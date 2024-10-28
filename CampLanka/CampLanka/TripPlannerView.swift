@@ -8,7 +8,6 @@
 import SwiftUI
 
 
-
 struct TripPlannerView: View {
     @State private var selectedTab = 0
     
@@ -23,8 +22,6 @@ struct TripPlannerView: View {
                 // Status Bar content (Time, Battery, etc.)
                 StatusBarView()
                 
-                
-                
                 // Main Content
                 VStack(spacing: 0) {
                     Text("Trip Planner")
@@ -34,7 +31,11 @@ struct TripPlannerView: View {
                     Spacer().frame(height: 80)
                     
                     // Tent Icon
-                    TentIcon()
+                    Image("camplogo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 100, height: 100)
+                        .padding(.top, 60)
                         .frame(width: 100, height: 100)
                     
                     Spacer().frame(height: 60)
@@ -64,7 +65,8 @@ struct TripPlannerView: View {
                     Spacer()
                     
                     // Custom Tab Bar
-                    CustomTabBar(selectedTab: $selectedTab)
+                //    CustomTabBar(selectedTab: $selectedTab)
+                    CustomTabBar()
                 }
             }
         }
@@ -75,17 +77,17 @@ struct TripPlannerView: View {
 struct StatusBarView: View {
     var body: some View {
         HStack {
-            //Text("9:41")
-               // .font(.system(size: 16, weight: .semibold))
+            
+                
             Spacer()
-           /* HStack(spacing: 4) {
-                Image(systemName: "cellullar")
-                Image(systemName: "wifi")
-                Image(systemName: "battery.100")
+            HStack(spacing: 4) {
+               
+              
+                
             }
-        }*/
+        }
         .padding(.horizontal, 20)
-        .padding(.top, 10)
+        .padding(.top, 5)
         .frame(height: 44)
         .background(Color.white)
     }
@@ -117,7 +119,7 @@ struct TentIcon: View {
         }
     }
 }
-
+/*
 // Custom Tab Bar
 struct CustomTabBar: View {
     @Binding var selectedTab: Int
@@ -142,7 +144,7 @@ struct CustomTabBar: View {
                                     .font(.system(size: 22, weight: .medium))
                                     .foregroundColor(.white)
                             }
-                            .offset(y: -15)
+                            .offset(y: -1)
                             Text("Add Plan")
                                 .font(.system(size: 12))
                                 .foregroundColor(selectedTab == index ? darkGreen : .gray)
@@ -189,7 +191,7 @@ struct CustomTabBar: View {
     }
 }
 
-
+*/
 
 #if DEBUG
 // Helper Preview Provider

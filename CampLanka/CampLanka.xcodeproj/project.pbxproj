@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CCE2CCE45C100924439 /* CampLankaApp.swift */; };
-		82981CD12CCE45C100924439 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD02CCE45C100924439 /* ContentView.swift */; };
+		82981CD12CCE45C100924439 /* ConteentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD02CCE45C100924439 /* ConteentView.swift */; };
 		82981CD32CCE45C200924439 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82981CD22CCE45C200924439 /* Assets.xcassets */; };
 		82981CD62CCE45C200924439 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82981CD52CCE45C200924439 /* Preview Assets.xcassets */; };
 		82981CD82CCE45C200924439 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD72CCE45C200924439 /* Persistence.swift */; };
@@ -22,6 +22,11 @@
 		82981D042CCE477200924439 /* TripPlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D032CCE477200924439 /* TripPlannerView.swift */; };
 		82981D062CCE481100924439 /* NotificationPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D052CCE481100924439 /* NotificationPermissionView.swift */; };
 		82981D082CCE483400924439 /* RegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D072CCE483400924439 /* RegistrationView.swift */; };
+		82C7ACD62CCF6E78002F64DC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */; };
+		82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD72CCF70B6002F64DC /* ProfileView.swift */; };
+		82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */; };
+		82C7ACDC2CCF930C002F64DC /* AddContactSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */; };
+		82C7ACDE2CCF96CC002F64DC /* EmergencyCallingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +49,7 @@
 /* Begin PBXFileReference section */
 		82981CCB2CCE45C100924439 /* CampLanka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampLanka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82981CCE2CCE45C100924439 /* CampLankaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampLankaApp.swift; sourceTree = "<group>"; };
-		82981CD02CCE45C100924439 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		82981CD02CCE45C100924439 /* ConteentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConteentView.swift; sourceTree = "<group>"; };
 		82981CD22CCE45C200924439 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		82981CD52CCE45C200924439 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		82981CD72CCE45C200924439 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -60,6 +65,11 @@
 		82981D032CCE477200924439 /* TripPlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPlannerView.swift; sourceTree = "<group>"; };
 		82981D052CCE481100924439 /* NotificationPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionView.swift; sourceTree = "<group>"; };
 		82981D072CCE483400924439 /* RegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationView.swift; sourceTree = "<group>"; };
+		82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		82C7ACD72CCF70B6002F64DC /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyView.swift; sourceTree = "<group>"; };
+		82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactSheetView.swift; sourceTree = "<group>"; };
+		82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyCallingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,11 +121,16 @@
 			isa = PBXGroup;
 			children = (
 				82981CCE2CCE45C100924439 /* CampLankaApp.swift */,
-				82981CD02CCE45C100924439 /* ContentView.swift */,
+				82981CD02CCE45C100924439 /* ConteentView.swift */,
 				82981CFD2CCE46F400924439 /* SignInView.swift */,
 				82981CFF2CCE470D00924439 /* SplashScreen.swift */,
 				82981D012CCE473D00924439 /* SignInSignUpView.swift */,
 				82981D032CCE477200924439 /* TripPlannerView.swift */,
+				82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */,
+				82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */,
+				82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */,
+				82C7ACD72CCF70B6002F64DC /* ProfileView.swift */,
+				82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */,
 				82981D052CCE481100924439 /* NotificationPermissionView.swift */,
 				82981D072CCE483400924439 /* RegistrationView.swift */,
 				82981CD22CCE45C200924439 /* Assets.xcassets */,
@@ -282,11 +297,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				82981D002CCE470D00924439 /* SplashScreen.swift in Sources */,
+				82C7ACDE2CCF96CC002F64DC /* EmergencyCallingView.swift in Sources */,
 				82981CD82CCE45C200924439 /* Persistence.swift in Sources */,
 				82981D042CCE477200924439 /* TripPlannerView.swift in Sources */,
+				82C7ACD62CCF6E78002F64DC /* CustomTabBar.swift in Sources */,
+				82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */,
 				82981D022CCE473D00924439 /* SignInSignUpView.swift in Sources */,
-				82981CD12CCE45C100924439 /* ContentView.swift in Sources */,
+				82981CD12CCE45C100924439 /* ConteentView.swift in Sources */,
+				82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */,
 				82981CDB2CCE45C200924439 /* CampLanka.xcdatamodeld in Sources */,
+				82C7ACDC2CCF930C002F64DC /* AddContactSheetView.swift in Sources */,
 				82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */,
 				82981CFE2CCE46F400924439 /* SignInView.swift in Sources */,
 				82981D062CCE481100924439 /* NotificationPermissionView.swift in Sources */,
