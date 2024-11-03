@@ -32,6 +32,10 @@
 		82D49DA82CD62FD700AC989F /* CampingPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */; };
 		82D49DAA2CD6374300AC989F /* BudgetPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D49DA92CD6374300AC989F /* BudgetPreferenceView.swift */; };
 		82D49DAC2CD63B8400AC989F /* WishListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D49DAB2CD63B8400AC989F /* WishListView.swift */; };
+		82DCC4662CD785D30050CF26 /* CampgroundListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DCC4652CD785D30050CF26 /* CampgroundListView.swift */; };
+		82DCC4682CD78F650050CF26 /* PreferredFacilitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */; };
+		82DCC46A2CD795A20050CF26 /* ActivitiesPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */; };
+		82DCC46C2CD799680050CF26 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DCC46B2CD799680050CF26 /* Models.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +84,10 @@
 		82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampingPreferenceView.swift; sourceTree = "<group>"; };
 		82D49DA92CD6374300AC989F /* BudgetPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetPreferenceView.swift; sourceTree = "<group>"; };
 		82D49DAB2CD63B8400AC989F /* WishListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListView.swift; sourceTree = "<group>"; };
+		82DCC4652CD785D30050CF26 /* CampgroundListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundListView.swift; sourceTree = "<group>"; };
+		82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredFacilitiesView.swift; sourceTree = "<group>"; };
+		82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesPreferencesView.swift; sourceTree = "<group>"; };
+		82DCC46B2CD799680050CF26 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,7 +154,11 @@
 				82D49DA52CD62C6000AC989F /* PlanListView.swift */,
 				82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */,
 				82D49DA92CD6374300AC989F /* BudgetPreferenceView.swift */,
+				82DCC4652CD785D30050CF26 /* CampgroundListView.swift */,
+				82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */,
+				82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */,
 				82D49DAB2CD63B8400AC989F /* WishListView.swift */,
+				82DCC46B2CD799680050CF26 /* Models.swift */,
 				82981D072CCE483400924439 /* RegistrationView.swift */,
 				82981CD22CCE45C200924439 /* Assets.xcassets */,
 				82981CD72CCE45C200924439 /* Persistence.swift */,
@@ -314,19 +326,23 @@
 				82981D002CCE470D00924439 /* SplashScreen.swift in Sources */,
 				82C7ACDE2CCF96CC002F64DC /* EmergencyCallingView.swift in Sources */,
 				82981CD82CCE45C200924439 /* Persistence.swift in Sources */,
+				82DCC46C2CD799680050CF26 /* Models.swift in Sources */,
 				82981D042CCE477200924439 /* TripPlannerView.swift in Sources */,
 				82C7ACD62CCF6E78002F64DC /* CustomTabBar.swift in Sources */,
+				82DCC4682CD78F650050CF26 /* PreferredFacilitiesView.swift in Sources */,
 				82D49DA62CD62C6000AC989F /* PlanListView.swift in Sources */,
 				82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */,
 				82D49DA82CD62FD700AC989F /* CampingPreferenceView.swift in Sources */,
 				82D49DAA2CD6374300AC989F /* BudgetPreferenceView.swift in Sources */,
 				82981D022CCE473D00924439 /* SignInSignUpView.swift in Sources */,
+				82DCC4662CD785D30050CF26 /* CampgroundListView.swift in Sources */,
 				82D49DA42CD628CE00AC989F /* SaveToPlanView.swift in Sources */,
 				82981CD12CCE45C100924439 /* ConteentView.swift in Sources */,
 				82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */,
 				82981CDB2CCE45C200924439 /* CampLanka.xcdatamodeld in Sources */,
 				82C7ACDC2CCF930C002F64DC /* AddContactSheetView.swift in Sources */,
 				82D49DAC2CD63B8400AC989F /* WishListView.swift in Sources */,
+				82DCC46A2CD795A20050CF26 /* ActivitiesPreferencesView.swift in Sources */,
 				82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */,
 				82981CFE2CCE46F400924439 /* SignInView.swift in Sources */,
 				82981D062CCE481100924439 /* NotificationPermissionView.swift in Sources */,
