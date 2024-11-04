@@ -81,24 +81,36 @@ struct BudgetPreferenceView: View {
             
             Spacer()
             
-            // Next Button
-            Button(action: {
-                // Handle next action
-                if selectedOption != nil {
-                    // Navigate to next screen
+            VStack(spacing: 8) {
+                // Next Button
+                Button(action: {
+                    // Handle next action
+                    if selectedOption != nil {
+                        // Navigate to next screen
+                    }
+                }) {
+                    Text("Next")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(selectedOption != nil ? Color.green : Color.gray.opacity(0.3))
+                        .foregroundColor(selectedOption != nil ? .white : .gray)
+                        .cornerRadius(10)
                 }
-            }) {
-                Text("Next")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(selectedOption != nil ? Color.green : Color.gray.opacity(0.3))
-                    .foregroundColor(selectedOption != nil ? .white : .gray)
-                    .cornerRadius(10)
+                .disabled(selectedOption == nil)
+                
+                // Skip Text Button
+                Button(action: {
+                    // Handle skip action
+                    // Navigate to next screen without selection
+                }) {
+                    Text("Skip")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
             }
-            .disabled(selectedOption == nil)
             .padding()
-            //Spacer()
+            
             CustomTabBar()
         }
     }
@@ -112,11 +124,11 @@ struct BudgetOptionCard: View {
     var iconName: String {
         switch option {
         case .budgetFriendly:
-            return "camplogo" // Replace with your actual asset name
+            return "budgetfriendly" // Replace with your actual asset name
         case .moderate:
-            return "camplogo" // Replace with your actual asset name
+            return "moderate" // Replace with your actual asset name
         case .luxury:
-            return "camplogo" // Replace with your actual asset name
+            return "luxury" // Replace with your actual asset name
         }
     }
     
@@ -147,8 +159,6 @@ struct BudgetOptionCard: View {
         }
     }
 }
-
-
 
 // Preview Provider
 struct BudgetPreferenceView_Previews: PreviewProvider {

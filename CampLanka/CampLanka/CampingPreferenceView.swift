@@ -123,13 +123,13 @@ struct CampingOptionCard: View {
     private func iconName(for option: CampingPreferenceView.CampingOption) -> String {
         switch option {
         case .freeCamping:
-            return "camplogo"
+            return "freecamping"
         case .paidCamping:
-            return "camplogo"
+            return "paidcamping"
         case .solo:
-            return "camplogo"
+            return "solocamping"
         case .groupCamping:
-            return "camplogo"
+            return "groupcamping"
         }
     }
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825822002CD8A5F0006E225B /* CampgroundServicesView.swift */; };
 		82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CCE2CCE45C100924439 /* CampLankaApp.swift */; };
 		82981CD12CCE45C100924439 /* ConteentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD02CCE45C100924439 /* ConteentView.swift */; };
 		82981CD32CCE45C200924439 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82981CD22CCE45C200924439 /* Assets.xcassets */; };
@@ -56,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		825822002CD8A5F0006E225B /* CampgroundServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundServicesView.swift; sourceTree = "<group>"; };
 		82981CCB2CCE45C100924439 /* CampLanka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampLanka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82981CCE2CCE45C100924439 /* CampLankaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampLankaApp.swift; sourceTree = "<group>"; };
 		82981CD02CCE45C100924439 /* ConteentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConteentView.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 				82D49DA52CD62C6000AC989F /* PlanListView.swift */,
 				82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */,
 				82D49DA92CD6374300AC989F /* BudgetPreferenceView.swift */,
+				825822002CD8A5F0006E225B /* CampgroundServicesView.swift */,
 				82DCC4652CD785D30050CF26 /* CampgroundListView.swift */,
 				82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */,
 				82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */,
@@ -338,6 +341,7 @@
 				82DCC4662CD785D30050CF26 /* CampgroundListView.swift in Sources */,
 				82D49DA42CD628CE00AC989F /* SaveToPlanView.swift in Sources */,
 				82981CD12CCE45C100924439 /* ConteentView.swift in Sources */,
+				825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */,
 				82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */,
 				82981CDB2CCE45C200924439 /* CampLanka.xcdatamodeld in Sources */,
 				82C7ACDC2CCF930C002F64DC /* AddContactSheetView.swift in Sources */,
