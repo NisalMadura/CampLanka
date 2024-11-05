@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct SignInSignUpView: View {
+    
     var body: some View {
         VStack(spacing: 24) {
             // Logo

@@ -12,10 +12,10 @@ struct CampingPreferenceView: View {
     @Environment(\.dismiss) private var dismiss
     
     enum CampingOption: String, CaseIterable {
-        case freeCamping = "Free camping"
-        case paidCamping = "Paid camping"
-        case solo = "Solo"
-        case groupCamping = "Group camping"
+        case freeCamping = "Free Camping"
+        case paidCamping = "Paid Camping"
+        case solo = "Solo Camping"
+        case groupCamping = "Group Camping"
     }
     
     var body: some View {

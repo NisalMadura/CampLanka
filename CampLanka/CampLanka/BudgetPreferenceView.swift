@@ -44,7 +44,7 @@ struct BudgetPreferenceView: View {
                     .font(.title2)
                     .fontWeight(.semibold)
                 
-                Text("Whats your emergency?")
+                Text("What are your budget preferences?")
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }

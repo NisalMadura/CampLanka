@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		822355672CD9D49800CF7554 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822355662CD9D49800CF7554 /* HomeView.swift */; };
+		822355692CD9FCD800CF7554 /* AddToCommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822355682CD9FCD800CF7554 /* AddToCommunityView.swift */; };
+		8223556B2CDA00CA00CF7554 /* starRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223556A2CDA00CA00CF7554 /* starRatingView.swift */; };
+		8223556D2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223556C2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift */; };
+		8223556F2CDA14F100CF7554 /* GroupChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223556E2CDA14F100CF7554 /* GroupChatView.swift */; };
+		822355712CDA21A600CF7554 /* TripPlannerDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */; };
+		822355732CDA3A2800CF7554 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 822355722CDA3A2800CF7554 /* GoogleService-Info.plist */; };
+		822355752CDA3A3200CF7554 /* GoogleService-Info-2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 822355742CDA3A3200CF7554 /* GoogleService-Info-2.plist */; };
+		822355782CDA3D2D00CF7554 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 822355772CDA3D2D00CF7554 /* FirebaseAuth */; };
+		8223557A2CDA3D2D00CF7554 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 822355792CDA3D2D00CF7554 /* FirebaseDatabase */; };
 		825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825822002CD8A5F0006E225B /* CampgroundServicesView.swift */; };
 		82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CCE2CCE45C100924439 /* CampLankaApp.swift */; };
 		82981CD12CCE45C100924439 /* ConteentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD02CCE45C100924439 /* ConteentView.swift */; };
@@ -57,6 +67,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		822355662CD9D49800CF7554 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		822355682CD9FCD800CF7554 /* AddToCommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCommunityView.swift; sourceTree = "<group>"; };
+		8223556A2CDA00CA00CF7554 /* starRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = starRatingView.swift; sourceTree = "<group>"; };
+		8223556C2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSubmissionScreen.swift; sourceTree = "<group>"; };
+		8223556E2CDA14F100CF7554 /* GroupChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupChatView.swift; sourceTree = "<group>"; };
+		822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPlannerDetailsView.swift; sourceTree = "<group>"; };
+		822355722CDA3A2800CF7554 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		822355742CDA3A3200CF7554 /* GoogleService-Info-2.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-2.plist"; sourceTree = "<group>"; };
+		8223557B2CDA3E3000CF7554 /* CampLanka.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CampLanka.entitlements; sourceTree = "<group>"; };
 		825822002CD8A5F0006E225B /* CampgroundServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundServicesView.swift; sourceTree = "<group>"; };
 		82981CCB2CCE45C100924439 /* CampLanka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampLanka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82981CCE2CCE45C100924439 /* CampLankaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampLankaApp.swift; sourceTree = "<group>"; };
@@ -97,6 +116,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8223557A2CDA3D2D00CF7554 /* FirebaseDatabase in Frameworks */,
+				822355782CDA3D2D00CF7554 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,12 +161,16 @@
 		82981CCD2CCE45C100924439 /* CampLanka */ = {
 			isa = PBXGroup;
 			children = (
+				8223557B2CDA3E3000CF7554 /* CampLanka.entitlements */,
+				822355722CDA3A2800CF7554 /* GoogleService-Info.plist */,
+				822355742CDA3A3200CF7554 /* GoogleService-Info-2.plist */,
 				82981CCE2CCE45C100924439 /* CampLankaApp.swift */,
 				82981CD02CCE45C100924439 /* ConteentView.swift */,
 				82981CFD2CCE46F400924439 /* SignInView.swift */,
 				82981CFF2CCE470D00924439 /* SplashScreen.swift */,
 				82981D012CCE473D00924439 /* SignInSignUpView.swift */,
 				82981D032CCE477200924439 /* TripPlannerView.swift */,
+				822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */,
 				82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */,
 				82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */,
 				82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */,
@@ -157,6 +182,11 @@
 				82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */,
 				82D49DA92CD6374300AC989F /* BudgetPreferenceView.swift */,
 				825822002CD8A5F0006E225B /* CampgroundServicesView.swift */,
+				822355662CD9D49800CF7554 /* HomeView.swift */,
+				822355682CD9FCD800CF7554 /* AddToCommunityView.swift */,
+				8223556A2CDA00CA00CF7554 /* starRatingView.swift */,
+				8223556C2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift */,
+				8223556E2CDA14F100CF7554 /* GroupChatView.swift */,
 				82DCC4652CD785D30050CF26 /* CampgroundListView.swift */,
 				82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */,
 				82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */,
@@ -212,6 +242,10 @@
 			dependencies = (
 			);
 			name = CampLanka;
+			packageProductDependencies = (
+				822355772CDA3D2D00CF7554 /* FirebaseAuth */,
+				822355792CDA3D2D00CF7554 /* FirebaseDatabase */,
+			);
 			productName = CampLanka;
 			productReference = 82981CCB2CCE45C100924439 /* CampLanka.app */;
 			productType = "com.apple.product-type.application";
@@ -284,6 +318,9 @@
 				Base,
 			);
 			mainGroup = 82981CC22CCE45C100924439;
+			packageReferences = (
+				822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 82981CCC2CCE45C100924439 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -302,6 +339,8 @@
 			files = (
 				82981CD62CCE45C200924439 /* Preview Assets.xcassets in Resources */,
 				82981CD32CCE45C200924439 /* Assets.xcassets in Resources */,
+				822355752CDA3A3200CF7554 /* GoogleService-Info-2.plist in Resources */,
+				822355732CDA3A2800CF7554 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -327,8 +366,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				82981D002CCE470D00924439 /* SplashScreen.swift in Sources */,
+				8223556B2CDA00CA00CF7554 /* starRatingView.swift in Sources */,
 				82C7ACDE2CCF96CC002F64DC /* EmergencyCallingView.swift in Sources */,
 				82981CD82CCE45C200924439 /* Persistence.swift in Sources */,
+				8223556F2CDA14F100CF7554 /* GroupChatView.swift in Sources */,
 				82DCC46C2CD799680050CF26 /* Models.swift in Sources */,
 				82981D042CCE477200924439 /* TripPlannerView.swift in Sources */,
 				82C7ACD62CCF6E78002F64DC /* CustomTabBar.swift in Sources */,
@@ -341,11 +382,15 @@
 				82DCC4662CD785D30050CF26 /* CampgroundListView.swift in Sources */,
 				82D49DA42CD628CE00AC989F /* SaveToPlanView.swift in Sources */,
 				82981CD12CCE45C100924439 /* ConteentView.swift in Sources */,
+				822355672CD9D49800CF7554 /* HomeView.swift in Sources */,
+				8223556D2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift in Sources */,
 				825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */,
 				82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */,
 				82981CDB2CCE45C200924439 /* CampLanka.xcdatamodeld in Sources */,
 				82C7ACDC2CCF930C002F64DC /* AddContactSheetView.swift in Sources */,
+				822355692CD9FCD800CF7554 /* AddToCommunityView.swift in Sources */,
 				82D49DAC2CD63B8400AC989F /* WishListView.swift in Sources */,
+				822355712CDA21A600CF7554 /* TripPlannerDetailsView.swift in Sources */,
 				82DCC46A2CD795A20050CF26 /* ActivitiesPreferencesView.swift in Sources */,
 				82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */,
 				82981CFE2CCE46F400924439 /* SignInView.swift in Sources */,
@@ -511,9 +556,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CampLanka/CampLanka.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CampLanka/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -539,9 +586,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CampLanka/CampLanka.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CampLanka/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -674,6 +723,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		822355772CDA3D2D00CF7554 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		822355792CDA3D2D00CF7554 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		82981CD92CCE45C200924439 /* CampLanka.xcdatamodeld */ = {
