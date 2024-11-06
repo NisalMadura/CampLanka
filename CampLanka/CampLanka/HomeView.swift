@@ -89,7 +89,20 @@ struct HomeViewscn: View {
                 .padding()
             
             }
+            
+           // Spacer()
+                           
+                           // Custom Task Bar at the bottom
+                           CustomTabBar()
+                             //  .padding(.bottom)
+                .navigationBarBackButtonHidden(true)
+            
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                                // Explicitly setting an empty toolbar item on the leading side
+                                // can also help to hide the default back button
+                                EmptyView()
+                            }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
                         Button(action: { }) {
@@ -98,6 +111,7 @@ struct HomeViewscn: View {
                         }
                         
                         ProfileButton()
+                        
                     }
                 }
             }

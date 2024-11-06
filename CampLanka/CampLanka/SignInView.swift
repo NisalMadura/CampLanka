@@ -32,9 +32,9 @@ struct SignInView: View {
                 
                 VStack(spacing: 16) {
                     // Sign In Button
-                    Button(action: {
+                    NavigationLink(destination: SignInSignUpView()) {
                         // Handle sign in
-                    }) {
+                    
                         Text("Sign In")
                             .font(.system(size: 17, weight: .semibold))
                             .frame(maxWidth: .infinity)
@@ -46,9 +46,9 @@ struct SignInView: View {
                     .padding(.horizontal, 24)
                     
                     // Create Profile Button
-                    Button(action: {
+                    NavigationLink(destination: RegistrationView()){
                         // Handle create profile
-                    }) {
+                    
                         Text("Create Free Profile")
                             .font(.system(size: 17, weight: .semibold))
                             .frame(maxWidth: .infinity)
@@ -64,9 +64,9 @@ struct SignInView: View {
                 Spacer()
                 
                 // I'll do it later button
-                Button(action: {
+                NavigationLink(destination: HomeViewscn()){
                     // Handle skip
-                }) {
+                
                     Text("I'll do it later")
                         .font(.system(size: 17))
                         .foregroundColor(.primary)
