@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8216B3D82CDCEA8A00CB656A /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8216B3D72CDCEA8A00CB656A /* ForgotPasswordView.swift */; };
+		8216B3DA2CDCFB8600CB656A /* MapLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8216B3D92CDCFB8600CB656A /* MapLocationView.swift */; };
 		822355672CD9D49800CF7554 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822355662CD9D49800CF7554 /* HomeView.swift */; };
 		822355692CD9FCD800CF7554 /* AddToCommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822355682CD9FCD800CF7554 /* AddToCommunityView.swift */; };
 		8223556B2CDA00CA00CF7554 /* starRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223556A2CDA00CA00CF7554 /* starRatingView.swift */; };
@@ -69,6 +71,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8216B3D72CDCEA8A00CB656A /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		8216B3D92CDCFB8600CB656A /* MapLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLocationView.swift; sourceTree = "<group>"; };
 		822355662CD9D49800CF7554 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		822355682CD9FCD800CF7554 /* AddToCommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCommunityView.swift; sourceTree = "<group>"; };
 		8223556A2CDA00CA00CF7554 /* starRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = starRatingView.swift; sourceTree = "<group>"; };
@@ -172,6 +176,8 @@
 				82981CCE2CCE45C100924439 /* CampLankaApp.swift */,
 				82981CD02CCE45C100924439 /* ConteentView.swift */,
 				82981CFD2CCE46F400924439 /* SignInView.swift */,
+				8216B3D72CDCEA8A00CB656A /* ForgotPasswordView.swift */,
+				8216B3D92CDCFB8600CB656A /* MapLocationView.swift */,
 				82981CFF2CCE470D00924439 /* SplashScreen.swift */,
 				82981D012CCE473D00924439 /* SignInSignUpView.swift */,
 				8223557C2CDA4D7700CF7554 /* AppDelegate.swift */,
@@ -373,7 +379,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8216B3DA2CDCFB8600CB656A /* MapLocationView.swift in Sources */,
 				82981D002CCE470D00924439 /* SplashScreen.swift in Sources */,
+				8216B3D82CDCEA8A00CB656A /* ForgotPasswordView.swift in Sources */,
 				8223556B2CDA00CA00CF7554 /* starRatingView.swift in Sources */,
 				82C7ACDE2CCF96CC002F64DC /* EmergencyCallingView.swift in Sources */,
 				82981CD82CCE45C200924439 /* Persistence.swift in Sources */,

@@ -52,7 +52,7 @@ struct MainView: View {
                 case .addPlan:
                     SaveToPlanView()
                 case .location:
-                    LocationView()
+                    LocationSearchView()
                 case .profile:
                     ProfileView()
                 }
