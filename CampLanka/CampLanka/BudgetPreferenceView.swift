@@ -111,7 +111,7 @@ struct BudgetPreferenceView: View {
             }
             .padding()
             
-            CustomTabBar()
+         //  CustomTabBar()
         }
     }
 }

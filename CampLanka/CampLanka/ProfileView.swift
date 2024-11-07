@@ -72,7 +72,7 @@ struct ProfileView: View {
                 .padding(.top, 20)
                 
                 Spacer()
-                CustomTabBar()
+                //CustomTabBar()
                 // Custom Tab Bar (reused from previous screen)
                 //CustomTabBar(selectedTab: $selectedTab)
             }

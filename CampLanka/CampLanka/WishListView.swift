@@ -99,10 +99,9 @@ struct WishListView: View {
             presentationMode.wrappedValue.dismiss()
         }) {
             HStack {
-                Image(systemName: "chevron.left")
-                    .foregroundColor(.blue)
-                Text("Back")
-                    .foregroundColor(.blue)
+                //Image(systemName: "chevron.left")
+                 //   .foregroundColor(.blue)
+                
             }
         }
     }

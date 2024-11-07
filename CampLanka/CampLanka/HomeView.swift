@@ -54,11 +54,11 @@ struct HomeViewscn: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 10) {
                     Text("Good Morning!")
                         .font(.title)
                         .bold()
-                        .padding(.top)
+                      .padding(.top,-60)
                     
                     // Search Bar
                     SearchBar(text: $searchText)
@@ -89,20 +89,12 @@ struct HomeViewscn: View {
                 .padding()
             
             }
-            
-           // Spacer()
-                           
-                           // Custom Task Bar at the bottom
-                           CustomTabBar()
-                             //  .padding(.bottom)
-                .navigationBarBackButtonHidden(true)
-            
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                                 // Explicitly setting an empty toolbar item on the leading side
                                 // can also help to hide the default back button
-                                EmptyView()
-                            }
+                    Text("")
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
                         Button(action: { }) {
@@ -116,6 +108,8 @@ struct HomeViewscn: View {
                 }
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
 }
 

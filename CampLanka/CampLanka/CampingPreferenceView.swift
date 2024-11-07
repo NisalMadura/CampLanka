@@ -75,7 +75,7 @@ struct CampingPreferenceView: View {
                     Spacer()
                 }
                 .padding()
-                CustomTabBar()
+              //  CustomTabBar()
             }
             .navigationBarItems(trailing: Button(action: {
                 dismiss()

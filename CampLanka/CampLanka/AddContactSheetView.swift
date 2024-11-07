@@ -151,7 +151,7 @@ struct EmergencyCircleView: View {
             Spacer()
             
             // Custom Tab Bar
-            CustomTabBar()
+           // CustomTabBar()
         }
         .sheet(isPresented: $showingAddSheet) {
             AddContactSheet(contactGroups: $contactGroups)

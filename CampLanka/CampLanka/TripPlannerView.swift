@@ -66,7 +66,7 @@ struct TripPlannerView: View {
                     
                     // Custom Tab Bar
                 //    CustomTabBar(selectedTab: $selectedTab)
-                    CustomTabBar()
+                    //CustomTabBar()
                 }
             }
         }

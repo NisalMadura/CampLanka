@@ -121,7 +121,7 @@ struct EmergencyView: View {
             Spacer()
             
             // Custom Tab Bar placeholder
-            CustomTabBar()
+           // CustomTabBar()
         }
     }
     

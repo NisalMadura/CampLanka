@@ -94,7 +94,7 @@ struct SaveToPlanView: View {
                 .padding()
                 
                 // Tab Bar
-                CustomTabBar()
+                //CustomTabBar()
             }
             .navigationTitle("Save To My Plan")
             .navigationBarTitleDisplayMode(.inline)
@@ -104,8 +104,8 @@ struct SaveToPlanView: View {
                         dismiss()
                     }) {
                         HStack {
-                            Image(systemName: "chevron.left")
-                            Text("Back")
+                            //Image(systemName: "chevron.left")
+                            //Text("Back")
                         }
                         .foregroundColor(.blue)
                     }

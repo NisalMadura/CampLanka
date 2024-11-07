@@ -64,15 +64,19 @@ struct SignInView: View {
                 Spacer()
                 
                 // I'll do it later button
-                NavigationLink(destination: HomeViewscn()){
+                NavigationLink(destination: MainView()){
                     // Handle skip
+                    
                 
                     Text("I'll do it later")
                         .font(.system(size: 17))
                         .foregroundColor(.primary)
                 }
                 .padding(.bottom, 32)
+              //  .navigationBarBackButtonHidden(true)
+
             }
+           
         }
     }
 }
