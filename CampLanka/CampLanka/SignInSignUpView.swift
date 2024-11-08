@@ -32,16 +32,16 @@ struct SignInSignUpView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
-                    .padding(.top, 60)
+                    .padding(.top, 0)
                 
                 // Title
-                Text("Sign in or create a\nfree profile")
+                Text("Sign In")
                     .font(.system(size: 28, weight: .bold))
                     .multilineTextAlignment(.center)
                     .padding(.top, 20)
                 
                 // Description
-                Text("Join CampLanka to discover amazing campsites, plan\ntrips, and collaborate with friends. Start your adventure today!")
+                Text("Join CampLanka to discover campsites!")
                     .font(.system(size: 16))
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color(.gray))
@@ -93,7 +93,6 @@ struct SignInSignUpView: View {
                     }) {
                         HStack {
                           
-                                
                             Text("Sign In")
                                 .font(.system(size: 17, weight: .semibold))
                         }
@@ -150,7 +149,7 @@ struct SignInSignUpView: View {
                   
                 }
                 .padding(.horizontal, 24)
-                .padding(.top, 32)
+                .padding(.top, 1)
                 
                 // Terms and Privacy
                 VStack(alignment: .center, spacing: 4) {

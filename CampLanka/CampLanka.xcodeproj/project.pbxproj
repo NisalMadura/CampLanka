@@ -37,6 +37,10 @@
 		82981D042CCE477200924439 /* TripPlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D032CCE477200924439 /* TripPlannerView.swift */; };
 		82981D062CCE481100924439 /* NotificationPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D052CCE481100924439 /* NotificationPermissionView.swift */; };
 		82981D082CCE483400924439 /* RegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D072CCE483400924439 /* RegistrationView.swift */; };
+		82B14EF42CDE1EC70092D0D4 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF32CDE1EC70092D0D4 /* FirebaseAppCheck */; };
+		82B14EF62CDE1EC70092D0D4 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF52CDE1EC70092D0D4 /* FirebaseCore */; };
+		82B14EF82CDE1EC70092D0D4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */; };
+		82B14EFA2CDE1EC70092D0D4 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF92CDE1EC70092D0D4 /* FirebaseMessaging */; };
 		82C7ACD62CCF6E78002F64DC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */; };
 		82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD72CCF70B6002F64DC /* ProfileView.swift */; };
 		82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */; };
@@ -123,10 +127,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82B14EFA2CDE1EC70092D0D4 /* FirebaseMessaging in Frameworks */,
 				8223557A2CDA3D2D00CF7554 /* FirebaseDatabase in Frameworks */,
 				822355782CDA3D2D00CF7554 /* FirebaseAuth in Frameworks */,
 				822355802CDA548200CF7554 /* GoogleSignIn in Frameworks */,
+				82B14EF42CDE1EC70092D0D4 /* FirebaseAppCheck in Frameworks */,
+				82B14EF62CDE1EC70092D0D4 /* FirebaseCore in Frameworks */,
 				822355822CDA548200CF7554 /* GoogleSignInSwift in Frameworks */,
+				82B14EF82CDE1EC70092D0D4 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,6 +267,10 @@
 				822355792CDA3D2D00CF7554 /* FirebaseDatabase */,
 				8223557F2CDA548200CF7554 /* GoogleSignIn */,
 				822355812CDA548200CF7554 /* GoogleSignInSwift */,
+				82B14EF32CDE1EC70092D0D4 /* FirebaseAppCheck */,
+				82B14EF52CDE1EC70092D0D4 /* FirebaseCore */,
+				82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */,
+				82B14EF92CDE1EC70092D0D4 /* FirebaseMessaging */,
 			);
 			productName = CampLanka;
 			productReference = 82981CCB2CCE45C100924439 /* CampLanka.app */;
@@ -782,6 +794,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8223557E2CDA548200CF7554 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
+		82B14EF32CDE1EC70092D0D4 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		82B14EF52CDE1EC70092D0D4 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		82B14EF92CDE1EC70092D0D4 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 
