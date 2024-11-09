@@ -10,29 +10,30 @@ import SwiftUI
 struct CampingPreferenceView: View {
     @State private var selectedOption: CampingOption?
     @Environment(\.dismiss) private var dismiss
-    
+    @State private var navigateToBudget = false
+
     enum CampingOption: String, CaseIterable {
         case freeCamping = "Free Camping"
         case paidCamping = "Paid Camping"
         case solo = "Solo Camping"
         case groupCamping = "Group Camping"
     }
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
                 Text("How do you like to")
                     .font(.title2)
                     .fontWeight(.semibold)
-                
+
                 Text("camping?")
                     .font(.title2)
                     .fontWeight(.semibold)
-                
-                Text("Whats your preference?")
+
+                Text("What's your preference?")
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                
+
                 LazyVGrid(columns: [
                     GridItem(.flexible()),
                     GridItem(.flexible())
@@ -46,14 +47,17 @@ struct CampingPreferenceView: View {
                     }
                 }
                 .padding(.horizontal)
-                
+
                 Spacer()
-                
+
                 VStack(spacing: 10) {
+                    NavigationLink(destination: BudgetPreferenceView(), isActive: $navigateToBudget) {
+                        //EmptyView()
+                    }
+
                     Button(action: {
-                        // Handle next action
                         if selectedOption != nil {
-                            // Navigate to next screen
+                            navigateToBudget = true
                         }
                     }) {
                         Text("Next")
@@ -65,25 +69,17 @@ struct CampingPreferenceView: View {
                             .cornerRadius(10)
                     }
                     .disabled(selectedOption == nil)
-                    
+
                     Button("Skip") {
-                        // Handle skip action
-                        dismiss()
-                        
+                        navigateToBudget = true
                     }
                     .foregroundColor(.gray)
+                    
                     Spacer()
                 }
                 .padding()
-              //  CustomTabBar()
             }
-            .navigationBarItems(trailing: Button(action: {
-                dismiss()
-            }) {
-                Image(systemName: "xmark")
-                    .foregroundColor(.black)
-            })
-            
+            .navigationBarBackButtonHidden(true)
         }
     }
 }
@@ -92,7 +88,7 @@ struct CampingOptionCard: View {
     let option: CampingPreferenceView.CampingOption
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 18) {
@@ -100,7 +96,7 @@ struct CampingOptionCard: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 80, height: 70)
-                
+
                 Text(option.rawValue)
                     .font(.subheadline)
                     .foregroundColor(.black)
@@ -111,7 +107,7 @@ struct CampingOptionCard: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.white)
                     .shadow(color: isSelected ? .green.opacity(0.3) : .gray.opacity(0.2),
-                           radius: 8, x: 0, y: 2)
+                            radius: 8, x: 0, y: 2)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -119,7 +115,7 @@ struct CampingOptionCard: View {
             )
         }
     }
-    
+
     private func iconName(for option: CampingPreferenceView.CampingOption) -> String {
         switch option {
         case .freeCamping:
@@ -134,9 +130,6 @@ struct CampingOptionCard: View {
     }
 }
 
-
-
-// Preview Provider
 struct CampingPreferenceView_Previews: PreviewProvider {
     static var previews: some View {
         CampingPreferenceView()

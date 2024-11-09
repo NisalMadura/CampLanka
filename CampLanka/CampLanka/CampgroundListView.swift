@@ -36,29 +36,33 @@ class CampgroundViewModel: ObservableObject {
 // MARK: - Views
 struct CampgroundListView: View {
     @StateObject private var viewModel = CampgroundViewModel()
+    @State private var navigateToDetails = false // Track navigation state
     
     var body: some View {
         NavigationView {
-            List(viewModel.campgrounds) { campground in
-                CampgroundCell(campground: campground) {
-                    viewModel.toggleFavorite(for: campground)
+            VStack {
+                List(viewModel.campgrounds) { campground in
+                    CampgroundCell(campground: campground) {
+                        viewModel.toggleFavorite(for: campground)
+                    }
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Recommended for you")
+                            .font(.system(size: 20, weight: .bold))
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        NavigationLink(destination: TripPlannerDetailsView(), isActive: $navigateToDetails) {
+                            Text("Next")
+                                .font(.headline)
+                                .foregroundColor(.blue)
+                        }
+                    }
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Recommended for you")
-                        .font(.system(size: 20, weight: .bold))
-                    
-                }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    BackButton()
-                }
-                
-            }
-            
         }
-
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -73,7 +77,6 @@ struct CampgroundCell: View {
                 Image(campground.imageUrl)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    //.frame(height: 200)
                     .clipped()
                     .cornerRadius(8)
                 
@@ -116,21 +119,6 @@ struct CampgroundCell: View {
     }
 }
 
-struct BackButton: View {
-    @Environment(\.presentationMode) var presentationMode
-    
-    var body: some View {
-        Button(action: {
-            presentationMode.wrappedValue.dismiss()
-        }) {
-            HStack(spacing: 4) {
-                Image(systemName: "chevron.left")
-                Text("Back")
-            }
-            .foregroundColor(.blue)
-        }
-    }
-}
 
 // MARK: - Preview
 struct CampgroundListView_Previews: PreviewProvider {

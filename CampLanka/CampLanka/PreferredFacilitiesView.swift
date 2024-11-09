@@ -45,28 +45,24 @@ struct PreferredFacilitiesView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var showingAddFacility = false
     @State private var newFacilityName = ""
+    @State private var showAlert = false
+    @State private var navigateToActivities = false
     
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
     
+    private var hasSelectedFacilities: Bool {
+        viewModel.facilities.contains { $0.isSelected }
+    }
+    
     var body: some View {
+        NavigationStack {
             VStack(spacing: 20) {
                 // Navigation Bar with Centered Title
                 ZStack {
                     HStack {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                    .foregroundColor(.blue)
-                                Text("Back")
-                                    .foregroundColor(.blue)
-                            }
-                        }
-                        Spacer()
                     }
                     
                     Text("Preferred Facilities")
@@ -74,72 +70,86 @@ struct PreferredFacilitiesView: View {
                         .frame(maxWidth: .infinity)
                 }
                 .padding(.horizontal)
+                .navigationBarBackButtonHidden(true)
                 
-                Divider() // Add a
-            // Facilities Grid
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(viewModel.facilities) { facility in
-                        FacilityCell(
-                            name: facility.name,
-                            isSelected: facility.isSelected,
-                            action: { viewModel.toggleFacility(facility.id) }
-                        )
-                    }
-                    
-                    // Add More Button
-                    Button(action: {
-                        showingAddFacility = true
-                    }) {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor((Color(red: 0/255, green: 84/255, blue: 64/255)))
-                            Text("Add More")
-                                .foregroundColor((Color(red: 0/255, green: 84/255, blue: 64/255)))
+                Divider()
+                
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(viewModel.facilities) { facility in
+                            FacilityCell(
+                                name: facility.name,
+                                isSelected: facility.isSelected,
+                                action: { viewModel.toggleFacility(facility.id) }
+                            )
                         }
+                        
+                        // Add More Button
+                        Button(action: {
+                            showingAddFacility = true
+                        }) {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundColor((Color(red: 0/255, green: 84/255, blue: 64/255)))
+                                Text("Add More")
+                                    .foregroundColor((Color(red: 0/255, green: 84/255, blue: 64/255)))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.white)
+                                    .shadow(color: Color.gray.opacity(0.2), radius: 4, x: 0, y: 2)
+                            )
+                        }
+                    }
+                    .padding()
+                }
+                
+                // Next Button
+                Button(action: {
+                    if hasSelectedFacilities {
+                        navigateToActivities = true
+                    } else {
+                        showAlert = true
+                    }
+                }) {
+                    Text("Next")
+                        .font(.headline)
+                        .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.white)
-                                .shadow(color: Color.gray.opacity(0.2), radius: 4, x: 0, y: 2)
-                        )
-                    }
+                        .background((Color(red: 0/255, green: 84/255, blue: 64/255)))
+                        .cornerRadius(25)
                 }
-                .padding()
-            }
-            
-            // Next Button
-            Button(action: {
-                // Handle next action
-            }) {
-                Text("Next")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background((Color(red: 0/255, green: 84/255, blue: 64/255)))
-                    .cornerRadius(25)
-            }
-            .padding(.horizontal)
-            .padding(.bottom, 20)
+                .padding(.horizontal)
+                .padding(.bottom, 20)
+                
                 Button("Skip") {
-                    // Handle skip action
-                    //dismiss()
-                    
+                    navigateToActivities = true
                 }
                 .foregroundColor(.gray)
                 Spacer()
+            }
+            .navigationDestination(isPresented: $navigateToActivities) {
+                ActivitiesPreferencesView()
+            }
+            .alert("Selection Required", isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("Please select at least one facility to continue.")
+            }
+            .sheet(isPresented: $showingAddFacility) {
+                AddFacilitySheet(
+                    newFacilityName: $newFacilityName,
+                    isPresented: $showingAddFacility,
+                    onAdd: { name in
+                        viewModel.addNewFacility(name)
+                    }
+                )
+            }
         }
-        .sheet(isPresented: $showingAddFacility) {
-            AddFacilitySheet(
-                newFacilityName: $newFacilityName,
-                isPresented: $showingAddFacility,
-                onAdd: { name in
-                    viewModel.addNewFacility(name)
-                }
-            )
-        }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -206,6 +216,8 @@ struct AddFacilitySheet: View {
         }
     }
 }
+
+
 
 // MARK: - Preview
 struct PreferredFacilitiesView_Previews: PreviewProvider {

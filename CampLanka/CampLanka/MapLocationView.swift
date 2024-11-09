@@ -9,7 +9,6 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-
 // MARK: - Data Models
 struct PlaceDetails: Identifiable {
     let id = UUID()

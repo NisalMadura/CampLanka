@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BudgetPreferenceView: View {
     @State private var selectedOption: BudgetOption?
-    @Environment(\.presentationMode) var presentationMode
+    @State private var navigateToFacilities = false
     
     enum BudgetOption: String, CaseIterable {
         case budgetFriendly = "Budget-friendly"
@@ -17,27 +17,8 @@ struct BudgetPreferenceView: View {
         case luxury = "Luxury"
     }
     
-    // Grid layout setup
-    private let columns: [GridItem] = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // Back Button
-            Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                HStack {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
-                    Text("Back")
-                        .foregroundColor(.blue)
-                }
-            }
-            .padding(.horizontal)
-            
             // Title Section
             VStack(alignment: .center, spacing: 36) {
                 Text("Budget Preferences")
@@ -53,7 +34,6 @@ struct BudgetPreferenceView: View {
             
             // Budget Options
             VStack(spacing: 20) {
-                // First row with two options
                 HStack(spacing: 16) {
                     BudgetOptionCard(
                         option: .budgetFriendly,
@@ -68,7 +48,6 @@ struct BudgetPreferenceView: View {
                     )
                 }
                 
-                // Second row with single centered option
                 BudgetOptionCard(
                     option: .luxury,
                     isSelected: selectedOption == .luxury,
@@ -81,12 +60,11 @@ struct BudgetPreferenceView: View {
             
             Spacer()
             
-            VStack(spacing: 8) {
+            VStack(spacing: 28) {
                 // Next Button
                 Button(action: {
-                    // Handle next action
                     if selectedOption != nil {
-                        // Navigate to next screen
+                        navigateToFacilities = true
                     }
                 }) {
                     Text("Next")
@@ -99,10 +77,9 @@ struct BudgetPreferenceView: View {
                 }
                 .disabled(selectedOption == nil)
                 
-                // Skip Text Button
+                // Skip Button
                 Button(action: {
-                    // Handle skip action
-                    // Navigate to next screen without selection
+                    navigateToFacilities = true
                 }) {
                     Text("Skip")
                         .font(.subheadline)
@@ -111,10 +88,17 @@ struct BudgetPreferenceView: View {
             }
             .padding()
             
-         //  CustomTabBar()
+            // Navigation link
+            NavigationLink(
+                destination: PreferredFacilitiesView(),
+                isActive: $navigateToFacilities,
+                label: { EmptyView() }
+            )
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
+
 
 struct BudgetOptionCard: View {
     let option: BudgetPreferenceView.BudgetOption
@@ -124,11 +108,11 @@ struct BudgetOptionCard: View {
     var iconName: String {
         switch option {
         case .budgetFriendly:
-            return "budgetfriendly" // Replace with your actual asset name
+            return "budgetfriendly"
         case .moderate:
-            return "moderate" // Replace with your actual asset name
+            return "moderate"
         case .luxury:
-            return "luxury" // Replace with your actual asset name
+            return "luxury"
         }
     }
     
@@ -160,7 +144,6 @@ struct BudgetOptionCard: View {
     }
 }
 
-// Preview Provider
 struct BudgetPreferenceView_Previews: PreviewProvider {
     static var previews: some View {
         BudgetPreferenceView()

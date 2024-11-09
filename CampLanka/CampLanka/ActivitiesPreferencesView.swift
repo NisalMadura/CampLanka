@@ -49,119 +49,126 @@ struct ActivitiesPreferencesView: View {
     @State private var newActivityName = ""
     @State private var showingAlert = false
     
+    // State for navigation
+    @State private var navigateToCampgroundList = false
+    
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
     
     var body: some View {
-        VStack(spacing: 20) {
-            // Navigation Bar with Centered Title
-            ZStack {
-                HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(.blue)
-                            Text("Back")
-                                .foregroundColor(.blue)
+        NavigationView {  // Wrapping the view in NavigationView
+            VStack(spacing: 20) {
+                // Navigation Bar with Centered Title
+                ZStack {
+                    HStack {
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            HStack(spacing: 4) {
+                                
+                            }
                         }
-                    }
-                    Spacer()
-                }
-                
-                Text("Activities Preferences")
-                    .font(.system(size: 20, weight: .semibold))
-                    .frame(maxWidth: .infinity)
-            }
-            .padding(.horizontal)
-            
-            Divider()
-            
-            // Activities Grid
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(viewModel.activities) { activity in
-                        ActivityCell(
-                            name: activity.name,
-                            isSelected: activity.isSelected,
-                            action: { viewModel.toggleActivity(activity.id) }
-                        )
+                        Spacer()
                     }
                     
-                    // Add More Button
-                    Button(action: {
-                        showingAddActivity = true
-                    }) {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor((Color(red: 0/255, green: 84/255, blue: 64/255)))
-                            Text("Add More")
-                                .foregroundColor((Color(red: 0/255, green: 84/255, blue: 64/255)))
-                        }
+                    Text("Activities Preferences")
+                        .font(.system(size: 20, weight: .semibold))
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.white)
-                                .shadow(color: Color.gray.opacity(0.2), radius: 4, x: 0, y: 2)
-                        )
-                    }
                 }
-                .padding()
-            }
-            
-            Spacer()
-            
-            // Navigation Buttons
-            VStack(spacing: 12) {
-                Button(action: {
-                    if viewModel.hasSelectedActivities {
-                        // Handle next action here
-                        print("Next button tapped")
-                    } else {
-                        showingAlert = true
+                .padding(.horizontal)
+                
+                Divider()
+                
+                // Activities Grid
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(viewModel.activities) { activity in
+                            ActivityCell(
+                                name: activity.name,
+                                isSelected: activity.isSelected,
+                                action: { viewModel.toggleActivity(activity.id) }
+                            )
+                        }
+                        
+                        // Add More Button
+                        Button(action: {
+                            showingAddActivity = true
+                        }) {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundColor((Color(red: 0/255, green: 84/255, blue: 64/255)))
+                                Text("Add More")
+                                    .foregroundColor((Color(red: 0/255, green: 84/255, blue: 64/255)))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.white)
+                                    .shadow(color: Color.gray.opacity(0.2), radius: 4, x: 0, y: 2)
+                            )
+                        }
                     }
-                }) {
-                    Text("Next")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background((Color(red: 0/255, green: 84/255, blue: 64/255)))
-                        .cornerRadius(10)
+                    .padding()
                 }
                 
-                Button(action: {
-                    // Handle skip action here
-                    print("Skip button tapped")
-                }) {
-                    Text("Skip")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+                Spacer()
+                
+                // Navigation Buttons
+                VStack(spacing: 12) {
+                    // Next Button
+                    Button(action: {
+                        if viewModel.hasSelectedActivities {
+                            navigateToCampgroundList = true  // Trigger navigation
+                        } else {
+                            showingAlert = true
+                        }
+                    }) {
+                        Text("Next")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background((Color(red: 0/255, green: 84/255, blue: 64/255)))
+                            .cornerRadius(10)
+                    }
+                    .background(
+                        NavigationLink(
+                            destination: CampgroundListView(),
+                            isActive: $navigateToCampgroundList,
+                            label: { EmptyView() }
+                        )
+                    )
+                    
+                    Button(action: {
+                        
+                    }) {
+                        
+                    }
                 }
+                .padding(.horizontal)
+                .padding(.bottom, 20)
             }
-            .padding(.horizontal)
-            .padding(.bottom, 20)
+            .sheet(isPresented: $showingAddActivity) {
+                AddActivitySheet(
+                    newActivityName: $newActivityName,
+                    isPresented: $showingAddActivity,
+                    onAdd: { name in
+                        viewModel.addNewActivity(name)
+                    }
+                )
+            }
+            .alert(isPresented: $showingAlert) {
+                Alert(
+                    title: Text("No Activities Selected"),
+                    message: Text("Please select at least one activity to continue."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
         }
-        .sheet(isPresented: $showingAddActivity) {
-            AddActivitySheet(
-                newActivityName: $newActivityName,
-                isPresented: $showingAddActivity,
-                onAdd: { name in
-                    viewModel.addNewActivity(name)
-                }
-            )
-        }
-        .alert(isPresented: $showingAlert) {
-            Alert(
-                title: Text("No Activities Selected"),
-                message: Text("Please select at least one activity to continue."),
-                dismissButton: .default(Text("OK"))
-            )
-        }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
