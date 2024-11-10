@@ -1,212 +1,205 @@
-//
-//  MapLocationView.swift
-//  CampLanka
-//
-//  Created by COBSCCOMPY4231P-008 on 2024-11-07.
-//
-
 import SwiftUI
 import MapKit
-import CoreLocation
+import Combine
 
-// MARK: - Data Models
-struct PlaceDetails: Identifiable {
-    let id = UUID()
-    let name: String
-    let address: String
-    let coordinate: CLLocationCoordinate2D
-    let category: String
-    let placeId: String?
-}
-
+// Location data model
 struct LocationData: Identifiable {
     let id = UUID()
     let name: String
-    let address: String
+    let city: String
+    let country: String
     let coordinate: CLLocationCoordinate2D
+    let images: [String]
     let category: String
-}
-
-// MARK: - Google Places API Response Models
-struct GooglePlacesResponse: Codable {
-    let results: [PlaceResult]
-}
-
-struct PlaceResult: Codable {
-    let name: String
-    let placeId: String
-    let geometry: Geometry
-    let vicinity: String
+    var isFavorite: Bool = false
     
-    enum CodingKeys: String, CodingKey {
-        case name
-        case placeId = "place_id"
-        case geometry
-        case vicinity
+    // Create from MKMapItem
+    init(mapItem: MKMapItem) {
+        self.name = mapItem.name ?? ""
+        self.city = mapItem.placemark.locality ?? ""
+        self.country = mapItem.placemark.country ?? ""
+        self.coordinate = mapItem.placemark.coordinate
+        self.images = [] // Would be populated from your backend/data source
+        self.category = mapItem.pointOfInterestCategory?.rawValue ?? ""
+    }
+    
+    // Custom init for preview/testing
+    init(name: String, city: String, country: String, coordinate: CLLocationCoordinate2D, images: [String], category: String) {
+        self.name = name
+        self.city = city
+        self.country = country
+        self.coordinate = coordinate
+        self.images = images
+        self.category = category
     }
 }
 
-struct Geometry: Codable {
-    let location: Location
-}
-
-struct Location: Codable {
-    let lat: Double
-    let lng: Double
-}
-
-// MARK: - Location Search Manager
-class LocationSearchManager: ObservableObject {
-    private let googlePlacesApiKey = "AIzaSyB-vj0d4Zq80Dt4QuKnwO1c1rJbZ0xjE9k" // Replace with your API key
-    
-    func searchNearbyCampsites(location: CLLocationCoordinate2D, radius: Int = 50000) async -> [PlaceDetails] {
-        let baseURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-        let queryItems = [
-            URLQueryItem(name: "key", value: googlePlacesApiKey),
-            URLQueryItem(name: "location", value: "\(location.latitude),\(location.longitude)"),
-            URLQueryItem(name: "radius", value: "\(radius)"),
-            URLQueryItem(name: "keyword", value: "camping site")
-        ]
-        
-        var urlComponents = URLComponents(string: baseURL)!
-        urlComponents.queryItems = queryItems
-        
-        guard let url = urlComponents.url else { return [] }
-        
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let decoder = JSONDecoder()
-            let results = try decoder.decode(GooglePlacesResponse.self, from: data)
-            
-            // Debug: Print out the number of results received
-            print("Received \(results.results.count) places from Google Places API")
-            
-            return results.results.map { result in
-                PlaceDetails(
-                    name: result.name,
-                    address: result.vicinity,
-                    coordinate: CLLocationCoordinate2D(
-                        latitude: result.geometry.location.lat,
-                        longitude: result.geometry.location.lng
-                    ),
-                    category: "Camping",
-                    placeId: result.placeId
-                )
-            }
-        } catch {
-            print("Error fetching places: \(error)")
-            return []
-        }
-    }
-}
-
-// MARK: - Location Manager
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    private let locationManager = CLLocationManager()
-    @Published var userLocation: CLLocationCoordinate2D?
+class LocationSearchViewModel: ObservableObject {
+    @Published var searchText = ""
+    @Published var searchResults: [LocationData] = []
+    @Published var selectedLocation: LocationData?
     @Published var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 7.8731, longitude: 80.7718), // Sri Lanka's center
-        span: MKCoordinateSpan(latitudeDelta: 4, longitudeDelta: 4)
+        center: CLLocationCoordinate2D(latitude: 37.4419, longitude: -122.1430),
+        span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
     )
     
-    override init() {
-        super.init()
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        // Debounce search text changes to avoid too many API calls
+        $searchText
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .sink { [weak self] searchText in
+                if !searchText.isEmpty {
+                    self?.searchLocations(query: searchText)
+                } else {
+                    self?.searchResults = []
+                }
+            }
+            .store(in: &cancellables)
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.first else { return }
-        DispatchQueue.main.async {
-            self.userLocation = location.coordinate
+    func searchLocations(query: String) {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = query
+        request.region = region
+        
+        let search = MKLocalSearch(request: request)
+        search.start { [weak self] response, error in
+            guard let response = response, error == nil else {
+                print("Search error: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self?.searchResults = response.mapItems.map { LocationData(mapItem: $0) }
+
+            }
         }
+    }
+    
+    func selectLocation(_ location: LocationData) {
+        selectedLocation = location
+        // Update region to center on selected location
+        region = MKCoordinateRegion(
+            center: location.coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        )
     }
 }
 
-// MARK: - Views
 struct LocationSearchView: View {
-    @StateObject private var locationManager = LocationManager()
-    @State private var places: [PlaceDetails] = []
-    @State private var selectedLocation: PlaceDetails?
+    @StateObject private var viewModel = LocationSearchViewModel()
     @State private var showingLocationDetail = false
-    @State private var isLoading = false
     
     var body: some View {
         NavigationView {
             ZStack(alignment: .top) {
-                Map(coordinateRegion: $locationManager.region,
+                // Map View
+                Map(coordinateRegion: $viewModel.region,
                     showsUserLocation: true,
-                    annotationItems: places) { place in
-                    MapAnnotation(coordinate: place.coordinate) {
-                        CampingSiteAnnotationView(name: place.name)
-                            .onTapGesture {
-                                selectedLocation = place
-                                showingLocationDetail = true
-                            }
+                    annotationItems: viewModel.selectedLocation.map { [$0] } ?? []) { location in
+                    MapAnnotation(coordinate: location.coordinate) {
+                        MapPinView()
                     }
                 }
                 .ignoresSafeArea()
                 
-                if isLoading {
-                    ProgressView()
+                // Search UI
+                VStack(spacing: 0) {
+                    // Search Bar
+                    SearchBar(text: $viewModel.searchText)
                         .padding()
+                    
+                    // Search Results
+                    if !viewModel.searchResults.isEmpty {
+                        ScrollView {
+                            VStack(spacing: 0) {
+                                ForEach(viewModel.searchResults) { location in
+                                    SearchResultRow(location: location)
+                                        .onTapGesture {
+                                            viewModel.selectLocation(location)
+                                            showingLocationDetail = true
+                                            // Clear search after selection
+                                            viewModel.searchText = ""
+                                            viewModel.searchResults = []
+                                        }
+                                }
+                            }
+                            .background(Color(.systemBackground))
+                        }
+                        .frame(maxHeight: 300)
                         .background(Color(.systemBackground))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                    }
                 }
             }
             .sheet(isPresented: $showingLocationDetail) {
-                if let location = selectedLocation {
-                    LocationDetailView(location: LocationData(
-                        name: location.name,
-                        address: location.address,
-                        coordinate: location.coordinate,
-                        category: location.category
-                    ))
+                if let location = viewModel.selectedLocation {
+                    LocationDetailView(location: location)
                 }
             }
             .navigationBarHidden(true)
-            .onAppear {
-                loadHardcodedCampsites()
-            }
         }
-    }
-    
-    private func loadHardcodedCampsites() {
-        // Adding hard-coded campsite locations
-        places = [
-            PlaceDetails(name: "Campsite 1", address: "Address 1", coordinate: CLLocationCoordinate2D(latitude: 6.9271, longitude: 79.8612), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 2", address: "Address 2", coordinate: CLLocationCoordinate2D(latitude: 6.9240, longitude: 79.8600), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 3", address: "Address 3", coordinate: CLLocationCoordinate2D(latitude: 7.2906, longitude: 80.6337), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 4", address: "Address 4", coordinate: CLLocationCoordinate2D(latitude: 6.0535, longitude: 80.2210), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 5", address: "Address 5", coordinate: CLLocationCoordinate2D(latitude: 8.3114, longitude: 80.4037), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 6", address: "Address 6", coordinate: CLLocationCoordinate2D(latitude: 7.8731, longitude: 80.7718), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 7", address: "Address 7", coordinate: CLLocationCoordinate2D(latitude: 7.8722, longitude: 79.8612), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 8", address: "Address 8", coordinate: CLLocationCoordinate2D(latitude: 6.9278, longitude: 79.8538), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 9", address: "Address 9", coordinate: CLLocationCoordinate2D(latitude: 6.9320, longitude: 79.8438), category: "Camping", placeId: nil),
-            PlaceDetails(name: "Campsite 10", address: "Address 10", coordinate: CLLocationCoordinate2D(latitude: 7.0000, longitude: 79.9400), category: "Camping", placeId: nil)
-        ]
-        
-        // Debug: Print loaded hard-coded places
-        print("Loaded \(places.count) hard-coded campsites for map annotations")
     }
 }
 
-
-struct CampingSiteAnnotationView: View {
-    let name: String
+struct SearchBart: View {
+    @Binding var text: String
     
     var body: some View {
-        VStack {
-            Image(systemName: "tent.fill")
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+            
+            TextField("Search locations...", text: $text)
+                .textFieldStyle(PlainTextFieldStyle())
+                .autocapitalization(.none)
+            
+            if !text.isEmpty {
+                Button(action: { text = "" }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.gray)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.systemBackground))
+        .cornerRadius(15)
+        .shadow(radius: 5)
+    }
+}
+
+struct SearchResultRow: View {
+    let location: LocationData
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(location.name)
+                .font(.headline)
+            Text("\(location.city), \(location.country)")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemBackground))
+        .contentShape(Rectangle())
+    }
+}
+
+struct MapPinView: View {
+    var body: some View {
+        VStack(spacing: 0) {
+            Image(systemName: "mappin.circle.fill")
                 .font(.title)
                 .foregroundColor(.red)
             
-            Text(name)
+            Image(systemName: "arrowtriangle.down.fill")
                 .font(.caption)
-                .padding(4)
-                .background(Color(.systemBackground))
-                .cornerRadius(4)
+                .foregroundColor(.red)
+                .offset(y: -5)
         }
     }
 }
@@ -216,36 +209,97 @@ struct LocationDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        VStack {
-            Text(location.name)
-                .font(.title)
-                .bold()
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Text(location.name)
+                    .font(.headline)
+                Spacer()
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark")
+                        .foregroundColor(.black)
+                }
+            }
+            .padding()
+            .background(Color.white)
             
-            Text(location.address)
-                .font(.subheadline)
-                .foregroundColor(.gray)
+            // Location info
+            HStack {
+                Text("City")
+                    .font(.subheadline)
+                Text("•")
+                Text(location.city)
+                Text(location.country)
+                    .font(.subheadline)
+                Spacer()
+                ShareLink(item: "Check out \(location.name)") {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
             
+            // Action buttons
+            HStack(spacing: 20) {
+                ActionButton(title: "Directions", icon: "location.fill", color: .blue) {
+                    openInMaps(location: location)
+                }
+                
+                ActionButton(title: "Download", icon: "arrow.down.circle", color: .blue.opacity(0.8)) {
+                    // Handle download
+                }
+                
+                ActionButton(title: "More", icon: "ellipsis", color: .gray) {
+                    // Handle more options
+                }
+            }
+            .padding()
+            
+            // Map preview
             Map(coordinateRegion: .constant(MKCoordinateRegion(
                 center: location.coordinate,
                 span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
             )), annotationItems: [location]) { location in
                 MapAnnotation(coordinate: location.coordinate) {
-                    CampingSiteAnnotationView(name: location.name)
+                    MapPinView()
                 }
             }
             .frame(height: 200)
-            .cornerRadius(12)
+            .cornerRadius(10)
+            .padding()
             
             Spacer()
         }
-        .padding()
-        .navigationBarItems(trailing: Button("Done") {
-            dismiss()
-        })
+    }
+    
+    private func openInMaps(location: LocationData) {
+        let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: location.coordinate))
+        mapItem.name = location.name
+        mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
     }
 }
 
-// MARK: - Preview Provider
+struct ActionButton: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack {
+                Image(systemName: icon)
+                    .font(.system(size: 20))
+                Text(title)
+                    .font(.caption)
+            }
+            .foregroundColor(color)
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
+// Preview
 struct LocationSearchView_Previews: PreviewProvider {
     static var previews: some View {
         LocationSearchView()

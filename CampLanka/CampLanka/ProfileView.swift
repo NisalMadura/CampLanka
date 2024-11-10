@@ -1,16 +1,16 @@
-//
-//  ProfileView.swift
-//  CampLanka
-//
-//  Created by COBSCCOMPY4231P-008 on 2024-10-28.
-//
-
 import SwiftUI
+import Firebase
+import FirebaseAuth
 
 struct ProfileView: View {
     @State private var selectedTab = 4  // Profile tab selected
     @State private var showingEditProfile = false
+    @State private var showingLogoutAlert = false
+    @State private var isLoggedOut = false
     @Environment(\.presentationMode) var presentationMode
+    @AppStorage("userid") private var userid: String = ""
+    @AppStorage("login_status") private var loginStatus: Bool = false
+    @AppStorage("userName") private var userName: String = ""
     
     private let darkGreen = Color(red: 0/255, green: 78/255, blue: 56/255)
     
@@ -45,7 +45,7 @@ struct ProfileView: View {
                         .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
                     
                     // Name
-                    Text("Nisal Perera")
+                    Text(userName.isEmpty ? "Nisal Perera" : userName)
                         .font(.system(size: 24, weight: .semibold))
                         .padding(.bottom, 20)
                 }
@@ -65,21 +65,50 @@ struct ProfileView: View {
                     }
                     
                     MenuLink(title: "Sign Out", iconName: "rectangle.portrait.and.arrow.right") {
-                        // Handle sign out
-                        print("Sign Out")
+                        showingLogoutAlert = true
                     }
                 }
                 .padding(.top, 20)
                 
                 Spacer()
-                //CustomTabBar()
-                // Custom Tab Bar (reused from previous screen)
-                //CustomTabBar(selectedTab: $selectedTab)
             }
             .background(Color(UIColor.systemBackground))
+            .alert(isPresented: $showingLogoutAlert) {
+                Alert(
+                    title: Text("Sign Out"),
+                    message: Text("Are you sure you want to sign out?"),
+                    primaryButton: .destructive(Text("Sign Out")) {
+                        logOut()
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+            .fullScreenCover(isPresented: $isLoggedOut) {
+                // Navigate to your SignInView
+                SignInView()
+            }
         }
         .sheet(isPresented: $showingEditProfile) {
             EditProfileView()
+        }
+    }
+    
+    private func logOut() {
+        do {
+            // Sign out from Firebase
+            try Auth.auth().signOut()
+            
+            // Clear user session data
+            KeychainHelper.shared.delete(forKey: "uid")
+            userName = ""
+            userid = ""
+            
+            // Mark user as logged out and trigger navigation
+            loginStatus = false
+            self.isLoggedOut = true
+            
+        } catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
         }
     }
 }
@@ -159,8 +188,6 @@ struct EditProfileView: View {
         }
     }
 }
-
-
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
