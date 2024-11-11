@@ -42,6 +42,7 @@
 		82B14EF82CDE1EC70092D0D4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */; };
 		82B14EFA2CDE1EC70092D0D4 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF92CDE1EC70092D0D4 /* FirebaseMessaging */; };
 		82B2A9102CE07B7100568194 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B2A90F2CE07B7100568194 /* KeychainHelper.swift */; };
+		82B2F51A2CE1D19D00DD4E30 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B2F5192CE1D19D00DD4E30 /* ChatView.swift */; };
 		82C7ACD62CCF6E78002F64DC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */; };
 		82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD72CCF70B6002F64DC /* ProfileView.swift */; };
 		82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */; };
@@ -108,6 +109,7 @@
 		82981D052CCE481100924439 /* NotificationPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionView.swift; sourceTree = "<group>"; };
 		82981D072CCE483400924439 /* RegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationView.swift; sourceTree = "<group>"; };
 		82B2A90F2CE07B7100568194 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		82B2F5192CE1D19D00DD4E30 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		82C7ACD72CCF70B6002F64DC /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyView.swift; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 				8223556A2CDA00CA00CF7554 /* starRatingView.swift */,
 				8223556C2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift */,
 				8223556E2CDA14F100CF7554 /* GroupChatView.swift */,
+				82B2F5192CE1D19D00DD4E30 /* ChatView.swift */,
 				82DCC4652CD785D30050CF26 /* CampgroundListView.swift */,
 				82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */,
 				82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */,
@@ -398,6 +401,7 @@
 				82981D002CCE470D00924439 /* SplashScreen.swift in Sources */,
 				8216B3D82CDCEA8A00CB656A /* ForgotPasswordView.swift in Sources */,
 				8223556B2CDA00CA00CF7554 /* starRatingView.swift in Sources */,
+				82B2F51A2CE1D19D00DD4E30 /* ChatView.swift in Sources */,
 				82C7ACDE2CCF96CC002F64DC /* EmergencyCallingView.swift in Sources */,
 				82981CD82CCE45C200924439 /* Persistence.swift in Sources */,
 				8223556F2CDA14F100CF7554 /* GroupChatView.swift in Sources */,

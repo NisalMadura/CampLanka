@@ -360,14 +360,14 @@ struct TripPlanningBanner: View {
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.9))
                     
-                    Button("Start Planning") {
-                        // Handle start planning action
+                    NavigationLink(destination: TripPlannerView()) {
+                        Text("Start Planning")
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 8)
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
                 }
                 
                 Spacer()

@@ -73,7 +73,7 @@ struct TripPlannerDetailsView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 14) {
                     Text("Plan your next\nadventure")
                         .font(.largeTitle)
                         .bold()

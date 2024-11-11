@@ -6,16 +6,29 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseFirestore
+import FirebaseAuth
 
 // MARK: - Models
-struct Campground: Identifiable {
-    let id = UUID()
+struct Campground: Identifiable, Codable {
+    let id: String
     let name: String
     let location: String
     let imageUrl: String
     let likes: Int
     let rating: Double
-    var isFavorite: Bool = false
+    var isFavorite: Bool
+    
+    init(id: String = UUID().uuidString, name: String, location: String, imageUrl: String, likes: Int, rating: Double, isFavorite: Bool = false) {
+        self.id = id
+        self.name = name
+        self.location = location
+        self.imageUrl = imageUrl
+        self.likes = likes
+        self.rating = rating
+        self.isFavorite = isFavorite
+    }
 }
 
 // MARK: - View Models
@@ -26,46 +39,96 @@ class CampgroundViewModel: ObservableObject {
         Campground(name: "Wangedigala Camp Site", location: "Campground in Ella", imageUrl: "wangedigala", likes: 25, rating: 5.0)
     ]
     
-    func toggleFavorite(for campground: Campground) {
-        if let index = campgrounds.firstIndex(where: { $0.id == campground.id }) {
-            campgrounds[index].isFavorite.toggle()
+    @Published var wishlist: [Campground] = []
+    @Published var showLoginAlert = false
+    @Published var errorMessage = ""
+    @Published var showError = false
+    
+    private let db = Firestore.firestore()
+    
+    init() {
+        // Set up auth state listener
+        Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            if user != nil {
+                self?.loadWishlist()
+            } else {
+                self?.wishlist.removeAll()
+            }
         }
     }
-}
-
-// MARK: - Views
-struct CampgroundListView: View {
-    @StateObject private var viewModel = CampgroundViewModel()
-    @State private var navigateToDetails = false // Track navigation state
     
-    var body: some View {
-        NavigationView {
-            VStack {
-                List(viewModel.campgrounds) { campground in
-                    CampgroundCell(campground: campground) {
-                        viewModel.toggleFavorite(for: campground)
+    private func loadWishlist() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        db.collection("users")
+            .document(userId)
+            .collection("wishlist")
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let documents = snapshot?.documents else {
+                    print("Error fetching wishlist: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+                
+                self?.wishlist = documents.compactMap { document -> Campground? in
+                    do {
+                        return try document.data(as: Campground.self)
+                    } catch {
+                        print("Error decoding campground: \(error)")
+                        return nil
                     }
                 }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        Text("Recommended for you")
-                            .font(.system(size: 20, weight: .bold))
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: TripPlannerDetailsView(), isActive: $navigateToDetails) {
-                            Text("Next")
-                                .font(.headline)
-                                .foregroundColor(.blue)
+                
+                // Update isFavorite status in campgrounds
+                self?.updateCampgroundFavoriteStatus()
+            }
+    }
+    
+    private func updateCampgroundFavoriteStatus() {
+        for (index, _) in campgrounds.enumerated() {
+            campgrounds[index].isFavorite = wishlist.contains(where: { $0.id == campgrounds[index].id })
+        }
+    }
+    
+    func toggleFavorite(for campground: Campground) {
+        guard let user = Auth.auth().currentUser else {
+            showLoginAlert = true
+            return
+        }
+        
+        let wishlistRef = db.collection("users").document(user.uid).collection("wishlist")
+        
+        if let index = campgrounds.firstIndex(where: { $0.id == campground.id }) {
+            // Toggle the favorite status locally
+            campgrounds[index].isFavorite.toggle()
+            
+            if campgrounds[index].isFavorite {
+                // Add to Firebase
+                do {
+                    try wishlistRef.document(campground.id).setData(from: campgrounds[index])
+                } catch {
+                    errorMessage = "Error saving to wishlist: \(error.localizedDescription)"
+                    showError = true
+                    // Revert the local change if saving fails
+                    campgrounds[index].isFavorite.toggle()
+                }
+            } else {
+                // Remove from Firebase
+                wishlistRef.document(campground.id).delete() { [weak self] error in
+                    if let error = error {
+                        self?.errorMessage = "Error removing from wishlist: \(error.localizedDescription)"
+                        self?.showError = true
+                        // Revert the local change if deletion fails
+                        DispatchQueue.main.async {
+                            self?.campgrounds[index].isFavorite.toggle()
                         }
                     }
                 }
             }
         }
-        .navigationBarBackButtonHidden(true)
     }
 }
 
+// MARK: - CampgroundCell View
 struct CampgroundCell: View {
     let campground: Campground
     let onFavoriteTap: () -> Void
@@ -119,6 +182,91 @@ struct CampgroundCell: View {
     }
 }
 
+// MARK: - Wishlist View
+struct WishlistView: View {
+    @ObservedObject var viewModel: CampgroundViewModel
+    @State private var showLoginAlert = false
+    
+    var body: some View {
+        NavigationView {
+            Group {
+                if Auth.auth().currentUser != nil {
+                    List {
+                        ForEach(viewModel.wishlist) { campground in
+                            CampgroundCell(campground: campground) {
+                                viewModel.toggleFavorite(for: campground)
+                            }
+                        }
+                    }
+                } else {
+                    VStack(spacing: 20) {
+                        Text("Please log in to view your wishlist")
+                            .font(.headline)
+                        
+                        NavigationLink(destination: SignInView()) {
+                            Text("Log In")
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(10)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Wishlist")
+        }
+    }
+}
+
+// MARK: - CampgroundListView
+struct CampgroundListView: View {
+    @StateObject private var viewModel = CampgroundViewModel()
+    @State private var navigateToDetails = false
+    @State private var showLogin = false
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                List(viewModel.campgrounds) { campground in
+                    CampgroundCell(campground: campground) {
+                        viewModel.toggleFavorite(for: campground)
+                    }
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Recommended for you")
+                            .font(.system(size: 20, weight: .bold))
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        NavigationLink(destination: TripPlannerDetailsView(), isActive: $navigateToDetails) {
+                            Text("Next")
+                                .font(.headline)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .alert("Login Required", isPresented: $viewModel.showLoginAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Login") {
+                showLogin = true
+            }
+        } message: {
+            Text("Please log in to save campgrounds to your wishlist")
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(viewModel.errorMessage)
+        }
+        .sheet(isPresented: $showLogin) {
+            SignInView()
+        }
+    }
+}
 
 // MARK: - Preview
 struct CampgroundListView_Previews: PreviewProvider {

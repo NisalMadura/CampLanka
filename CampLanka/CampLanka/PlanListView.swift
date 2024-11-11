@@ -1,12 +1,12 @@
 //
-//  ForgotPasswordView.swift
+// PlanListView.swift
 //  CampLanka
 //
 //  Created by COBSCCOMPY4231P-008 on 2024-11-07.
 //
 
 
-// MARK: - Models
+
 struct Plan: Codable, Identifiable {
     var id: String = UUID().uuidString
     var name: String
@@ -14,7 +14,7 @@ struct Plan: Codable, Identifiable {
     var dateCreated: Date
 }
 
-// MARK: - View Models
+
 class PlanListViewModel: ObservableObject {
     @Published var plans: [Plan] = []
     
@@ -53,7 +53,7 @@ class PlanListViewModel: ObservableObject {
     }
 }
 
-// MARK: - Views
+
 import SwiftUI
 
 struct SaveToPlanView: View {
@@ -101,7 +101,7 @@ struct SaveToPlanView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Save To My Plan")
+            //.navigationTitle("Save To My Plan")
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $showingCreatePlan) {
@@ -116,72 +116,72 @@ struct PlanRowView: View {
     @State private var showingPreferences = false
     @State private var showDeleteAlert = false
     @State private var showGroupChat = false
-    
+
     var body: some View {
-            Button(action: {
-                showingPreferences = true
-            }) {
-                HStack(spacing: 12) {
-                    // Image on the left
-                    Image(plan.imageName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 60, height: 60)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+        Button(action: {
+            showingPreferences = true
+        }) {
+            HStack(spacing: 12) {
+                
+                Image(plan.imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 60, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                
+                Text(plan.name)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.black)
+                
+                Spacer()
+                
+                HStack(spacing: 16) {
+                    NavigationLink(
+                        destination: ChatView(
+                            groupName: plan.name,
+                            participants: [
+                                User(name: "Michael Tran", avatar: "person.circle"),
+                                User(name: "Chris", avatar: "person.circle"),
+                                User(name: "Kristen Decastro", avatar: "person.circle")
+                            ]
+                        ),
+                        isActive: $showGroupChat
+                    ) {
+                        Image(systemName: "rectangle.3.group.bubble")
+                            .foregroundColor(.green)
+                            .font(.system(size: 22))
+                    }
                     
-                    // Plan name
-                    Text(plan.name)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
-                    
-                    Spacer()
-                    
-                    // Action buttons on the right
-                    HStack(spacing: 16) {
-                        // Group chat button
-                        Button(action: {
-                            showGroupChat = true  // Step 3: Set state to true to trigger navigation
-                        }) {
-                            Image(systemName: "rectangle.3.group.bubble")
-                                .foregroundColor(.green)
-                                .font(.system(size: 22))
-                        }
-                        .background(
-                            NavigationLink("", destination: GroupSettingsView(), isActive: $showGroupChat) // Step 4: Use NavigationLink for navigation
-                                .hidden()
-                        )
-                        
-                        // Delete button
-                        Button(action: {
-                            showDeleteAlert = true
-                        }) {
-                            Image(systemName: "trash")
-                                .foregroundColor(.red)
-                                .font(.system(size: 22))
-                        }
+                    Button(action: {
+                        showDeleteAlert = true
+                    }) {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                            .font(.system(size: 22))
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Color.white)
-                .contentShape(Rectangle())
             }
-            .buttonStyle(PlainButtonStyle())
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-            .sheet(isPresented: $showingPreferences) {
-                TripPlannerView()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.white)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .sheet(isPresented: $showingPreferences) {
+            TripPlannerDetailsView()
+        }
+        .alert("Delete Plan", isPresented: $showDeleteAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                viewModel.deletePlan(plan: plan)
             }
-            .alert("Delete Plan", isPresented: $showDeleteAlert) {
-                Button("Cancel", role: .cancel) {}
-                Button("Delete", role: .destructive) {
-                    viewModel.deletePlan(plan: plan)
-                }
-            } message: {
-                Text("Are you sure you want to delete this plan?")
-            }
+        } message: {
+            Text("Are you sure you want to delete this plan?")
         }
     }
+}
 
 struct CreatePlanView: View {
     @Environment(\.dismiss) var dismiss
@@ -294,7 +294,7 @@ struct CampingPreferenceViews: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        // Add save functionality
+                        
                         dismiss()
                     }
                 }
@@ -332,7 +332,7 @@ struct PeopleCountView: View {
             }
             
             Section(footer: Text("Total group size: \(adultCount + childCount)")) {
-                // Additional settings if needed
+              
             }
         }
         .navigationTitle("People Count")
@@ -450,7 +450,7 @@ struct RequirementsView: View {
     }
 }
 
-// MARK: - Preview Provider
+
 struct SaveToPlanView_Previews: PreviewProvider {
     static var previews: some View {
         SaveToPlanView()

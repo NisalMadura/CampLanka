@@ -57,12 +57,12 @@ class GroupSettingsViewModel: ObservableObject {
     init() {
         // Sample data
         self.settings = GroupSettings(
-            name: "Canyon Club",
+            name: "Office Group",
             photo: nil,
             members: [
-                GroupMember(name: "Michael Tran", phoneNumber: "+1 (555) 123-4567", profileImage: nil, isAdmin: true),
-                GroupMember(name: "Kristen Decastro", phoneNumber: "+1 (555) 234-5678", profileImage: nil, isAdmin: false),
-                GroupMember(name: "Chris Johnson", phoneNumber: "+1 (555) 345-6789", profileImage: nil, isAdmin: false)
+                GroupMember(name: "Lakshan", phoneNumber: "0778767678", profileImage: nil, isAdmin: false),
+                GroupMember(name: "Nimesh", phoneNumber: "0776545456", profileImage: nil, isAdmin: false),
+                GroupMember(name: "Madura", phoneNumber: "07761234234", profileImage: nil, isAdmin: false)
             ],
             muteNotifications: false,
             pinConversation: true,
@@ -148,6 +148,7 @@ struct GroupSettingsView: View {
         .sheet(isPresented: $viewModel.showingAddMembers) {
             AddMembersView(viewModel: viewModel)
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -158,9 +159,9 @@ struct AddMembersView: View {
     
     // Sample contacts data
     let contacts = [
-        GroupMember(name: "Alice Smith", phoneNumber: "+1 (555) 111-2222", profileImage: nil, isAdmin: false),
-        GroupMember(name: "Bob Johnson", phoneNumber: "+1 (555) 222-3333", profileImage: nil, isAdmin: false),
-        GroupMember(name: "Carol White", phoneNumber: "+1 (555) 333-4444", profileImage: nil, isAdmin: false)
+        GroupMember(name: "Person 1", phoneNumber: "0711232123", profileImage: nil, isAdmin: false),
+        GroupMember(name: "Person 2", phoneNumber: "0778987678", profileImage: nil, isAdmin: false),
+        GroupMember(name: "Person 3", phoneNumber: "0768756765", profileImage: nil, isAdmin: false)
     ]
     
     var filteredContacts: [GroupMember] {
