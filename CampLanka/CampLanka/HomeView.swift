@@ -16,7 +16,7 @@ struct ProfileButton: View {
         }
     }
 }
-// MARK: - Models
+
 struct CampgroundBox: Identifiable {
     let id = UUID()
     let name: String
@@ -28,7 +28,7 @@ struct CampgroundBox: Identifiable {
     var startPrice: Double?
 }
 
-// MARK: - Views
+
 struct HomeViewscn: View {
     @State private var searchText = ""
     
@@ -58,7 +58,7 @@ struct HomeViewscn: View {
                     Text("Good Morning!")
                         .font(.title)
                         .bold()
-                      .padding(.top,-60)
+                      .padding(.top,-50)
                     
                     // Search Bar
                     SearchBar(text: $searchText)
@@ -82,7 +82,7 @@ struct HomeViewscn: View {
                         campgrounds: popularCampgrounds
                     )
                     
-                    // Trip Planning Banner
+                    
                     TripPlanningBanner()
                     
                 }
@@ -91,8 +91,8 @@ struct HomeViewscn: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                                // Explicitly setting an empty toolbar item on the leading side
-                                // can also help to hide the default back button
+                                
+                                
                     Text("")
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -103,13 +103,16 @@ struct HomeViewscn: View {
                         }
                         
                         ProfileButton()
+                       
                         
                     }
                 }
+                
             }
+            .navigationBarBackButtonHidden(true)
         }
         .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        //.navigationBarHidden(true)
     }
 }
 
@@ -141,7 +144,7 @@ struct CampgroundSection: View {
                 Spacer()
                 
                 Button("View all") {
-                    // Handle view all action
+                    
                 }
                 .foregroundColor(.green)
             }
@@ -171,7 +174,7 @@ struct BookableCampgroundSection: View {
                 Spacer()
                 
                 Button("View all") {
-                    // Handle view all action
+                    
                 }
                 .foregroundColor(.green)
             }
@@ -206,7 +209,7 @@ struct PopularCampgroundSection: View {
                 Spacer()
                 
                 Button("View all") {
-                    // Handle view all action
+                    
                 }
                 .foregroundColor(.green)
             }
@@ -279,7 +282,7 @@ struct BookableCampgroundCard: View {
                 Spacer()
                 
                 Button("Book") {
-                    // Handle booking action
+                    
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 8)
@@ -372,7 +375,7 @@ struct TripPlanningBanner: View {
                 
                 Spacer()
                 
-                Image("tent-illustration") // Add this image to your assets
+                Image("tent-illustration")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100)
@@ -384,7 +387,7 @@ struct TripPlanningBanner: View {
     }
 }
 
-// MARK: - Preview
+
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeViewscn()

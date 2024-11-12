@@ -119,6 +119,7 @@ struct ForgotPasswordView: View {
                 }
             }
             .background(Color.white)
+            .navigationBarBackButtonHidden(true)
         }
     }
     private func handlePasswordReset() {

@@ -173,7 +173,7 @@ struct SignInSignUpView: View {
                 .padding(.bottom, 100)
                 
                 // Error Message Alert
-                .alert(errorMessage, isPresented: $showAlert) { }
+               // .alert(errorMessage, isPresented: $showAlert) { }
                 
                 // Loading Overlay
                 .overlay {
@@ -190,6 +190,7 @@ struct SignInSignUpView: View {
             }
             .background(Color.white)
         }
+        .navigationBarBackButtonHidden(true)
     }
     private func handlePasswordReset() {
           guard !email.isEmpty else {
@@ -233,7 +234,7 @@ struct SignInSignUpView: View {
         isLoading = true
         
         guard let clientID = FirebaseApp.app()?.options.clientID else {
-            showError("Google Sign In configuration error")
+            showError("Try Again!")
             return
         }
         
@@ -242,7 +243,7 @@ struct SignInSignUpView: View {
         
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootViewController = windowScene.windows.first?.rootViewController else {
-            showError("Cannot find root view controller")
+            showError("Try Again!")
             return
         }
         
@@ -254,7 +255,7 @@ struct SignInSignUpView: View {
             
             guard let user = result?.user,
                   let idToken = user.idToken?.tokenString else {
-                showError("Cannot get user data from Google")
+                showError("Try Again!")
                 return
             }
             

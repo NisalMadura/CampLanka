@@ -46,7 +46,7 @@ struct SplashScreenView: View {
             
             VStack(spacing: 20) {
                 // Tent/Tipi Logo
-                Image(systemName: "tent.fill") // Replace with your actual logo image
+                Image(systemName: "tent.fill") 
                     .resizable()
                     .scaledToFit()
                     .frame(width: 80, height: 80)

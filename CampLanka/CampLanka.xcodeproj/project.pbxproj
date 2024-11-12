@@ -37,6 +37,7 @@
 		82981D042CCE477200924439 /* TripPlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D032CCE477200924439 /* TripPlannerView.swift */; };
 		82981D062CCE481100924439 /* NotificationPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D052CCE481100924439 /* NotificationPermissionView.swift */; };
 		82981D082CCE483400924439 /* RegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D072CCE483400924439 /* RegistrationView.swift */; };
+		82AAE6FA2CE31049005E1189 /* CampgroundDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */; };
 		82B14EF42CDE1EC70092D0D4 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF32CDE1EC70092D0D4 /* FirebaseAppCheck */; };
 		82B14EF62CDE1EC70092D0D4 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF52CDE1EC70092D0D4 /* FirebaseCore */; };
 		82B14EF82CDE1EC70092D0D4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */; };
@@ -108,6 +109,7 @@
 		82981D032CCE477200924439 /* TripPlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPlannerView.swift; sourceTree = "<group>"; };
 		82981D052CCE481100924439 /* NotificationPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionView.swift; sourceTree = "<group>"; };
 		82981D072CCE483400924439 /* RegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationView.swift; sourceTree = "<group>"; };
+		82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundDetailView.swift; sourceTree = "<group>"; };
 		82B2A90F2CE07B7100568194 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		82B2F5192CE1D19D00DD4E30 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				8216B3D92CDCFB8600CB656A /* MapLocationView.swift */,
 				82981CFF2CCE470D00924439 /* SplashScreen.swift */,
 				82981D012CCE473D00924439 /* SignInSignUpView.swift */,
+				82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */,
 				8223557C2CDA4D7700CF7554 /* AppDelegate.swift */,
 				82981D032CCE477200924439 /* TripPlannerView.swift */,
 				822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */,
@@ -426,6 +429,7 @@
 				82981CDB2CCE45C200924439 /* CampLanka.xcdatamodeld in Sources */,
 				82C7ACDC2CCF930C002F64DC /* AddContactSheetView.swift in Sources */,
 				822355692CD9FCD800CF7554 /* AddToCommunityView.swift in Sources */,
+				82AAE6FA2CE31049005E1189 /* CampgroundDetailView.swift in Sources */,
 				82D49DAC2CD63B8400AC989F /* WishListView.swift in Sources */,
 				822355712CDA21A600CF7554 /* TripPlannerDetailsView.swift in Sources */,
 				82DCC46A2CD795A20050CF26 /* ActivitiesPreferencesView.swift in Sources */,
