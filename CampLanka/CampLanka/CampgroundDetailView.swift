@@ -5,11 +5,11 @@
 //  Created by COBSCCOMPY4231P-008 on 2024-11-12.
 //
 
-// MARK: - Models/CampgroundModels.swift
 import SwiftUI
+import FirebaseFirestore
 
-// Base model for list views
-struct CampgroundBase: Identifiable, Codable {
+// First, update the models to work with Firestore data
+struct CampgroundBase: Identifiable {
     let id: String
     let name: String
     let location: String
@@ -18,24 +18,88 @@ struct CampgroundBase: Identifiable, Codable {
     let rating: Double
     var isFavorite: Bool
     
-    init(id: String = UUID().uuidString,
-         name: String,
-         location: String,
-         imageUrl: String,
-         likes: Int,
-         rating: Double,
-         isFavorite: Bool = false) {
+    init?(id: String, data: [String: Any]) {
         self.id = id
+        guard let name = data["name"] as? String,
+              let location = data["location"] as? String,
+              let imageUrl = data["imageUrl"] as? String,
+              let likes = data["likes"] as? Int,
+              let rating = data["rating"] as? Double else {
+            return nil
+        }
         self.name = name
         self.location = location
         self.imageUrl = imageUrl
         self.likes = likes
         self.rating = rating
-        self.isFavorite = isFavorite
+        self.isFavorite = data["isFavorite"] as? Bool ?? false
+    }
+}
+// MARK: - Reservation Info
+struct ReservationInfo {
+    let isReservationRequired: Bool
+    let policy: String
+    let maxStayDays: Int
+}
+
+// MARK: - Contact Info
+struct ContactInfo {
+    let office: String
+    let phone: String
+    let emergency: String
+    let email: String
+}
+
+// MARK: - Access Method
+struct AccessMethod: Identifiable {
+    var id: UUID = UUID()
+    let type: AccessType
+    let description: String
+    
+    enum AccessType: String {
+        case hikeIn = "hikeIn"
+        case driveIn = "driveIn"
+        case walkIn = "walkIn"
     }
 }
 
-// Extended model for detail view
+// MARK: - Connectivity Option
+struct ConnectivityOption: Identifiable {
+    var id: UUID = UUID()
+    let type: ConnectivityType
+    let provider: String?
+    
+    enum ConnectivityType: String {
+        case wifi = "wifi"
+        case noWifi = "noWifi"
+        case cellular = "cellular"
+    }
+}
+
+// MARK: - Site Type
+struct SiteType: Identifiable {
+    var id: UUID = UUID()
+    let type: SiteTypeOption
+    
+    enum SiteTypeOption {
+        case tent
+        case rv
+        case cabin
+        case groupSite
+    }
+}
+
+// MARK: - Feature
+struct Feature: Identifiable {
+    var id: UUID = UUID()
+    let type: FeatureType
+    
+    enum FeatureType {
+        case firewood
+        case drinkingWater
+        case parking
+    }
+}
 struct CampgroundDetail {
     let base: CampgroundBase
     let numberOfReviews: Int
@@ -49,170 +113,235 @@ struct CampgroundDetail {
     let siteTypes: [SiteType]
     let features: [Feature]
     
-    var isFavorite: Bool {
-        get { base.isFavorite }
-        set { /* Implement if needed */ }
+    init?(id: String, baseData: [String: Any], detailData: [String: Any]) {
+        // Initialize base data
+        guard let base = CampgroundBase(id: id, data: baseData) else {
+            return nil
+        }
+        self.base = base
+        
+        // Initialize detail data
+        self.numberOfReviews = detailData["numberOfReviews"] as? Int ?? 0
+        self.servicesCount = detailData["servicesCount"] as? Int ?? 0
+        self.distanceInMeters = detailData["distanceInMeters"] as? Int ?? 0
+        self.description = detailData["description"] as? String ?? ""
+        
+        // Initialize reservation info
+        if let reservationData = detailData["reservationInfo"] as? [String: Any] {
+            self.reservationInfo = ReservationInfo(
+                isReservationRequired: reservationData["isReservationRequired"] as? Bool ?? false,
+                policy: reservationData["policy"] as? String ?? "",
+                maxStayDays: reservationData["maxStayDays"] as? Int ?? 0
+            )
+        } else {
+            self.reservationInfo = ReservationInfo(isReservationRequired: false, policy: "", maxStayDays: 0)
+        }
+        
+        // Initialize contact info
+        if let contactData = detailData["contactInfo"] as? [String: Any] {
+            self.contactInfo = ContactInfo(
+                office: contactData["office"] as? String ?? "",
+                phone: contactData["phone"] as? String ?? "",
+                emergency: contactData["emergency"] as? String ?? "",
+                email: contactData["email"] as? String ?? ""
+            )
+        } else {
+            self.contactInfo = ContactInfo(office: "", phone: "", emergency: "", email: "")
+        }
+        
+        // Initialize access methods
+        if let accessData = detailData["accessMethods"] as? [[String: Any]] {
+            self.accessMethods = accessData.map { data in
+                AccessMethod(
+                    type: AccessMethod.AccessType(rawValue: data["type"] as? String ?? "") ?? .walkIn,
+                    description: data["description"] as? String ?? ""
+                )
+            }
+        } else {
+            self.accessMethods = []
+        }
+        
+        // Initialize connectivity
+        if let connectivityData = detailData["connectivity"] as? [[String: Any]] {
+            self.connectivity = connectivityData.map { data in
+                ConnectivityOption(
+                    type: ConnectivityOption.ConnectivityType(rawValue: data["type"] as? String ?? "") ?? .noWifi,
+                    provider: data["provider"] as? String
+                )
+            }
+        } else {
+            self.connectivity = []
+        }
+        
+        // Initialize site types and features as before
+        self.siteTypes = [SiteType(type: .tent)]
+        self.features = [
+            Feature(type: .firewood),
+            Feature(type: .drinkingWater),
+            Feature(type: .parking)
+        ]
+    }
+}
+
+// Create a ViewModel to handle Firebase operations
+class CampgroundDetailViewModel: ObservableObject {
+    private let db = Firestore.firestore()
+    @Published var campgroundDetail: CampgroundDetail?
+    @Published var isLoading = true
+    @Published var errorMessage: String?
+    
+    func fetchCampgroundDetail(id: String) {
+        isLoading = true
+        errorMessage = nil
+        
+        // First, fetch the base campground data
+        db.collection("campgrounds").document(id).getDocument { [weak self] baseSnapshot, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    self?.errorMessage = error.localizedDescription
+                    self?.isLoading = false
+                }
+                return
+            }
+            
+            guard let baseData = baseSnapshot?.data() else {
+                DispatchQueue.main.async {
+                    self?.errorMessage = "Campground not found"
+                    self?.isLoading = false
+                }
+                return
+            }
+            
+            // Then fetch the detailed data
+            self?.db.collection("campgrounds").document(id).getDocument { detailSnapshot, error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self?.errorMessage = error.localizedDescription
+                        self?.isLoading = false
+                        return
+                    }
+                    
+                    guard let detailData = detailSnapshot?.data() else {
+                        self?.errorMessage = "Details not found"
+                        self?.isLoading = false
+                        return
+                    }
+                    
+                    // Create the CampgroundDetail object
+                    if let campgroundDetail = CampgroundDetail(id: id, baseData: baseData, detailData: detailData) {
+                        self?.campgroundDetail = campgroundDetail
+                    }
+                    
+                    self?.isLoading = false
+                }
+            }
+        }
     }
     
-    // Convenience accessors
-    var name: String { base.name }
-    var location: String { base.location }
-    var rating: Double { base.rating }
-}
-
-struct ReservationInfo {
-    let isReservationRequired: Bool
-    let policy: String
-    let maxStayDays: Int
-}
-
-struct ContactInfo {
-    let office: String
-    let phone: String
-    let emergency: String
-    let email: String
-}
-
-struct AccessMethod: Identifiable {
-    let id = UUID()
-    let type: AccessType
-    let description: String
-    
-    enum AccessType {
-        case hikeIn
-        case driveIn
-        case walkIn
+    func toggleFavorite() {
+        guard let detail = campgroundDetail else { return }
+        
+        let newValue = !detail.base.isFavorite
+        db.collection("campgrounds").document(detail.base.id).updateData([
+            "isFavorite": newValue
+        ])
     }
 }
 
-struct ConnectivityOption: Identifiable {
-    let id = UUID()
-    let type: ConnectivityType
-    let provider: String?
-    
-    enum ConnectivityType {
-        case noWifi
-        case cellular
-    }
-}
-
-struct SiteType: Identifiable {
-    let id = UUID()
-    let type: CampSiteType
-    
-    enum CampSiteType {
-        case tent
-    }
-}
-
-struct Feature: Identifiable {
-    let id = UUID()
-    let type: FeatureType
-    
-    enum FeatureType {
-        case firewood
-        case drinkingWater
-        case parking
-    }
-}
-
-// MARK: - Views/CampgroundDetailView.swift
+// Update the main CampgroundDetailView
 struct CampgroundDetailView: View {
+    @StateObject private var viewModel = CampgroundDetailViewModel()
     @State private var selectedTab = 0
-    @State private var campground: CampgroundDetail
-    
-    init(campground: CampgroundDetail) {
-        self._campground = State(initialValue: campground)
-    }
+    let campgroundId: String
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                headerImage
-                titleSection
-                tabBar
-                
-                // Main content
-                tabContent
-                    .padding(.horizontal)
+            if viewModel.isLoading {
+                ProgressView()
+                    .padding()
+            } else if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .padding()
+            } else if let campground = viewModel.campgroundDetail {
+                VStack(alignment: .leading, spacing: 0) {
+                    // Header Image
+                    AsyncImage(url: URL(string: campground.base.imageUrl)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.2))
+                    }
+                    .frame(height: 250)
+                    .clipped()
+                    
+                    // Title Section
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text(campground.base.name)
+                                .font(.title)
+                                .fontWeight(.bold)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                viewModel.toggleFavorite()
+                            }) {
+                                Image(systemName: campground.base.isFavorite ? "heart.fill" : "heart")
+                                    .foregroundColor(campground.base.isFavorite ? .red : .gray)
+                                    .font(.title2)
+                            }
+                        }
+                        
+                        Text(campground.base.location)
+                            .foregroundColor(.gray)
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.yellow)
+                            Text(String(format: "%.1f", campground.base.rating))
+                            Text("(\(campground.numberOfReviews) Reviews)")
+                                .foregroundColor(.gray)
+                        }
+                        
+                        Button(action: { }) {
+                            HStack {
+                                Image(systemName: "doc.text")
+                                Text("Add to plan")
+                            }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 12)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                        }
+                    }
+                    .padding()
+                    
+                    // Tab Bar
+                    tabBar(campground: campground)
+                    
+                    // Content
+                    tabContent(campground: campground)
+                        .padding(.horizontal)
+                }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(false)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
+            /*ToolbarItem(placement: .navigationBarLeading) {
                 BackButton()
-            }
+            }*/
+        }
+        .onAppear {
+            viewModel.fetchCampgroundDetail(id: campgroundId)
         }
     }
     
-    private var headerImage: some View {
-        AsyncImage(url: URL(string: campground.base.imageUrl)) { phase in
-            switch phase {
-            case .empty:
-                ProgressView()
-            case .success(let image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            case .failure:
-                Image("homepic3")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            @unknown default:
-                EmptyView()
-            }
-        }
-        .frame(height: 250)
-        .clipped()
-    }
-    
-    private var titleSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(campground.name)
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                Button(action: {
-                    // Toggle favorite
-                }) {
-                    Image(systemName: campground.isFavorite ? "heart.fill" : "heart")
-                        .foregroundColor(campground.isFavorite ? .red : .gray)
-                        .font(.title2)
-                }
-            }
-            
-            Text(campground.location)
-                .foregroundColor(.gray)
-            
-            HStack(spacing: 4) {
-                Image(systemName: "star.fill")
-                    .foregroundColor(.yellow)
-                Text(String(format: "%.1f", campground.rating))
-                Text("(\(campground.numberOfReviews) Reviews)")
-                    .foregroundColor(.gray)
-            }
-            
-            Button(action: {
-                // Add to plan functionality
-            }) {
-                HStack {
-                    Image(systemName: "doc.text")
-                    Text("Add to plan")
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(Color(.systemGray6))
-                .cornerRadius(8)
-            }
-        }
-        .padding()
-    }
-    
-    private var tabBar: some View {
+    // Keep your existing tab bar and content methods
+    private func tabBar(campground: CampgroundDetail) -> some View {
         HStack(spacing: 0) {
             TabButton(title: "Overview", count: nil, isSelected: selectedTab == 0) {
                 selectedTab = 0
@@ -233,7 +362,7 @@ struct CampgroundDetailView: View {
         .padding(.horizontal)
     }
     
-    private var tabContent: some View {
+    private func tabContent(campground: CampgroundDetail) -> some View {
         VStack(alignment: .leading, spacing: 24) {
             switch selectedTab {
             case 0:
@@ -251,8 +380,81 @@ struct CampgroundDetailView: View {
         .padding(.top)
     }
 }
+// MARK: - Supporting Views
+struct BackButton: View {
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        Button(action: {
+            presentationMode.wrappedValue.dismiss()
+        }) {
+           /* Image(systemName: "chevron.left")
+                .foregroundColor(.primary)*/
+        }
+    }
+}
 
-// MARK: - Views/Tabs/OverviewTab.swift
+struct TabButton: View {
+    let title: String
+    let count: Int?
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Text(title)
+                    .fontWeight(isSelected ? .semibold : .regular)
+                
+                if let count = count {
+                    Text("\(count)")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
+                Rectangle()
+                    .fill(isSelected ? Color.green : Color.clear)
+                    .frame(height: 2)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct SectionView<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.green)
+            content
+        }
+    }
+}
+
+struct CampgroundContactRow: View {
+    let title: String
+    let value: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.gray)
+            Text(value)
+        }
+    }
+}
+
+// MARK: - Tab Content Views
 struct OverviewTab: View {
     let campground: CampgroundDetail
     
@@ -374,103 +576,44 @@ struct OverviewTab: View {
     }
 }
 
-// MARK: - Views/Components/SupportingViews.swift
-struct BackButton: View {
-    @Environment(\.presentationMode) var presentationMode
-    
-    var body: some View {
-        Button(action: {
-            presentationMode.wrappedValue.dismiss()
-        }) {
-            Image(systemName: "chevron.left")
-                .foregroundColor(.primary)
-        }
-    }
-}
-
-struct TabButton: View {
-    let title: String
-    let count: Int?
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 4) {
-                Text(title)
-                    .fontWeight(isSelected ? .semibold : .regular)
-                
-                if let count = count {
-                    Text("\(count)")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-                
-                Rectangle()
-                    .fill(isSelected ? Color.green : Color.clear)
-                    .frame(height: 2)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-struct SectionView<Content: View>: View {
-    let title: String
-    let content: Content
-    
-    init(title: String, @ViewBuilder content: () -> Content) {
-        self.title = title
-        self.content = content()
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(.green)
-            content
-        }
-    }
-}
-
-struct CampgroundContactRow: View {
-    let title: String
-    let value: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            Text(value)
-        }
-    }
-}
-
-// MARK: - Views/Tabs/ServicesTab.swift
 struct ServicesTab: View {
     let campground: CampgroundDetail
     
     var body: some View {
-        Text("Services Content")
-        // Implement services content
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Available Services")
+                .font(.headline)
+            
+            // Add your services content here
+            Text("Services content coming soon...")
+                .foregroundColor(.gray)
+        }
     }
 }
 
-// MARK: - Views/Tabs/LocationTab.swift
 struct LocationTab: View {
     var body: some View {
-        Text("Location Content")
-        // Implement location content
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Location Information")
+                .font(.headline)
+            
+            // Add your location content here
+            Text("Location content coming soon...")
+                .foregroundColor(.gray)
+        }
     }
 }
 
-// MARK: - Views/Tabs/ReviewsTab.swift
 struct ReviewsTab: View {
     var body: some View {
-        Text("Reviews Content")
-        // Implement reviews content
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Reviews")
+                .font(.headline)
+            
+            // Add your reviews content here
+            Text("Reviews content coming soon...")
+                .foregroundColor(.gray)
+        }
     }
 }
 
@@ -478,48 +621,7 @@ struct ReviewsTab: View {
 struct CampgroundDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            CampgroundDetailView(campground: CampgroundDetail(
-                base: CampgroundBase(
-                    name: "Horton Plains Campground",
-                    location: "Badulla Sri Lanka",
-                    imageUrl: "https://example.com/horton_plains.jpg",
-                    likes: 156,
-                    rating: 4.6,
-                    isFavorite: false
-                ),
-                numberOfReviews: 230,
-                servicesCount: 12,
-                distanceInMeters: 35,
-                description: "A scenic and remote camping spot located within Horton Plains National Park, ideal for nature lovers, hikers, and wildlife enthusiasts. Enjoy beautiful sunrises, cool temperatures, and easy access to some of Sri Lanka's most famous hiking trails.",
-                reservationInfo: ReservationInfo(
-                    isReservationRequired: false,
-                    policy: "First-come, first-served. Arrive early during weekends and holidays.",
-                    maxStayDays: 5
-                ),
-                contactInfo: ContactInfo(
-                    office: "Horton Plains National Park Office",
-                    phone: "+94 112 233456",
-                    emergency: "+94 777 987654 (Forest Department)",
-                    email: "hortonplains@parks.lk"
-                ),
-                accessMethods: [
-                    AccessMethod(type: .hikeIn, description: "Park in a lot, hike to your campsite"),
-                    AccessMethod(type: .driveIn, description: "Park next to your campsite"),
-                    AccessMethod(type: .walkIn, description: "Park in a lot, walk to your campsite")
-                ],
-                connectivity: [
-                    ConnectivityOption(type: .noWifi, provider: nil),
-                    ConnectivityOption(type: .cellular, provider: "T-Mobile")
-                ],
-                siteTypes: [
-                    SiteType(type: .tent)
-                ],
-                features: [
-                    Feature(type: .firewood),
-                    Feature(type: .drinkingWater),
-                    Feature(type: .parking)
-                ]
-            ))
+            CampgroundDetailView(campgroundId: "preview_id")
         }
     }
 }

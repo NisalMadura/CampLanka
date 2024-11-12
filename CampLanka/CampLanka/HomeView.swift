@@ -5,51 +5,129 @@
 //  Created by COBSCCOMPY4231P-008 on 2024-11-05.
 //
 
-import SwiftUI
 
-struct ProfileButton: View {
-    var body: some View {
-        Button(action: { }) {
-            Image(systemName: "person.circle")
-                .foregroundColor(.black)
-                .font(.system(size: 24))
-        }
-    }
-}
+
+import SwiftUI
+import FirebaseFirestore
 
 struct CampgroundBox: Identifiable {
-    let id = UUID()
+    let id: String
     let name: String
     let location: String
     let rating: Double
     let likes: Int
     let image: String
-    var isFavorite: Bool = false
+    var isFavorite: Bool
     var startPrice: Double?
+    
+    init(id: String, name: String, location: String, rating: Double, likes: Int, image: String, isFavorite: Bool, startPrice: Double?) {
+        self.id = id
+        self.name = name
+        self.location = location
+        self.rating = rating
+        self.likes = likes
+        self.image = image
+        self.isFavorite = isFavorite
+        self.startPrice = startPrice
+    }
+    
+    init(id: String, data: [String: Any]) {
+        self.id = id
+        self.name = data["name"] as? String ?? ""
+        self.location = data["location"] as? String ?? ""
+        self.rating = data["rating"] as? Double ?? 0.0
+        self.likes = data["likes"] as? Int ?? 0
+        self.image = data["imageUrl"] as? String ?? ""
+        self.isFavorite = data["isFavorite"] as? Bool ?? false
+        self.startPrice = data["startPrice"] as? Double
+    }
+}
+
+class HomeViewModel: ObservableObject {
+    private let db = Firestore.firestore()
+    
+    @Published var publicCampgrounds: [CampgroundBox] = []
+    @Published var bookableCampgrounds: [CampgroundBox] = []
+    @Published var popularCampgrounds: [CampgroundBox] = []
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
+    
+    func fetchCampgrounds() {
+        isLoading = true
+        
+        // Fetch Public Campgrounds
+        db.collection("campgrounds")
+            .whereField("type", isEqualTo: "public")
+            .getDocuments { [weak self] snapshot, error in
+                if let error = error {
+                    print("Error fetching public campgrounds: \(error)")
+                    return
+                }
+                
+                self?.publicCampgrounds = snapshot?.documents.map { doc in
+                    CampgroundBox(id: doc.documentID, data: doc.data())
+                } ?? []
+            }
+        
+        // Fetch Bookable Campgrounds
+        APIManager.shared.fetchGlampingSriLanka { [weak self] hotels, error in
+            self?.isLoading = false
+            
+            if let error = error {
+                print("Error fetching bookable campgrounds: \(error)")
+                self?.errorMessage = error.localizedDescription
+                return
+            }
+            
+            if let hotels = hotels {
+                print("Received \(hotels.count) hotels from API")
+                
+                self?.bookableCampgrounds = hotels.map { hotel in
+                    print("Processing hotel: \(hotel.name)")
+                    return CampgroundBox(
+                        id: UUID().uuidString,
+                        name: hotel.name,
+                        location: hotel.address,
+                        rating: Double(hotel.starRating),
+                        likes: 0,
+                        image: hotel.images.first ?? "",
+                        isFavorite: false,
+                        startPrice: hotel.price
+                    )
+                }
+                
+                if self?.bookableCampgrounds.isEmpty == true {
+                    print("No bookable campgrounds found after processing")
+                    self?.errorMessage = "No glamping locations found"
+                } else {
+                    print("Successfully loaded \(self?.bookableCampgrounds.count ?? 0) bookable campgrounds")
+                }
+            } else {
+                print("No hotels data received from API")
+                self?.errorMessage = "No data received from booking service"
+            }
+        }
+        
+        // Fetch Popular Campgrounds
+        db.collection("campgrounds")
+            .whereField("type", isEqualTo: "popular")
+            .getDocuments { [weak self] snapshot, error in
+                if let error = error {
+                    print("Error fetching popular campgrounds: \(error)")
+                    return
+                }
+                
+                self?.popularCampgrounds = snapshot?.documents.map { doc in
+                    CampgroundBox(id: doc.documentID, data: doc.data())
+                } ?? []
+            }
+    }
 }
 
 
 struct HomeViewscn: View {
+    @StateObject private var viewModel = HomeViewModel()
     @State private var searchText = ""
-    
-    let publicCampgrounds: [CampgroundBox] = [
-        CampgroundBox(name: "Madulsima Camping", location: "Madulsima", rating: 5.0, likes: 25, image: "homepic1"),
-        CampgroundBox(name: "Camping at Unawatuna", location: "Unawatuna", rating: 5.0, likes: 25, image: "homepic2"),
-        CampgroundBox(name: "Blue Elephant opens", location: "NuwaraEliya", rating: 5.0, likes: 25, image: "homepic3")
-    ]
-    
-    let bookableCampgrounds: [CampgroundBox] = [
-        CampgroundBox(name: "Glamping By Offtrek", location: "Kandy", rating: 4.8, likes: 0, image: "glamping", startPrice: 200),
-        CampgroundBox(name: "Glamping By Offtrek", location: "Kandy", rating: 4.8, likes: 0, image: "homepic4", startPrice: 200)
-        // Add more bookable campgrounds
-    ]
-    
-    let popularCampgrounds: [CampgroundBox] = [
-        CampgroundBox(name: "Mandaram Nuwara Camping", location: "Pidurutalagala", rating: 5.0, likes: 25, image: "homepic5"),
-        CampgroundBox(name: "Mahoora Tented Safari Camps", location: "Habarana", rating: 5.0, likes: 25, image: "homepic6"),
-        CampgroundBox(name: "Narangala Mountain Camping", location: "Badulla", rating: 5.0, likes: 25, image: "glamping"),
-        CampgroundBox(name: "Camping Horton plains", location: "Ohiya", rating: 5.0, likes: 25, image: "homepic8")
-    ]
     
     var body: some View {
         NavigationStack {
@@ -58,81 +136,58 @@ struct HomeViewscn: View {
                     Text("Good Morning!")
                         .font(.title)
                         .bold()
-                      .padding(.top,-50)
+                        .padding(.top, -50)
                     
-                    // Search Bar
-                    SearchBar(text: $searchText)
-                    
-                    // Public Campgrounds Section
                     CampgroundSection(
                         title: "Public Campgrounds",
-                        campgrounds: publicCampgrounds
+                        campgrounds: viewModel.publicCampgrounds,
+                        viewAll: {}
                     )
                     
-                    // Bookable Campgrounds Section
                     BookableCampgroundSection(
                         title: "Bookable Campgrounds",
-                        campgrounds: bookableCampgrounds
+                        campgrounds: viewModel.bookableCampgrounds,
+                        viewAll: {}
                     )
                     
-                    // Most Popular Section
                     PopularCampgroundSection(
                         title: "CAMPLANKA SPECIAL",
                         subtitle: "Most Popular",
-                        campgrounds: popularCampgrounds
+                        campgrounds: viewModel.popularCampgrounds,
+                        viewAll: {}
                     )
                     
-                    
                     TripPlanningBanner()
-                    
                 }
                 .padding()
-            
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                                
-                                
                     Text("")
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
-                        Button(action: { }) {
+                        Button(action: {}) {
                             Image(systemName: "bell")
                                 .foregroundColor(.black)
                         }
-                        
-                        ProfileButton()
-                       
-                        
+                       // ProfileButton()
                     }
                 }
-                
             }
             .navigationBarBackButtonHidden(true)
         }
-        .navigationBarBackButtonHidden(true)
-        //.navigationBarHidden(true)
-    }
-}
-
-struct SearchBar: View {
-    @Binding var text: String
-    
-    var body: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.gray)
-            
-            TextField("Near Me", text: $text)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+        .onAppear {
+            viewModel.fetchCampgrounds()
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
 struct CampgroundSection: View {
     let title: String
     let campgrounds: [CampgroundBox]
+    let viewAll: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -143,80 +198,17 @@ struct CampgroundSection: View {
                 
                 Spacer()
                 
-                Button("View all") {
-                    
-                }
-                .foregroundColor(.green)
+                Button("View all", action: viewAll)
+                    .foregroundColor(.green)
             }
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
                     ForEach(campgrounds) { campground in
-                        CampgroundCard(campground: campground)
+                        NavigationLink(destination: CampgroundDetailView(campgroundId: campground.id)) {
+                            CampgroundCard(campground: campground)
+                        }
                     }
-                }
-            }
-        }
-    }
-}
-
-struct BookableCampgroundSection: View {
-    let title: String
-    let campgrounds: [CampgroundBox]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(title)
-                    .font(.title2)
-                    .bold()
-                
-                Spacer()
-                
-                Button("View all") {
-                    
-                }
-                .foregroundColor(.green)
-            }
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) {
-                    ForEach(campgrounds) { campground in
-                        BookableCampgroundCard(campground: campground)
-                    }
-                }
-            }
-        }
-    }
-}
-
-struct PopularCampgroundSection: View {
-    let title: String
-    let subtitle: String
-    let campgrounds: [CampgroundBox]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.green)
-            
-            HStack {
-                Text(subtitle)
-                    .font(.title2)
-                    .bold()
-                
-                Spacer()
-                
-                Button("View all") {
-                    
-                }
-                .foregroundColor(.green)
-            }
-            
-            VStack(spacing: 15) {
-                ForEach(campgrounds) { campground in
-                    PopularCampgroundCard(campground: campground)
                 }
             }
         }
@@ -228,11 +220,16 @@ struct CampgroundCard: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Image(campground.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 300, height: 200)
-                .cornerRadius(12)
+            AsyncImage(url: URL(string: campground.image)) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
+            }
+            .frame(width: 300, height: 200)
+            .cornerRadius(12)
             
             Text(campground.name)
                 .font(.headline)
@@ -254,16 +251,52 @@ struct CampgroundCard: View {
     }
 }
 
+struct BookableCampgroundSection: View {
+    let title: String
+    let campgrounds: [CampgroundBox]
+    let viewAll: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(title)
+                    .font(.title2)
+                    .bold()
+                
+                Spacer()
+                
+                Button("View all", action: viewAll)
+                    .foregroundColor(.green)
+            }
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 15) {
+                    ForEach(campgrounds) { campground in  // Use ForEach to show all campgrounds
+                        NavigationLink(destination: CampgroundDetailView(campgroundId: campground.id)) {
+                            BookableCampgroundCard(campground: campground)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 struct BookableCampgroundCard: View {
     let campground: CampgroundBox
     
     var body: some View {
         VStack(alignment: .leading) {
-            Image(campground.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 300, height: 200)
-                .cornerRadius(12)
+            AsyncImage(url: URL(string: campground.image)) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
+            }
+            .frame(width: 300, height: 200)
+            .cornerRadius(12)
             
             Text(campground.name)
                 .font(.headline)
@@ -282,7 +315,7 @@ struct BookableCampgroundCard: View {
                 Spacer()
                 
                 Button("Book") {
-                    
+                    // Implement booking action
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 8)
@@ -299,44 +332,83 @@ struct BookableCampgroundCard: View {
     }
 }
 
+struct PopularCampgroundSection: View {
+    let title: String
+    let subtitle: String
+    let campgrounds: [CampgroundBox]
+    let viewAll: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.green)
+            
+            HStack {
+                Text(subtitle)
+                    .font(.title2)
+                    .bold()
+                
+                Spacer()
+                
+                Button("View all", action: viewAll)
+                    .foregroundColor(.green)
+            }
+            
+            VStack(spacing: 15) {
+                ForEach(campgrounds) { campground in
+                    NavigationLink(destination: CampgroundDetailView(campgroundId: campground.id)) {
+                        PopularCampgroundCard(campground: campground)
+                    }
+                }
+            }
+        }
+    }
+}
+
 struct PopularCampgroundCard: View {
     let campground: CampgroundBox
     
     var body: some View {
-        HStack {
-            Image(campground.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 120, height: 80)
-                .cornerRadius(12)
-            
-            VStack(alignment: .leading) {
-                Text(campground.name)
-                    .font(.headline)
-                
-                Text(campground.location)
-                    .foregroundColor(.gray)
-                
-                HStack {
-                    Image(systemName: "heart.fill")
-                        .foregroundColor(.gray)
-                    Text("\(campground.likes)")
-                    
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                    Text(String(format: "%.1f", campground.rating))
-                }
+        VStack(alignment: .leading) {
+            AsyncImage(url: URL(string: campground.image)) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
             }
+            .frame(width: 300, height: 200)
+            .cornerRadius(12)
             
-            Spacer()
+            Text(campground.name)
+                .font(.headline)
             
-            Button(action: { }) {
-                Image(systemName: "heart")
-                    .foregroundColor(.black)
-                    .padding(8)
-                    .background(Circle().stroke(Color.gray.opacity(0.3)))
+            Text(campground.location)
+                .foregroundColor(.gray)
+            
+            HStack {
+                if let price = campground.startPrice {
+                    Text("Start from")
+                        .foregroundColor(.gray)
+                    Text("$ \(Int(price))/pax")
+                        .bold()
+                }
+                
+                Spacer()
+                
+                Button("Book") {
+                    // Implement booking action
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 8)
+                .background(Color.green)
+                .foregroundColor(.white)
+                .cornerRadius(8)
             }
         }
+        .frame(width: 300)
         .padding()
         .background(Color.white)
         .cornerRadius(12)
@@ -383,13 +455,13 @@ struct TripPlanningBanner: View {
             .padding()
         }
         .cornerRadius(12)
-        
     }
 }
-
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeViewscn()
     }
 }
+    
+
