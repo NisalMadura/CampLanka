@@ -271,7 +271,7 @@ struct BookableCampgroundSection: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
-                    ForEach(campgrounds) { campground in  // Use ForEach to show all campgrounds
+                    ForEach(campgrounds) { campground in
                         NavigationLink(destination: CampgroundDetailView(campgroundId: campground.id)) {
                             BookableCampgroundCard(campground: campground)
                         }
@@ -315,7 +315,7 @@ struct BookableCampgroundCard: View {
                 Spacer()
                 
                 Button("Book") {
-                    // Implement booking action
+                   
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 8)
@@ -379,7 +379,7 @@ struct PopularCampgroundCard: View {
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
             }
-            .frame(width: 300, height: 200)
+            .frame(width: 300, height: 150)
             .cornerRadius(12)
             
             Text(campground.name)
@@ -388,25 +388,7 @@ struct PopularCampgroundCard: View {
             Text(campground.location)
                 .foregroundColor(.gray)
             
-            HStack {
-                if let price = campground.startPrice {
-                    Text("Start from")
-                        .foregroundColor(.gray)
-                    Text("$ \(Int(price))/pax")
-                        .bold()
-                }
-                
-                Spacer()
-                
-                Button("Book") {
-                    // Implement booking action
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 8)
-                .background(Color.green)
-                .foregroundColor(.white)
-                .cornerRadius(8)
-            }
+   
         }
         .frame(width: 300)
         .padding()

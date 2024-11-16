@@ -127,13 +127,7 @@ struct ReviewsScreen: View {
                 Button(action: {
                     dismiss()
                 }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .medium))
-                        Text("Back")
-                            .font(.system(size: 16))
-                    }
-                    .foregroundColor(.blue)
+                    
                 }
                 Spacer()
             }
@@ -141,32 +135,14 @@ struct ReviewsScreen: View {
             .padding(.vertical, 8)
             
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 11) {
                     Text("Review")
                         .font(.system(size: 28, weight: .bold))
                         .padding(.horizontal)
                     
                     // Rating Summary
-                    HStack(alignment: .top, spacing: 32) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(String(format: "%.1f", averageRating))
-                                .font(.system(size: 40, weight: .bold))
-                            StarRatingView(rating: averageRating)
-                                .padding(.vertical, 2)
-                            Text("Based on \(reviews.count) reviews")
-                                .font(.system(size: 12))
-                                .foregroundColor(.gray)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            ForEach((1...5).reversed(), id: \.self) { rating in
-                                RatingBarView(
-                                    rating: rating,
-                                    count: ratingCounts[rating, default: 0],
-                                    totalCount: reviews.count
-                                )
-                            }
-                        }
+                    HStack(alignment: .top, spacing: 22) {
+                     
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 8)

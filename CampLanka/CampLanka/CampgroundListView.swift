@@ -98,26 +98,26 @@ class CampgroundViewModel: ObservableObject {
         let wishlistRef = db.collection("users").document(user.uid).collection("wishlist")
         
         if let index = campgrounds.firstIndex(where: { $0.id == campground.id }) {
-            // Toggle the favorite status locally
+            
             campgrounds[index].isFavorite.toggle()
             
             if campgrounds[index].isFavorite {
-                // Add to Firebase
+                
                 do {
                     try wishlistRef.document(campground.id).setData(from: campgrounds[index])
                 } catch {
                     errorMessage = "Error saving to wishlist: \(error.localizedDescription)"
                     showError = true
-                    // Revert the local change if saving fails
+                
                     campgrounds[index].isFavorite.toggle()
                 }
             } else {
-                // Remove from Firebase
+                
                 wishlistRef.document(campground.id).delete() { [weak self] error in
                     if let error = error {
                         self?.errorMessage = "Error removing from wishlist: \(error.localizedDescription)"
                         self?.showError = true
-                        // Revert the local change if deletion fails
+                    
                         DispatchQueue.main.async {
                             self?.campgrounds[index].isFavorite.toggle()
                         }
@@ -128,7 +128,7 @@ class CampgroundViewModel: ObservableObject {
     }
 }
 
-// MARK: - CampgroundCell View
+
 struct CampgroundCell: View {
     let campground: Campground
     let onFavoriteTap: () -> Void
@@ -182,7 +182,7 @@ struct CampgroundCell: View {
     }
 }
 
-// MARK: - Wishlist View
+
 struct WishlistView: View {
     @ObservedObject var viewModel: CampgroundViewModel
     @State private var showLoginAlert = false
@@ -218,7 +218,7 @@ struct WishlistView: View {
     }
 }
 
-// MARK: - CampgroundListView
+
 struct CampgroundListView: View {
     @StateObject private var viewModel = CampgroundViewModel()
     @State private var navigateToDetails = false
@@ -268,7 +268,7 @@ struct CampgroundListView: View {
     }
 }
 
-// MARK: - Preview
+
 struct CampgroundListView_Previews: PreviewProvider {
     static var previews: some View {
         CampgroundListView()

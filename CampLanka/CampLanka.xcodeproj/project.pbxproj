@@ -21,6 +21,8 @@
 		8223557D2CDA4D7700CF7554 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223557C2CDA4D7700CF7554 /* AppDelegate.swift */; };
 		822355802CDA548200CF7554 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 8223557F2CDA548200CF7554 /* GoogleSignIn */; };
 		822355822CDA548200CF7554 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 822355812CDA548200CF7554 /* GoogleSignInSwift */; };
+		8249E7D12CE8D6E200685B60 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8249E7D02CE8D6E200685B60 /* FirebaseAnalytics */; };
+		8249E7D32CE8D6E200685B60 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 8249E7D22CE8D6E200685B60 /* FirebaseStorage */; };
 		825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825822002CD8A5F0006E225B /* CampgroundServicesView.swift */; };
 		82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CCE2CCE45C100924439 /* CampLankaApp.swift */; };
 		82981CD12CCE45C100924439 /* ConteentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD02CCE45C100924439 /* ConteentView.swift */; };
@@ -140,11 +142,13 @@
 				82B14EFA2CDE1EC70092D0D4 /* FirebaseMessaging in Frameworks */,
 				8223557A2CDA3D2D00CF7554 /* FirebaseDatabase in Frameworks */,
 				822355782CDA3D2D00CF7554 /* FirebaseAuth in Frameworks */,
+				8249E7D32CE8D6E200685B60 /* FirebaseStorage in Frameworks */,
 				822355802CDA548200CF7554 /* GoogleSignIn in Frameworks */,
 				82B14EF42CDE1EC70092D0D4 /* FirebaseAppCheck in Frameworks */,
 				82B14EF62CDE1EC70092D0D4 /* FirebaseCore in Frameworks */,
 				822355822CDA548200CF7554 /* GoogleSignInSwift in Frameworks */,
 				82B14EF82CDE1EC70092D0D4 /* FirebaseFirestore in Frameworks */,
+				8249E7D12CE8D6E200685B60 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +290,8 @@
 				82B14EF52CDE1EC70092D0D4 /* FirebaseCore */,
 				82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */,
 				82B14EF92CDE1EC70092D0D4 /* FirebaseMessaging */,
+				8249E7D02CE8D6E200685B60 /* FirebaseAnalytics */,
+				8249E7D22CE8D6E200685B60 /* FirebaseStorage */,
 			);
 			productName = CampLanka;
 			productReference = 82981CCB2CCE45C100924439 /* CampLanka.app */;
@@ -814,6 +820,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8223557E2CDA548200CF7554 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
+		8249E7D02CE8D6E200685B60 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		8249E7D22CE8D6E200685B60 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		82B14EF32CDE1EC70092D0D4 /* FirebaseAppCheck */ = {
 			isa = XCSwiftPackageProductDependency;

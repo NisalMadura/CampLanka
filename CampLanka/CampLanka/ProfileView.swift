@@ -1,12 +1,18 @@
+// MARK: - ProfileView.swift
 import SwiftUI
 import Firebase
 import FirebaseAuth
+import FirebaseFirestore
+import FirebaseStorage
+import PhotosUI
 
 struct ProfileView: View {
-    @State private var selectedTab = 4  // Profile tab selected
+    @State private var selectedTab = 4
     @State private var showingEditProfile = false
     @State private var showingLogoutAlert = false
     @State private var isLoggedOut = false
+    @State private var profileImage: UIImage?
+    @State private var isLoading = false
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("userid") private var userid: String = ""
     @AppStorage("login_status") private var loginStatus: Bool = false
@@ -16,63 +22,71 @@ struct ProfileView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Profile Section
-                VStack(spacing: 24) {
-                    // Edit Button
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            showingEditProfile = true
-                        }) {
-                            Image(systemName: "pencil")
-                                .font(.system(size: 20))
-                                .foregroundColor(.gray)
-                                .padding(12)
-                                .background(Color.gray.opacity(0.1))
-                                .clipShape(Circle())
-                        }
-                        .padding(.trailing, 20)
-                    }
-                    .padding(.top, 10)
-                    
-                    // Profile Image
-                    Image("profile")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 100, height: 100)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
-                    
-                    // Name
-                    Text(userName.isEmpty ? "Nisal Perera" : userName)
-                        .font(.system(size: 24, weight: .semibold))
-                        .padding(.bottom, 20)
-                }
-                
-                // Menu Items
+            ZStack {
                 VStack(spacing: 0) {
-                    MenuLink(title: "Personal Details", iconName: "person.fill") {
-                        print("Navigate to Personal Details")
+                    VStack(spacing: 24) {
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                showingEditProfile = true
+                            }) {
+                                Image(systemName: "pencil")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.gray)
+                                    .padding(12)
+                                    .background(Color.gray.opacity(0.1))
+                                    .clipShape(Circle())
+                            }
+                            .padding(.trailing, 20)
+                        }
+                        .padding(.top, 10)
+                        
+                        ZStack {
+                            if let image = profileImage {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(.gray)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                            }
+                            
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .background(Color.black.opacity(0.4))
+                                    .clipShape(Circle())
+                                    .frame(width: 100, height: 100)
+                            }
+                        }
+                        
+                        Text(userName.isEmpty ? "Fetching Name..." : userName)
+                            .font(.system(size: 24, weight: .semibold))
+                            .padding(.bottom, 20)
                     }
                     
-                    MenuLink(title: "Account & Password", iconName: "lock.fill") {
-                        print("Navigate to Account & Password")
+                    VStack(spacing: 0) {
+                        MenuLink(title: "Personal Details", iconName: "person.fill") {}
+                        MenuLink(title: "Account & Password", iconName: "lock.fill") {}
+                        MenuLink(title: "Help Center", iconName: "questionmark.circle.fill") {}
+                        MenuLink(title: "Sign Out", iconName: "rectangle.portrait.and.arrow.right") {
+                            showingLogoutAlert = true
+                        }
                     }
+                    .padding(.top, 20)
                     
-                    MenuLink(title: "Help Center", iconName: "questionmark.circle.fill") {
-                        print("Navigate to Help Center")
-                    }
-                    
-                    MenuLink(title: "Sign Out", iconName: "rectangle.portrait.and.arrow.right") {
-                        showingLogoutAlert = true
-                    }
+                    Spacer()
                 }
-                .padding(.top, 20)
-                
-                Spacer()
+                .background(Color(UIColor.systemBackground))
             }
-            .background(Color(UIColor.systemBackground))
             .alert(isPresented: $showingLogoutAlert) {
                 Alert(
                     title: Text("Sign Out"),
@@ -84,36 +98,253 @@ struct ProfileView: View {
                 )
             }
             .fullScreenCover(isPresented: $isLoggedOut) {
-                // Navigate to your SignInView
                 SignInView()
+            }
+            .onAppear {
+                fetchUserData()
             }
         }
         .sheet(isPresented: $showingEditProfile) {
-            EditProfileView()
+            EditProfileView(profileImage: $profileImage, userName: $userName)
+        }
+    }
+    
+    private func fetchUserData() {
+        isLoading = true
+        fetchUserName()
+        fetchProfileImage()
+    }
+    
+    private func fetchUserName() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            userName = "Guest"
+            return
+        }
+
+        let db = Firestore.firestore()
+        db.collection("users").document(userID).getDocument { document, error in
+            if let document = document, document.exists, let name = document.data()?["name"] as? String, !name.isEmpty {
+                self.userName = name
+            } else if let email = Auth.auth().currentUser?.email {
+                self.userName = email.components(separatedBy: "@").first ?? "Unknown User"
+            } else {
+                self.userName = "Guest"
+            }
+        }
+    }
+    
+    private func fetchProfileImage() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            isLoading = false
+            return
+        }
+        
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profileImageRef = storageRef.child("profile_images/\(userID).jpg")
+        
+        profileImageRef.getData(maxSize: Int64(5 * 1024 * 1024)) { data, error in
+            isLoading = false
+            
+            if let error = error {
+                print("Error downloading profile image: \(error)")
+                return
+            }
+            
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self.profileImage = image
+                }
+            }
         }
     }
     
     private func logOut() {
         do {
-            // Sign out from Firebase
             try Auth.auth().signOut()
-            
-            // Clear user session data
             KeychainHelper.shared.delete(forKey: "uid")
             userName = ""
             userid = ""
-            
-            // Mark user as logged out and trigger navigation
             loginStatus = false
+            profileImage = nil
             self.isLoggedOut = true
-            
         } catch let signOutError as NSError {
             print("Error signing out: %@", signOutError)
         }
     }
 }
 
-// Menu Link Component
+
+struct EditProfileView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @State private var name: String = ""
+    @State private var isSaving = false
+    @State private var saveError: String?
+    @State private var showingImagePicker = false
+    @State private var selectedImage: UIImage?
+    @State private var imagePickerItem: PhotosPickerItem?
+    @State private var showingErrorAlert = false
+    @State private var errorMessage = ""
+    @Binding var profileImage: UIImage?
+    @Binding var userName: String
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Profile Photo")) {
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            if let image = selectedImage ?? profileImage {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .foregroundColor(.gray)
+                                    .clipShape(Circle())
+                            }
+                            
+                            if isSaving {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .frame(width: 100, height: 100)
+                                    .background(Color.black.opacity(0.4))
+                                    .clipShape(Circle())
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 10)
+                    
+                    PhotosPicker(selection: $imagePickerItem,
+                               matching: .images) {
+                        Text("Change Photo")
+                            .foregroundColor(.blue)
+                    }
+                               .onChange(of: imagePickerItem) { oldValue, newValue in
+                                   Task {
+                                       if let data = try? await newValue?.loadTransferable(type: Data.self),
+                                          let image = UIImage(data: data) {
+                                           await MainActor.run {
+                                               selectedImage = image
+                                           }
+                                       }
+                                   }
+                               }
+                }
+                
+                Section(header: Text("Personal Information")) {
+                    TextField("Name", text: $name)
+                        .autocapitalization(.words)
+                }
+            }
+            .navigationTitle("Edit Profile")
+            .navigationBarItems(
+                leading: Button("Cancel") {
+                    presentationMode.wrappedValue.dismiss()
+                },
+                trailing: Button(isSaving ? "Saving..." : "Save") {
+                    saveProfile()
+                }
+                .disabled(isSaving || (name.isEmpty && selectedImage == nil))
+            )
+            .alert(isPresented: $showingErrorAlert) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(errorMessage),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+        }
+        .onAppear {
+            name = userName
+        }
+    }
+    
+    private func saveProfile() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            showError("User not authenticated")
+            return
+        }
+        
+        isSaving = true
+        
+        let group = DispatchGroup()
+        var hadError = false
+        
+        // Save profile image if selected
+        if let imageToUpload = selectedImage {
+            group.enter()
+            uploadProfileImage(imageToUpload, userID: userID) { result in
+                switch result {
+                case .success():
+                    self.profileImage = imageToUpload
+                case .failure(let error):
+                    hadError = true
+                    showError("Failed to upload image: \(error.localizedDescription)")
+                }
+                group.leave()
+            }
+        }
+        
+        // Save name to Firestore if changed
+        if !name.isEmpty && name != userName {
+            group.enter()
+            let db = Firestore.firestore()
+            db.collection("users").document(userID).setData(["name": name], merge: true) { error in
+                if let error = error {
+                    hadError = true
+                    showError("Failed to save name: \(error.localizedDescription)")
+                } else {
+                    userName = name
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            isSaving = false
+            if !hadError {
+                presentationMode.wrappedValue.dismiss()
+            }
+        }
+    }
+    
+    private func uploadProfileImage(_ image: UIImage, userID: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data"])))
+            return
+        }
+        
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let profileImageRef = storageRef.child("profile_images/\(userID).jpg")
+        
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        
+        profileImageRef.putData(imageData, metadata: metadata) { metadata, error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+    
+    private func showError(_ message: String) {
+        errorMessage = message
+        showingErrorAlert = true
+    }
+}
+
+// MARK: - MenuLink.swift
 struct MenuLink: View {
     let title: String
     let iconName: String
@@ -129,7 +360,7 @@ struct MenuLink: View {
                 
                 Text(title)
                     .font(.system(size: 17))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                 
                 Spacer()
                 
@@ -145,50 +376,33 @@ struct MenuLink: View {
     }
 }
 
-// Edit Profile View
-struct EditProfileView: View {
-    @Environment(\.presentationMode) var presentationMode
-    @State private var name = "Elisa Maria"
+// MARK: - KeychainHelper.swift
+class KeychainHelpers {
+    static let shared = KeychainHelpers()
+    private init() {}
     
-    var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Profile Photo")) {
-                    HStack {
-                        Spacer()
-                        Image("profile-placeholder")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                        Spacer()
-                    }
-                    .padding(.vertical, 10)
-                    
-                    Button("Change Photo") {
-                        // Handle photo change
-                    }
-                    .foregroundColor(.blue)
-                }
-                
-                Section(header: Text("Personal Information")) {
-                    TextField("Name", text: $name)
-                }
-            }
-            .navigationTitle("Edit Profile")
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    presentationMode.wrappedValue.dismiss()
-                },
-                trailing: Button("Save") {
-                    // Handle save
-                    presentationMode.wrappedValue.dismiss()
-                }
-            )
-        }
+    func save(_ data: Data, forKey key: String) {
+        let query = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecValueData as String: data
+        ] as [String: Any]
+        
+        SecItemDelete(query as CFDictionary)
+        SecItemAdd(query as CFDictionary, nil)
+    }
+    
+    func delete(forKey key: String) {
+        let query = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key
+        ] as [String: Any]
+        
+        SecItemDelete(query as CFDictionary)
     }
 }
 
+// MARK: - Preview Provider
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()
