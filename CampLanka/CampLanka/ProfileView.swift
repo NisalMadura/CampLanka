@@ -1,4 +1,4 @@
-// MARK: - ProfileView.swift
+
 import SwiftUI
 import Firebase
 import FirebaseAuth
@@ -17,6 +17,10 @@ struct ProfileView: View {
     @AppStorage("userid") private var userid: String = ""
     @AppStorage("login_status") private var loginStatus: Bool = false
     @AppStorage("userName") private var userName: String = ""
+    @State private var showingPersonalDetails = false
+    @State private var showingAccountAndPassword = false
+    @State private var showingHelpCenter = false
+
     
     private let darkGreen = Color(red: 0/255, green: 78/255, blue: 56/255)
     
@@ -74,9 +78,9 @@ struct ProfileView: View {
                     }
                     
                     VStack(spacing: 0) {
-                        MenuLink(title: "Personal Details", iconName: "person.fill") {}
-                        MenuLink(title: "Account & Password", iconName: "lock.fill") {}
-                        MenuLink(title: "Help Center", iconName: "questionmark.circle.fill") {}
+                        MenuLink(title: "Personal Details", iconName: "person.fill") {showingPersonalDetails = true}
+                        MenuLink(title: "Account & Password", iconName: "lock.fill") {showingAccountAndPassword = true}
+                        MenuLink(title: "Help Center", iconName: "questionmark.circle.fill") {showingHelpCenter = true}
                         MenuLink(title: "Sign Out", iconName: "rectangle.portrait.and.arrow.right") {
                             showingLogoutAlert = true
                         }
@@ -106,6 +110,15 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showingEditProfile) {
             EditProfileView(profileImage: $profileImage, userName: $userName)
+        }
+        .sheet(isPresented: $showingPersonalDetails) {
+            PersonalDetailsView()
+        }
+        .sheet(isPresented: $showingAccountAndPassword) {
+            AccountAndPasswordView()
+        }
+        .sheet(isPresented: $showingHelpCenter) {
+            HelpCenterView()
         }
     }
     
@@ -278,7 +291,7 @@ struct EditProfileView: View {
         let group = DispatchGroup()
         var hadError = false
         
-        // Save profile image if selected
+        
         if let imageToUpload = selectedImage {
             group.enter()
             uploadProfileImage(imageToUpload, userID: userID) { result in
@@ -293,7 +306,7 @@ struct EditProfileView: View {
             }
         }
         
-        // Save name to Firestore if changed
+        
         if !name.isEmpty && name != userName {
             group.enter()
             let db = Firestore.firestore()
@@ -344,7 +357,7 @@ struct EditProfileView: View {
     }
 }
 
-// MARK: - MenuLink.swift
+
 struct MenuLink: View {
     let title: String
     let iconName: String
@@ -376,7 +389,7 @@ struct MenuLink: View {
     }
 }
 
-// MARK: - KeychainHelper.swift
+
 class KeychainHelpers {
     static let shared = KeychainHelpers()
     private init() {}
@@ -400,9 +413,10 @@ class KeychainHelpers {
         
         SecItemDelete(query as CFDictionary)
     }
+    
 }
 
-// MARK: - Preview Provider
+
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()

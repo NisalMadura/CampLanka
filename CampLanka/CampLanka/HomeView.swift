@@ -124,6 +124,23 @@ class HomeViewModel: ObservableObject {
     }
 }
 
+struct ProfileButton: View {
+    let destination: ProfileView
+    
+    var body: some View {
+        NavigationLink(destination: destination) {
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .frame(width: 30, height: 30)
+                .foregroundColor(.black)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                )
+        }
+    }
+}
 
 struct HomeViewscn: View {
     @StateObject private var viewModel = HomeViewModel()
@@ -171,7 +188,7 @@ struct HomeViewscn: View {
                             Image(systemName: "bell")
                                 .foregroundColor(.black)
                         }
-                       // ProfileButton()
+                        ProfileButton(destination: ProfileView())
                     }
                 }
             }
