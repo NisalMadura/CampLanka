@@ -21,6 +21,9 @@
 		8223557D2CDA4D7700CF7554 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223557C2CDA4D7700CF7554 /* AppDelegate.swift */; };
 		822355802CDA548200CF7554 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 8223557F2CDA548200CF7554 /* GoogleSignIn */; };
 		822355822CDA548200CF7554 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 822355812CDA548200CF7554 /* GoogleSignInSwift */; };
+		823B6D032CEB65BF00B943DE /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823B6D022CEB65BF00B943DE /* NotificationManager.swift */; };
+		823B6D052CEB69EE00B943DE /* NotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823B6D042CEB69EE00B943DE /* NotificationSettingsViewController.swift */; };
+		823B6D072CEB7B0D00B943DE /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823B6D062CEB7B0D00B943DE /* NotificationSettingsView.swift */; };
 		8249E7D12CE8D6E200685B60 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8249E7D02CE8D6E200685B60 /* FirebaseAnalytics */; };
 		8249E7D32CE8D6E200685B60 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 8249E7D22CE8D6E200685B60 /* FirebaseStorage */; };
 		825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825822002CD8A5F0006E225B /* CampgroundServicesView.swift */; };
@@ -97,6 +100,9 @@
 		8223557B2CDA3E3000CF7554 /* CampLanka.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CampLanka.entitlements; sourceTree = "<group>"; };
 		8223557C2CDA4D7700CF7554 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		822355832CDA58C800CF7554 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		823B6D022CEB65BF00B943DE /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		823B6D042CEB69EE00B943DE /* NotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsViewController.swift; sourceTree = "<group>"; };
+		823B6D062CEB7B0D00B943DE /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
 		825822002CD8A5F0006E225B /* CampgroundServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundServicesView.swift; sourceTree = "<group>"; };
 		82981CCB2CCE45C100924439 /* CampLanka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampLanka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82981CCE2CCE45C100924439 /* CampLankaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampLankaApp.swift; sourceTree = "<group>"; };
@@ -210,8 +216,11 @@
 				82981D012CCE473D00924439 /* SignInSignUpView.swift */,
 				82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */,
 				8223557C2CDA4D7700CF7554 /* AppDelegate.swift */,
+				823B6D042CEB69EE00B943DE /* NotificationSettingsViewController.swift */,
 				82981D032CCE477200924439 /* TripPlannerView.swift */,
 				822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */,
+				823B6D022CEB65BF00B943DE /* NotificationManager.swift */,
+				823B6D062CEB7B0D00B943DE /* NotificationSettingsView.swift */,
 				82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */,
 				82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */,
 				82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */,
@@ -438,14 +447,17 @@
 				82D49DA62CD62C6000AC989F /* PlanListView.swift in Sources */,
 				82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */,
 				82AAE6FC2CE32BA8005E1189 /* SearchBar.swift in Sources */,
+				823B6D032CEB65BF00B943DE /* NotificationManager.swift in Sources */,
 				82D49DA82CD62FD700AC989F /* CampingPreferenceView.swift in Sources */,
 				82D49DAA2CD6374300AC989F /* BudgetPreferenceView.swift in Sources */,
 				82981D022CCE473D00924439 /* SignInSignUpView.swift in Sources */,
 				82DCC4662CD785D30050CF26 /* CampgroundListView.swift in Sources */,
 				82B2A9102CE07B7100568194 /* KeychainHelper.swift in Sources */,
 				82D49DA42CD628CE00AC989F /* SaveToPlanView.swift in Sources */,
+				823B6D072CEB7B0D00B943DE /* NotificationSettingsView.swift in Sources */,
 				82981CD12CCE45C100924439 /* ConteentView.swift in Sources */,
 				82B0948A2CEA04430035A3B7 /* HelpDetailView.swift in Sources */,
+				823B6D052CEB69EE00B943DE /* NotificationSettingsViewController.swift in Sources */,
 				822355672CD9D49800CF7554 /* HomeView.swift in Sources */,
 				8223556D2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift in Sources */,
 				825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */,
@@ -631,7 +643,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CampLanka/Info.plist;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "We need access to your calendar to add trip events";
 				INFOPLIST_KEY_NSContactsUsageDescription = "This app uses your contacts to add and manage group members.";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "We need access to your reminders to add trip reminders";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -663,7 +677,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CampLanka/Info.plist;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "We need access to your calendar to add trip events";
 				INFOPLIST_KEY_NSContactsUsageDescription = "This app uses your contacts to add and manage group members.";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "We need access to your reminders to add trip reminders";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

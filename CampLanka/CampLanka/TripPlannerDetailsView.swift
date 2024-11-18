@@ -3,6 +3,162 @@ import EventKit
 import FirebaseFirestore
 import FirebaseAuth
 import Contacts
+import ContactsUI
+import EventKitUI
+
+
+struct Member: Identifiable {
+    var id = UUID()
+    var name: String
+    var imageUrl: String
+    var phoneNumber: String?
+    var email: String?
+    
+
+    init(from contact: CNContact) {
+        self.name = "\(contact.givenName) \(contact.familyName)".trimmingCharacters(in: .whitespaces)
+        self.imageUrl = "person.circle.fill"
+        self.phoneNumber = contact.phoneNumbers.first?.value.stringValue
+        self.email = contact.emailAddresses.first?.value as String?
+    }
+    
+
+    init(name: String, imageUrl: String = "person.circle.fill", phoneNumber: String? = nil, email: String? = nil) {
+        self.name = name
+        self.imageUrl = imageUrl
+        self.phoneNumber = phoneNumber
+        self.email = email
+    }
+}
+
+struct ContactPickerViewController: UIViewControllerRepresentable {
+    @Binding var members: [Member]
+    @Environment(\.presentationMode) var presentationMode
+    
+    class Coordinator: NSObject, CNContactPickerDelegate {
+        let parent: ContactPickerViewController
+        
+        init(_ parent: ContactPickerViewController) {
+            self.parent = parent
+        }
+        
+        func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
+            
+            let newMembers = contacts.map { Member(from: $0) }
+            
+        
+            DispatchQueue.main.async {
+                self.parent.members.append(contentsOf: newMembers)
+                
+                picker.dismiss(animated: true)
+            }
+        }
+        
+        func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
+            
+            picker.dismiss(animated: true)
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(self)
+    }
+    
+    func makeUIViewController(context: Context) -> CNContactPickerViewController {
+        let picker = CNContactPickerViewController()
+        picker.delegate = context.coordinator
+        picker.predicateForEnablingContact = NSPredicate(format: "phoneNumbers.@count > 0")
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: CNContactPickerViewController, context: Context) {}
+}
+
+struct MembersListView: View {
+    @Binding var members: [Member]
+    
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(members) { member in
+                    VStack {
+                        Image(systemName: member.imageUrl)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.blue)
+                        
+                        Text(member.name)
+                            .font(.caption)
+                            .lineLimit(1)
+                    }
+                    .frame(width: 80)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
+extension TripPlannerDetailsView {
+    var membersSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Who's coming along?")
+                .font(.headline)
+            
+            if members.isEmpty {
+                Text("No members added yet")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                    .padding(.vertical, 8)
+            } else {
+                MembersListView(members: $members)
+            }
+            
+            Button(action: {
+                requestContactsAccess { granted in
+                    if granted {
+                        isShowingContactPicker = true
+                    }
+                }
+            }) {
+                HStack {
+                    Image(systemName: "person.badge.plus")
+                    Text("Add from Contacts")
+                }
+                .foregroundColor(.white)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .cornerRadius(10)
+            }
+        }
+        .sheet(isPresented: $isShowingContactPicker) {
+            ContactPickerViewController(members: $members)
+        }
+    }
+}
+    
+    // Update requestContactsAccess function
+    func requestContactsAccess(completion: @escaping (Bool) -> Void) {
+        let store = CNContactStore()
+        
+        switch CNContactStore.authorizationStatus(for: .contacts) {
+        case .authorized:
+            completion(true)
+        case .notDetermined:
+            store.requestAccess(for: .contacts) { granted, _ in
+                DispatchQueue.main.async {
+                    completion(granted)
+                }
+            }
+        default:
+            DispatchQueue.main.async {
+                completion(false)
+                // Show alert to guide user to Settings app
+                // You might want to add an alert here
+            }
+        }
+    }
 
 
 
@@ -19,6 +175,9 @@ struct TripPlannerDetailsView: View {
     @State private var showingDatePicker = false
     @State private var notes: String = ""
     @State private var isShowingContactPicker = false
+    @State private var members: [Member] = [] // Initialize as empty array
+       // @State private var isShowingContactPicker = false
+        @State private var showingSettingsAlert = false
     
     // New state variables for custom items
     @State private var customPackingItems: Set<String> = []
@@ -29,16 +188,19 @@ struct TripPlannerDetailsView: View {
     @State private var newActivity: String = ""
     @State private var showingAddActivity = false
     
-    @State private var members: [Member] = [
-        Member(name: "Member01", imageUrl: "person.circle.fill"),
-        Member(name: "Member02", imageUrl: "person.circle.fill")
-    ]
+    
     @State private var newMemberName: String = ""
     @State private var showingAddMember = false
     
     @State private var eventKitManager = EventKitManager()
     @State private var isPermissionGranted = false
-    
+    @State private var showingError = false
+        @State private var errorMessage = ""
+    @State private var showingSaveSuccess = false
+        @State private var showingCalendarSuccess = false
+        @State private var showingAlert = false
+        @State private var alertTitle = ""
+        @State private var alertMessage = ""
     
     private var db = Firestore.firestore()
     
@@ -63,11 +225,7 @@ struct TripPlannerDetailsView: View {
         case cycling = "Cycling"
     }
 
-    struct Member: Identifiable {
-        var id = UUID()
-        var name: String
-        var imageUrl: String
-    }
+   
     
     struct DateRange {
         var startDate: Date
@@ -309,7 +467,7 @@ struct TripPlannerDetailsView: View {
                     }
                     .foregroundColor(.white)
                     .padding()
-                    .background(Color.blue)
+                    .background(Color.green)
                     .cornerRadius(8)
                 }
             }
@@ -364,7 +522,7 @@ struct TripPlannerDetailsView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(Color.green)
                             .cornerRadius(8)
                     }
                     .padding()
@@ -376,35 +534,36 @@ struct TripPlannerDetailsView: View {
             }
         }
     
-        private var addMemberSheet: some View {
-            NavigationView {
-                VStack(spacing: 20) {
-                    TextField("Enter member name", text: $newMemberName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding()
-                    
-                    Button(action: {
-                        if !newMemberName.isEmpty {
-                            members.append(Member(name: newMemberName, imageUrl: "person.circle.fill"))
-                            newMemberName = ""
-                            showingAddMember = false
-                        }
-                    }) {
-                        Text("Add Member")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.orange)
-                            .cornerRadius(8)
-                    }
+    private var addMemberSheet: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                TextField("Enter member name", text: $newMemberName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
+                
+                Button(action: {
+                    if !newMemberName.isEmpty {
+                        let newMember = Member(name: newMemberName)
+                        members.append(newMember)
+                        newMemberName = ""
+                        showingAddMember = false
+                    }
+                }) {
+                    Text("Add Member")
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.orange)
+                        .cornerRadius(8)
                 }
-                .navigationBarTitle("Add New Member", displayMode: .inline)
-                .navigationBarItems(trailing: Button("Cancel") {
-                    showingAddMember = false
-                })
+                .padding()
             }
+            .navigationBarTitle("Add New Member", displayMode: .inline)
+            .navigationBarItems(trailing: Button("Cancel") {
+                showingAddMember = false
+            })
         }
+    }
    // @State private var isShowingContactPicker = false
     @State private var fetchedContacts: [CNContact] = []
 
@@ -413,8 +572,8 @@ struct TripPlannerDetailsView: View {
             List {
                 ForEach(fetchedContacts, id: \.identifier) { contact in
                     Button(action: {
-                        let memberName = "\(contact.givenName) \(contact.familyName)"
-                        members.append(Member(name: memberName, imageUrl: "person.circle.fill"))
+                        let newMember = Member(from: contact)
+                        members.append(newMember)
                         isShowingContactPicker = false
                     }) {
                         Text("\(contact.givenName) \(contact.familyName)")
@@ -428,7 +587,7 @@ struct TripPlannerDetailsView: View {
         }
     }
 
-    private var membersSection: some View {
+    private var membersSkection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Who’s coming along?")
                 .font(.headline)
@@ -444,7 +603,7 @@ struct TripPlannerDetailsView: View {
                     members.remove(atOffsets: indexSet)
                 }
             }
-            .frame(height: 200) // Adjust height as needed
+            .frame(height: 200)
             
             Button(action: {
                 fetchedContacts = fetchContacts()
@@ -479,27 +638,34 @@ struct TripPlannerDetailsView: View {
     }
     
     private var actionButtons: some View {
-        HStack {
-            Button(action: saveTripDetails) {
-                Text("Save Details")
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+            HStack {
+                Button(action: saveTripDetails) {
+                    Text("Save Details")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                
+                Button(action: saveTripToCalendar) {
+                    Text("Save to Calendar")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
             }
-            
-            Button(action: saveTripToCalendar) {
-                Text("Save to Calendar")
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+            .alert(isPresented: $showingAlert) {
+                Alert(
+                    title: Text(alertTitle),
+                    message: Text(alertMessage),
+                    dismissButton: .default(Text("OK"))
+                )
             }
         }
-    }
-    func requestContactsAccess(completion: @escaping (Bool) -> Void) {
+    func requestContkactsAccess(completion: @escaping (Bool) -> Void) {
         let store = CNContactStore()
         store.requestAccess(for: .contacts) { granted, error in
             DispatchQueue.main.async {
@@ -526,54 +692,111 @@ struct TripPlannerDetailsView: View {
 
     func saveTripDetails() {
         
+        guard let currentUser = Auth.auth().currentUser else {
+                    showAlert(title: "Error", message: "Please sign in to save trip details")
+                    return
+                }
+            
         guard !selectedCity.isEmpty, let selectedDates = selectedDates else {
-            print("Please fill in all required fields.")
-            return
-        }
+                    showAlert(title: "Error", message: "Please fill in all required fields.")
+                    return
+                }
 
-        
-        let tripData: [String: Any] = [
-            "city": selectedCity,
-            "startDate": selectedDates.startDate,
-            "endDate": selectedDates.endDate,
-            "budget": ["min": minBudget, "max": maxBudget],
-            "transportMethods": Array(selectedTransportMethods.map { $0.rawValue }),
-            "packingItems": Array(selectedPackingItems.map { $0.rawValue }) + Array(customPackingItems),
-            "activities": Array(selectedActivities.map { $0.rawValue }) + Array(customActivities),
-            "numberOfPeople": numberOfPeople,
-            "notes": notes,
-            "members": members.map { $0.name }
-        ]
+            let tripData: [String: Any] = [
+                "userId": currentUser.uid,  // Add user ID to the trip data
+                "city": selectedCity,
+                "startDate": selectedDates.startDate,
+                "endDate": selectedDates.endDate,
+                "budget": [
+                    "min": minBudget,
+                    "max": maxBudget
+                ],
+                "transportMethods": Array(selectedTransportMethods.map { $0.rawValue }),
+                "packingItems": Array(selectedPackingItems.map { $0.rawValue }) + Array(customPackingItems),
+                "activities": Array(selectedActivities.map { $0.rawValue }) + Array(customActivities),
+                "numberOfPeople": numberOfPeople,
+                "notes": notes,
+                "members": members.map { [
+                    "name": $0.name,
+                    "phoneNumber": $0.phoneNumber ?? "",
+                    "email": $0.email ?? ""
+                ]},
+                "createdAt": FieldValue.serverTimestamp()
+            ]
 
-        
         db.collection("trips").addDocument(data: tripData) { error in
-            if let error = error {
-                print("Error saving trip details: \(error.localizedDescription)")
-            } else {
-                print("Trip details saved successfully!")
+                    if let error = error {
+                        showAlert(title: "Error", message: "Error saving trip details: \(error.localizedDescription)")
+                    } else {
+                        showAlert(title: "Success", message: "Trip plan created successfully!")
+                        
+                        clearFormFields()
+                    }
+                }
             }
-        }
-    }
 
-
-        private func saveTripToCalendar() {
-            guard let selectedDates = selectedDates else { return }
-            
-            let notes = """
-            Budget: \(minBudget)-\(maxBudget)$
-            Transport: \(selectedTransportMethods.map { $0.rawValue }.joined(separator: ", "))
-            Activities: \(selectedActivities.map { $0.rawValue }.joined(separator: ", "))
-            Notes: \(notes)
-            """
-            
-            eventKitManager.addEventToCalendar(
-                title: "Trip to \(selectedCity)",
-                startDate: selectedDates.startDate,
-                endDate: selectedDates.endDate,
-                notes: notes
-            )
-        }
-    }
+    private func saveTripToCaloendar() {
+          guard let selectedDates = selectedDates else {
+              showAlert(title: "Error", message: "Please select trip dates first")
+              return
+          }
+          
+          guard !selectedCity.isEmpty else {
+              showAlert(title: "Error", message: "Please enter a destination")
+              return
+          }
+          
+          let notes = """
+          Budget: \(minBudget)-\(maxBudget)$
+          Transport: \(selectedTransportMethods.map { $0.rawValue }.joined(separator: ", "))
+          Activities: \(selectedActivities.map { $0.rawValue }.joined(separator: ", "))
+          Notes: \(notes)
+          """
+          
+          
+          let event = EKEvent(eventStore: eventKitManager.eventStore)
+          event.title = "Trip to \(selectedCity)"
+          event.startDate = selectedDates.startDate
+          event.endDate = selectedDates.endDate
+          event.notes = notes
+          
+          
+          let reminder = EKReminder(eventStore: eventKitManager.eventStore)
+          reminder.title = "Prepare for trip to \(selectedCity)"
+          reminder.notes = "Your trip to \(selectedCity) is coming up!"
+          reminder.dueDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: Calendar.current.date(byAdding: .day, value: -1, to: selectedDates.startDate) ?? selectedDates.startDate)
+          reminder.priority = 1
+          
+          do {
+              try eventKitManager.eventStore.save(event, span: .thisEvent)
+              try eventKitManager.eventStore.save(reminder, commit: true)
+              showAlert(title: "Success", message: "Trip has been added to your calendar and reminders!")
+          } catch {
+              showAlert(title: "Error", message: "Failed to save to calendar: \(error.localizedDescription)")
+          }
+      }
+      
+      private func showAlert(title: String, message: String) {
+          alertTitle = title
+          alertMessage = message
+          showingAlert = true
+      }
+      
+      private func clearFormFields() {
+          selectedCity = ""
+          selectedDates = nil
+          minBudget = ""
+          maxBudget = ""
+          selectedTransportMethods = []
+          selectedPackingItems = []
+          selectedActivities = []
+          numberOfPeople = 1
+          notes = ""
+          members = []
+          customPackingItems = []
+          customActivities = []
+      }
+  }
 
 
 struct DatePickerView: View {
@@ -633,50 +856,169 @@ struct DatePickerView: View {
 }
 
     
-    class EventKitManager: ObservableObject {
-        private let eventStore = EKEventStore()
-        @Published var isAuthorized = false
-        
-        func requestCalendarPermission(completion: @escaping (Bool) -> Void) {
-            if #available(iOS 17.0, *) {
-                Task {
-                    do {
-                        let granted = try await eventStore.requestFullAccessToEvents()
-                        DispatchQueue.main.async {
-                            self.isAuthorized = granted
-                            completion(granted)
-                        }
-                    } catch {
-                        DispatchQueue.main.async {
-                            completion(false)
-                        }
-                    }
-                }
-            } else {
-                eventStore.requestAccess(to: .event) { granted, error in
+class EventKitManager: ObservableObject {
+    let eventStore = EKEventStore()
+    @Published var isAuthorized = false
+    
+    func requestCalendarPermission(completion: @escaping (Bool) -> Void) {
+        if #available(iOS 17.0, *) {
+            Task {
+                do {
+                    let calendarAccess = try await eventStore.requestFullAccessToEvents()
+                    let reminderAccess = try await eventStore.requestFullAccessToReminders()
                     DispatchQueue.main.async {
-                        self.isAuthorized = granted
-                        completion(granted)
+                        self.isAuthorized = calendarAccess && reminderAccess
+                        completion(self.isAuthorized)
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        completion(false)
                     }
                 }
             }
-        }
-        
-        func addEventToCalendar(title: String, startDate: Date, endDate: Date, notes: String) {
-            let event = EKEvent(eventStore: eventStore)
-            event.title = title
-            event.startDate = startDate
-            event.endDate = endDate
-            event.notes = notes
-            event.calendar = eventStore.defaultCalendarForNewEvents
+        } else {
             
-            do {
-                try eventStore.save(event, span: .thisEvent)
-            } catch {
-                print("Error saving event: \(error.localizedDescription)")
+            eventStore.requestAccess(to: .event) { [weak self] calendarGranted, _ in
+                self?.eventStore.requestAccess(to: .reminder) { reminderGranted, _ in
+                    DispatchQueue.main.async {
+                        self?.isAuthorized = calendarGranted && reminderGranted
+                        completion(calendarGranted && reminderGranted)
+                    }
+                }
             }
         }
     }
+    
+    func saveEventToCalendar(title: String, startDate: Date, endDate: Date, notes: String, completion: @escaping (Bool, String) -> Void) {
+          
+          let authStatus = EKEventStore.authorizationStatus(for: .event)
+          
+          guard authStatus == .authorized else {
+              completion(false, "Calendar access not authorized")
+              return
+          }
+          
+          // Ensure we have a calendar to save to
+          guard let calendar = eventStore.defaultCalendarForNewEvents else {
+              // If no default calendar, try to get the first available calendar
+              let calendars = eventStore.calendars(for: .event)
+              guard let firstCalendar = calendars.first else {
+                  completion(false, "No calendar available")
+                  return
+              }
+              
+              let event = EKEvent(eventStore: eventStore)
+              event.calendar = firstCalendar
+              event.title = title
+              event.startDate = startDate
+              event.endDate = endDate
+              event.notes = notes
+              
+              
+              let alarm = EKAlarm(relativeOffset: -86400) // 24 hours in seconds
+              event.addAlarm(alarm)
+              
+              do {
+                  try eventStore.save(event, span: .thisEvent)
+                  saveReminderForTrip(title: "Prepare for \(title)", notes: notes, dueDate: startDate)
+                  completion(true, "Event saved successfully")
+              } catch {
+                  completion(false, "Failed to save event: \(error.localizedDescription)")
+              }
+              return
+          }
+          
+          
+          let event = EKEvent(eventStore: eventStore)
+          event.calendar = calendar
+          event.title = title
+          event.startDate = startDate
+          event.endDate = endDate
+          event.notes = notes
+          
+          
+          let alarm = EKAlarm(relativeOffset: -86400)
+          event.addAlarm(alarm)
+          
+          do {
+              try eventStore.save(event, span: .thisEvent)
+              saveReminderForTrip(title: "Prepare for \(title)", notes: notes, dueDate: startDate)
+              completion(true, "Event saved successfully")
+          } catch {
+              completion(false, "Failed to save event: \(error.localizedDescription)")
+          }
+      }
+      
+      private func saveReminderForTrip(title: String, notes: String, dueDate: Date) {
+          guard EKEventStore.authorizationStatus(for: .reminder) == .authorized else { return }
+          
+          let reminder = EKReminder(eventStore: eventStore)
+          reminder.title = title
+          reminder.notes = notes
+          reminder.calendar = eventStore.defaultCalendarForNewReminders()
+          
+        
+          let oneDayBefore = Calendar.current.date(byAdding: .day, value: -1, to: dueDate) ?? dueDate
+          reminder.dueDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: oneDayBefore)
+          
+        
+          let alarm = EKAlarm(absoluteDate: oneDayBefore)
+          reminder.addAlarm(alarm)
+          
+          do {
+              try eventStore.save(reminder, commit: true)
+          } catch {
+              print("Failed to save reminder: \(error.localizedDescription)")
+          }
+      }
+  }
+
+  extension TripPlannerDetailsView {
+      private func saveTripToCalendar() {
+          guard let selectedDates = selectedDates else {
+              showAlert(title: "Error", message: "Please select trip dates first")
+              return
+          }
+          
+          guard !selectedCity.isEmpty else {
+              showAlert(title: "Error", message: "Please enter a destination")
+              return
+          }
+          
+          let notes = """
+          Trip to \(selectedCity)
+          Budget: \(minBudget)-\(maxBudget)$
+          Transport: \(selectedTransportMethods.map { $0.rawValue }.joined(separator: ", "))
+          Activities: \(selectedActivities.map { $0.rawValue }.joined(separator: ", "))
+          Additional Notes: \(self.notes)
+          """
+          
+          
+          eventKitManager.requestCalendarPermission { granted in
+              if granted {
+                  
+                  eventKitManager.saveEventToCalendar(
+                      title: "Trip to \(selectedCity)",
+                      startDate: selectedDates.startDate,
+                      endDate: selectedDates.endDate,
+                      notes: notes
+                  ) { success, message in
+                      DispatchQueue.main.async {
+                          if success {
+                              showAlert(title: "Success", message: "Trip has been added to your calendar and reminders!")
+                          } else {
+                              showAlert(title: "Error", message: message)
+                          }
+                      }
+                  }
+              } else {
+                  showAlert(title: "Error", message: "Calendar access denied. Please enable calendar access in Settings.")
+              }
+          }
+      }
+  }
+        
+        
 
     struct TripPlannerDetailsView_Previews: PreviewProvider {
         static var previews: some View {
