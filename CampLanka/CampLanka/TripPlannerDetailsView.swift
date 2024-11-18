@@ -2,9 +2,12 @@ import SwiftUI
 import EventKit
 import FirebaseFirestore
 import FirebaseAuth
+import Contacts
+
+
 
 struct TripPlannerDetailsView: View {
-    // Existing state variables...
+    
     @State private var selectedCity: String = ""
     @State private var selectedDates: DateRange?
     @State private var minBudget: String = ""
@@ -15,6 +18,7 @@ struct TripPlannerDetailsView: View {
     @State private var numberOfPeople: Int = 1
     @State private var showingDatePicker = false
     @State private var notes: String = ""
+    @State private var isShowingContactPicker = false
     
     // New state variables for custom items
     @State private var customPackingItems: Set<String> = []
@@ -120,7 +124,7 @@ struct TripPlannerDetailsView: View {
                     }
                 }
     
-    // MARK: - View Components
+    
     
     private var destinationSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -143,14 +147,9 @@ struct TripPlannerDetailsView: View {
             
             Button(action: {}) {
                 HStack {
-                    Image(systemName: "plus.circle.fill")
-                    Text("Add destination")
-                        .foregroundColor(.white)
+                    
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color.blue)
-                .cornerRadius(8)
+                
             }
         }
     }
@@ -218,7 +217,7 @@ struct TripPlannerDetailsView: View {
                       }
                   }
                   
-                  // Display custom packing items
+                  
                   ForEach(Array(customPackingItems), id: \.self) { item in
                       Toggle(isOn: .constant(true)) {
                           Text(item)
@@ -295,7 +294,7 @@ struct TripPlannerDetailsView: View {
                         }
                     }
                     
-                    // Display custom activities
+                
                     ForEach(Array(customActivities), id: \.self) { activity in
                         Toggle(isOn: .constant(true)) {
                             Text(activity)
@@ -316,7 +315,7 @@ struct TripPlannerDetailsView: View {
             }
         }
         
-    // Add Item Sheet View
+    
         private var addItemSheet: some View {
             NavigationView {
                 VStack(spacing: 20) {
@@ -376,7 +375,7 @@ struct TripPlannerDetailsView: View {
                 })
             }
         }
-    // Add Member Sheet View
+    
         private var addMemberSheet: some View {
             NavigationView {
                 VStack(spacing: 20) {
@@ -406,22 +405,54 @@ struct TripPlannerDetailsView: View {
                 })
             }
         }
+   // @State private var isShowingContactPicker = false
+    @State private var fetchedContacts: [CNContact] = []
+
+    private var contactPicker: some View {
+        NavigationView {
+            List {
+                ForEach(fetchedContacts, id: \.identifier) { contact in
+                    Button(action: {
+                        let memberName = "\(contact.givenName) \(contact.familyName)"
+                        members.append(Member(name: memberName, imageUrl: "person.circle.fill"))
+                        isShowingContactPicker = false
+                    }) {
+                        Text("\(contact.givenName) \(contact.familyName)")
+                    }
+                }
+            }
+            .navigationBarTitle("Select a Contact", displayMode: .inline)
+            .navigationBarItems(trailing: Button("Cancel") {
+                isShowingContactPicker = false
+            })
+        }
+    }
+
     private var membersSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Who’s coming along?")
                 .font(.headline)
             
-            ForEach(members) { member in
-                HStack {
-                    Image(systemName: member.imageUrl)
-                    Text(member.name)
+            List {
+                ForEach(members) { member in
+                    HStack {
+                        Image(systemName: member.imageUrl)
+                        Text(member.name)
+                    }
+                }
+                .onDelete { indexSet in
+                    members.remove(atOffsets: indexSet)
                 }
             }
+            .frame(height: 200) // Adjust height as needed
             
-            Button(action: {}) {
+            Button(action: {
+                fetchedContacts = fetchContacts()
+                isShowingContactPicker = true
+            }) {
                 HStack {
                     Image(systemName: "plus.circle.fill")
-                    Text("Add Member")
+                    Text("Add from Contacts")
                 }
                 .foregroundColor(.white)
                 .padding()
@@ -429,7 +460,11 @@ struct TripPlannerDetailsView: View {
                 .cornerRadius(8)
             }
         }
+        .sheet(isPresented: $isShowingContactPicker) {
+            contactPicker
+        }
     }
+
     
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -464,33 +499,62 @@ struct TripPlannerDetailsView: View {
             }
         }
     }
-    
+    func requestContactsAccess(completion: @escaping (Bool) -> Void) {
+        let store = CNContactStore()
+        store.requestAccess(for: .contacts) { granted, error in
+            DispatchQueue.main.async {
+                completion(granted)
+            }
+        }
+    }
+    func fetchContacts() -> [CNContact] {
+        let store = CNContactStore()
+        let keysToFetch = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactImageDataAvailableKey] as [CNKeyDescriptor]
+        
+        let request = CNContactFetchRequest(keysToFetch: keysToFetch)
+        var contacts = [CNContact]()
+        
+        do {
+            try store.enumerateContacts(with: request) { contact, stop in
+                contacts.append(contact)
+            }
+        } catch {
+            print("Failed to fetch contacts: \(error)")
+        }
+        return contacts
+    }
+
     func saveTripDetails() {
-        guard let userID = Auth.auth().currentUser?.uid else { return }
+        
+        guard !selectedCity.isEmpty, let selectedDates = selectedDates else {
+            print("Please fill in all required fields.")
+            return
+        }
+
         
         let tripData: [String: Any] = [
-            "userID": userID,
-            "selectedCity": selectedCity,
-            "startDate": selectedDates?.startDate ?? Date(),
-            "endDate": selectedDates?.endDate ?? Date(),
-            "minBudget": minBudget,
-            "maxBudget": maxBudget,
-            "transportMethods": selectedTransportMethods.map { $0.rawValue },
-            "packingItems": selectedPackingItems.map { $0.rawValue } + Array(customPackingItems),
-            "activities": selectedActivities.map { $0.rawValue } + Array(customActivities),
+            "city": selectedCity,
+            "startDate": selectedDates.startDate,
+            "endDate": selectedDates.endDate,
+            "budget": ["min": minBudget, "max": maxBudget],
+            "transportMethods": Array(selectedTransportMethods.map { $0.rawValue }),
+            "packingItems": Array(selectedPackingItems.map { $0.rawValue }) + Array(customPackingItems),
+            "activities": Array(selectedActivities.map { $0.rawValue }) + Array(customActivities),
             "numberOfPeople": numberOfPeople,
             "notes": notes,
-            "members": members.map { ["name": $0.name, "imageUrl": $0.imageUrl] }
+            "members": members.map { $0.name }
         ]
+
         
         db.collection("trips").addDocument(data: tripData) { error in
             if let error = error {
                 print("Error saving trip details: \(error.localizedDescription)")
             } else {
-                print("Trip details successfully saved!")
+                print("Trip details saved successfully!")
             }
         }
     }
+
 
         private func saveTripToCalendar() {
             guard let selectedDates = selectedDates else { return }
@@ -511,7 +575,7 @@ struct TripPlannerDetailsView: View {
         }
     }
 
-// MARK: - DatePickerView
+
 struct DatePickerView: View {
     @Binding var selectedDates: TripPlannerDetailsView.DateRange?
     @Binding var isPresented: Bool
@@ -568,7 +632,7 @@ struct DatePickerView: View {
     }
 }
 
-    // MARK: - EventKitManager
+    
     class EventKitManager: ObservableObject {
         private let eventStore = EKEventStore()
         @Published var isAuthorized = false
