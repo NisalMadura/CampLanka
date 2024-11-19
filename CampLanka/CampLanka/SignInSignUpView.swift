@@ -12,8 +12,10 @@ import CryptoKit
 import FirebaseAuth
 import FirebaseCore
 import GoogleSignIn
+import LocalAuthentication
 
 struct SignInSignUpView: View {
+    
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage: String = ""
@@ -23,18 +25,26 @@ struct SignInSignUpView: View {
     @State private var navigateToHome: Bool = false
     @AppStorage("log_status") private var logStatus: Bool = false
     @State private var showResetPassword: Bool = false
-
+    @State private var biometryType: LABiometryType = .none
+    @State private var isBiometricAvailable: Bool = false
+    
+    
+    init() {
+        checkBiometricAvailability()
+    }
+    
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                
+            
                 Image("camplogo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
                     .padding(.top, 0)
                 
-                
+            
                 Text("Sign In")
                     .font(.system(size: 28, weight: .bold))
                     .multilineTextAlignment(.center)
@@ -46,68 +56,93 @@ struct SignInSignUpView: View {
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color(.gray))
                     .padding(.horizontal, 32)
-                TextField("Email", text: $email)
-                                   .textInputAutocapitalization(.never)
-                                   .keyboardType(.emailAddress)
-                                   .padding()
-                                   .cornerRadius(10)
-                                   .overlay(
-                                       RoundedRectangle(cornerRadius: 8)
-                                           .stroke(Color(.systemGray3), lineWidth: 2)
-                                   )
-                                   .padding(.horizontal, 20)
-                               
-                              // Spacer().frame(height: 20)
-                               
-                               SecureField("Password", text: $password)
-                                   .padding()
-                                   .cornerRadius(10)
-                                   .overlay(
-                                       RoundedRectangle(cornerRadius: 8)
-                                           .stroke(Color(.systemGray3), lineWidth: 2)
-                                   )
-                                   .padding(.horizontal, 20)
-                               
-                               // Forgot Password
-                               HStack {
-                                   Spacer()
-                                   Button(action: {
-                                       showResetPassword = true
-                                                                   }) {
-                                       Text("Forgot password?")
-                                           .foregroundColor(.blue)
-                                           .font(.footnote)
-                                           .padding(.horizontal, 5)
-                                           .padding(.top, 1)
-                                   }
-                                   .padding(.trailing)
-                                   
-                               }
                 
-                NavigationLink(destination: ForgotPasswordView(), isActive: $showResetPassword) {
-                    EmptyView()
-                }
                 
-                Button(action: {
-                        handleEmailPasswordSignIn()
+                if isBiometricAvailable {
+                    Button(action: {
+                        authenticateWithBiometric()
                     }) {
-                        HStack {
-                          
-                            Text("Sign In")
+                        HStack(spacing: 12) {
+                            Image(systemName: biometryType == .faceID ? "faceid" : "touchid")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(.white)
+                            
+                            Text("Sign in with \(biometryType == .faceID ? "Face ID" : "Touch ID")")
                                 .font(.system(size: 17, weight: .semibold))
+                                .foregroundColor(.white)
                         }
-                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                         .background(Color(red: 0/255, green: 84/255, blue: 64/255))
                         .cornerRadius(25)
                     }
                     .padding(.horizontal, 24)
-                    
-                               
+                }
+                
+            
+                TextField("Email", text: $email)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.emailAddress)
+                    .padding()
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(.systemGray3), lineWidth: 2)
+                    )
+                    .padding(.horizontal, 20)
+                
+                
+                SecureField("Password", text: $password)
+                    .padding()
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(.systemGray3), lineWidth: 2)
+                    )
+                    .padding(.horizontal, 20)
+                
+                
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showResetPassword = true
+                    }) {
+                        Text("Forgot password?")
+                            .foregroundColor(.blue)
+                            .font(.footnote)
+                            .padding(.horizontal, 5)
+                            .padding(.top, 1)
+                    }
+                    .padding(.trailing)
+                }
+                
+                
+                NavigationLink(destination: ForgotPasswordView(), isActive: $showResetPassword) {
+                    EmptyView()
+                }
+                
+                // Sign In Button
+                Button(action: {
+                    handleEmailPasswordSignIn()
+                }) {
+                    HStack {
+                        Text("Sign In")
+                            .font(.system(size: 17, weight: .semibold))
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(Color(red: 0/255, green: 84/255, blue: 64/255))
+                    .cornerRadius(25)
+                }
+                .padding(.horizontal, 24)
+                
                 
                 VStack(spacing: 16) {
-                    // Apple Login Button
+                    // Apple Login
                     SignInWithAppleButton(.signIn) { request in
                         let nonce = randomNonceString()
                         self.nonce = nonce
@@ -124,12 +159,12 @@ struct SignInSignUpView: View {
                     .frame(height: 50)
                     .cornerRadius(25)
                     
-                    // Google Login Button
+                    // Google Login
                     Button(action: {
                         GoogleSignInMehod()
                     }) {
                         HStack {
-                            Image("googleIcon") // Add Google icon to assets
+                            Image("googleIcon")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 20, height: 20)
@@ -145,13 +180,11 @@ struct SignInSignUpView: View {
                                 .stroke(Color(.systemGray4), lineWidth: 1)
                         )
                     }
-                    
-                  
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 1)
                 
-                
+            
                 VStack(alignment: .center, spacing: 4) {
                     Text("By continuing, you agree to our")
                         .foregroundColor(.black)
@@ -171,45 +204,74 @@ struct SignInSignUpView: View {
                     }
                 }
                 .padding(.bottom, 100)
-                
-                // Error Message Alert
-               // .alert(errorMessage, isPresented: $showAlert) { }
-                
-                
-                .overlay {
-                    if isLoading {
-                        LoadingScreen()
-                    }
-                }
-                .navigationDestination(isPresented: $navigateToHome) {
-                    MainView()
-                        .navigationBarBackButtonHidden(true)
-                    
-                }
-                
             }
             .background(Color.white)
+            .alert(errorMessage, isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            }
+            .overlay {
+                if isLoading {
+                    LoadingScreen()
+                }
+            }
+            .navigationDestination(isPresented: $navigateToHome) {
+                MainView()
+                    .navigationBarBackButtonHidden(true)
+            }
         }
         .navigationBarBackButtonHidden(true)
+        .onAppear {
+            checkBiometricAvailability()
+        }
     }
-    private func handlePasswordReset() {
-          guard !email.isEmpty else {
-              showError("Please enter your email")
-              return
-          }
-          
-          isLoading = true
-          Auth.auth().sendPasswordReset(withEmail: email) { error in
-              isLoading = false
-              if let error = error {
-                  showError(error.localizedDescription)
-                  return
-              }
-              
-              showError("Password reset email sent successfully")
-          }
-      }
-    // Email/Password Sign In
+    
+    
+    private func checkBiometricAvailability() {
+        let context = LAContext()
+        var error: NSError?
+        
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            biometryType = context.biometryType
+            isBiometricAvailable = true
+            print("Biometry Type: \(context.biometryType == .faceID ? "Face ID" : "Touch ID")")
+        } else {
+            print("Biometric not available: \(error?.localizedDescription ?? "Unknown error")")
+            isBiometricAvailable = false
+        }
+    }
+    
+    private func authenticateWithBiometric() {
+        let context = LAContext()
+        var error: NSError?
+        
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
+            showError(error?.localizedDescription ?? "Biometric authentication not available")
+            return
+        }
+        
+        isLoading = true
+        
+        context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics,
+                             localizedReason: "Log in to your account") { success, error in
+            DispatchQueue.main.async {
+                isLoading = false
+                
+                if success {
+                    if let savedEmail = UserDefaults.standard.string(forKey: "savedEmail"),
+                       let savedPassword = UserDefaults.standard.string(forKey: "savedPassword") {
+                        self.email = savedEmail
+                        self.password = savedPassword
+                        handleEmailPasswordSignIn()
+                    } else {
+                        showError("No saved credentials. Please sign in with email first.")
+                    }
+                } else if let error = error {
+                    showError(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
     private func handleEmailPasswordSignIn() {
         guard !email.isEmpty, !password.isEmpty else {
             showError("Please fill in all fields")
@@ -223,13 +285,21 @@ struct SignInSignUpView: View {
                 return
             }
             
+            
+            UserDefaults.standard.set(email, forKey: "savedEmail")
+            UserDefaults.standard.set(password, forKey: "savedPassword")
+            
             logStatus = true
             isLoading = false
             navigateToHome = true
         }
+        
     }
-
-    // Google Sign In Methode
+    func showErrorx(_ message: String) {
+        showError("Incorrect Email or Password!")
+        showAlert.toggle()
+        isLoading = false
+    }
     func GoogleSignInMehod() {
         isLoading = true
         
@@ -260,7 +330,7 @@ struct SignInSignUpView: View {
             }
             
             let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                           accessToken: user.accessToken.tokenString)
+                                                         accessToken: user.accessToken.tokenString)
             
             Auth.auth().signIn(with: credential) { result, error in
                 if let error = error {
@@ -274,28 +344,13 @@ struct SignInSignUpView: View {
             }
         }
     }
-
-    @ViewBuilder
-    func LoadingScreen() -> some View {
-        ZStack {
-            Rectangle()
-                .fill(.ultraThinMaterial)
-            
-            ProgressView()
-                .frame(width: 45, height: 45)
-                .background(
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(Color(.systemBackground))
-                )
-        }
-    }
     
     func showError(_ message: String) {
         errorMessage = message
         showAlert.toggle()
         isLoading = false
     }
-
+    
     func loginWithFirebase(_ authorization: ASAuthorization) {
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             isLoading = true
@@ -313,8 +368,8 @@ struct SignInSignUpView: View {
             }
             
             let credential = OAuthProvider.appleCredential(withIDToken: idTokenString,
-                                                           rawNonce: nonce,
-                                                           fullName: appleIDCredential.fullName)
+                                                         rawNonce: nonce,
+                                                         fullName: appleIDCredential.fullName)
             
             Auth.auth().signIn(with: credential) { result, error in
                 if let error = error {
@@ -328,45 +383,60 @@ struct SignInSignUpView: View {
             }
         }
     }
+    
     private func randomNonceString(length: Int = 32) -> String {
-            precondition(length > 0)
-            var randomBytes = [UInt8](repeating: 0, count: length)
-            let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
-            if errorCode != errSecSuccess {
-                fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
-            }
-            
-            let charset: [Character] =
-                Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-            
-            let nonce = randomBytes.map { byte in
-                charset[Int(byte) % charset.count]
-            }
-            
-            return String(nonce)
+        precondition(length > 0)
+        var randomBytes = [UInt8](repeating: 0, count: length)
+        let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
+        if errorCode != errSecSuccess {
+            fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
         }
         
-        private func sha256(_ input: String) -> String {
-            let inputData = Data(input.utf8)
-            let hashedData = SHA256.hash(data: inputData)
-            let hashString = hashedData.compactMap {
-                String(format: "%02x", $0)
-            }.joined()
-            
-            return hashString
+        let charset: [Character] =
+        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        
+        let nonce = randomBytes.map { byte in
+            charset[Int(byte) % charset.count]
         }
+        
+        return String(nonce)
+    }
     
-    
+    private func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        let hashString = hashedData.compactMap {
+            String(format: "%02x", $0)
+        }.joined()
+        
+        return hashString
+    }
 }
 
+
+extension SignInSignUpView {
+    @ViewBuilder
+    func LoadingScreen() -> some View {
+        ZStack {
+            Rectangle()
+                .fill(.ultraThinMaterial)
+            
+            ProgressView()
+                .frame(width: 45, height: 45)
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color(.systemBackground))
+                )
+        }
+    }
+}
 
 
 struct SignInSignUpView_Previews: PreviewProvider {
     static var previews: some View {
-    SignInSignUpView()
+        SignInSignUpView()
     }
 }
-
 
 struct SocialButtonStyle: ButtonStyle {
     var backgroundColor: Color

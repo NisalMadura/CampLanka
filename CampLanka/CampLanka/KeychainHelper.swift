@@ -7,43 +7,65 @@
 
 import Foundation
 import Security
+import LocalAuthentication
 
 final class KeychainHelper {
     static let shared = KeychainHelper()
     private init() {}
     
-    func save(_ data: Data, forKey key: String) {
-        // Create query for keychain
-        let query = [
+    
+    enum BiometricProtectionLevel {
+        case none
+        case biometricAny
+    }
+    
+    func save(_ data: Data, forKey key: String, withBiometricProtection protection: BiometricProtectionLevel = .none) {
+        
+        var query: [CFString: Any] = [
             kSecValueData: data,
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: key,
-        ] as [CFString: Any] as CFDictionary
+        ]
         
-        // Add data to keychain
-        let status = SecItemAdd(query, nil)
         
-        // Update existing data if it already exists
+        if protection == .biometricAny {
+            query[kSecAttrAccessControl] = SecAccessControlCreateWithFlags(
+                nil,
+                kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+                .biometryAny,
+                nil
+            )
+        }
+        
+        
+        let status = SecItemAdd(query as CFDictionary, nil)
+        
+    
         if status == errSecDuplicateItem {
-            let query = [
+            let searchQuery = [
                 kSecClass: kSecClassGenericPassword,
                 kSecAttrAccount: key,
-            ] as [CFString: Any] as CFDictionary
+            ] as [CFString: Any]
             
             let attributesToUpdate = [kSecValueData: data] as CFDictionary
-            SecItemUpdate(query, attributesToUpdate)
+            SecItemUpdate(searchQuery as CFDictionary, attributesToUpdate)
         }
     }
     
-    func read(forKey key: String) -> Data? {
-        let query = [
+    func read(forKey key: String, withBiometricAuth requireBiometric: Bool = false) -> Data? {
+        var query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: key,
             kSecReturnData: true
-        ] as [CFString: Any] as CFDictionary
+        ]
+        
+        if requireBiometric {
+            
+            query[kSecUseOperationPrompt] = "Authenticate to access your account"
+        }
         
         var result: AnyObject?
-        SecItemCopyMatching(query, &result)
+        SecItemCopyMatching(query as CFDictionary, &result)
         
         return result as? Data
     }
@@ -58,14 +80,43 @@ final class KeychainHelper {
     }
     
     // Convenience methods for storing strings
-    func save(_ string: String, forKey key: String) {
+    func save(_ string: String, forKey key: String, withBiometricProtection protection: BiometricProtectionLevel = .none) {
         if let data = string.data(using: .utf8) {
-            save(data, forKey: key)
+            save(data, forKey: key, withBiometricProtection: protection)
         }
     }
     
-    func readString(forKey key: String) -> String? {
-        guard let data = read(forKey: key) else { return nil }
+    func readString(forKey key: String, withBiometricAuth requireBiometric: Bool = false) -> String? {
+        guard let data = read(forKey: key, withBiometricAuth: requireBiometric) else { return nil }
         return String(data: data, encoding: .utf8)
+    }
+    
+    // Check if biometric authentication is available
+    func canUseBiometricAuthentication() -> Bool {
+        let context = LAContext()
+        var error: NSError?
+        
+        return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+    }
+    
+    // Perform biometric authentication
+    func authenticateWithBiometric(reason: String = "Authenticate to sign in", completion: @escaping (Result<Void, Error>) -> Void) {
+        let context = LAContext()
+        var error: NSError?
+        
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
+            completion(.failure(error ?? NSError(domain: "BiometricAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Biometric authentication not available"])))
+            return
+        }
+        
+        context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, error in
+            DispatchQueue.main.async {
+                if success {
+                    completion(.success(()))
+                } else {
+                    completion(.failure(error ?? NSError(domain: "BiometricAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Authentication failed"])))
+                }
+            }
+        }
     }
 }

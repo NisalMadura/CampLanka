@@ -649,6 +649,7 @@
 				INFOPLIST_FILE = CampLanka/Info.plist;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "We need access to your calendar to add trip events";
 				INFOPLIST_KEY_NSContactsUsageDescription = "This app uses your contacts to add and manage group members.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID to securely sign you in to your account.";
 				INFOPLIST_KEY_NSRemindersUsageDescription = "We need access to your reminders to add trip reminders";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -683,6 +684,7 @@
 				INFOPLIST_FILE = CampLanka/Info.plist;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "We need access to your calendar to add trip events";
 				INFOPLIST_KEY_NSContactsUsageDescription = "This app uses your contacts to add and manage group members.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID to securely sign you in to your account.";
 				INFOPLIST_KEY_NSRemindersUsageDescription = "We need access to your reminders to add trip reminders";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
