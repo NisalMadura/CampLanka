@@ -42,7 +42,7 @@ struct SignInSignUpView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
-                    .padding(.top, 0)
+                    .padding(.top, 20)
                 
             
                 Text("Sign In")

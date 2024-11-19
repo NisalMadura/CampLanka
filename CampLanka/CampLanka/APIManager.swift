@@ -1,6 +1,6 @@
 import Foundation
 
-// API Response Model
+
 struct BookingLocation: Codable {
     let name: String
     let latitude: Double
@@ -11,19 +11,19 @@ struct BookingLocation: Codable {
     let label: String
     let dest_id: String
     
-    // Computing a price range for demo purposes
+    
     var estimatedPrice: Double {
-        // Generate a random price between 100 and 300
+        
         return Double.random(in: 100...300)
     }
     
-    // Convert to standardized Hotel format
+    
     func toHotel() -> Hotel {
         return Hotel(
             name: name,
             latitude: latitude,
             longitude: longitude,
-            starRating: Int.random(in: 3...5), // Demo rating
+            starRating: Int.random(in: 3...5),
             price: estimatedPrice,
             address: "\(city_name), \(region)",
             images: [image_url]
@@ -80,10 +80,10 @@ class APIManager {
             }
             
             do {
-                // First decode as array of BookingLocation
+                
                 let locations = try JSONDecoder().decode([BookingLocation].self, from: data)
                 
-                // Convert BookingLocation array to Hotel array
+                
                 let hotels = locations.map { $0.toHotel() }
                 
                 DispatchQueue.main.async {

@@ -178,6 +178,8 @@ struct TripPlannerDetailsView: View {
     @State private var members: [Member] = [] // Initialize as empty array
        // @State private var isShowingContactPicker = false
         @State private var showingSettingsAlert = false
+    @State private var tripId: String?
+        @State private var isEditMode: Bool = false
     
     // New state variables for custom items
     @State private var customPackingItems: Set<String> = []
@@ -204,6 +206,71 @@ struct TripPlannerDetailsView: View {
     
     private var db = Firestore.firestore()
     
+    private func loadTripData() {
+          guard let userId = Auth.auth().currentUser?.uid else { return }
+          
+          db.collection("plans")
+             
+              .getDocuments { snapshot, error in
+                  if let error = error {
+                      print("Error loading trip data: \(error)")
+                      return
+                  }
+                  
+                  guard let document = snapshot?.documents.first else { return }
+                  let data = document.data()
+                  
+                  tripId = document.documentID
+                  
+                  // Update UI with loaded data
+                  DispatchQueue.main.async {
+                      selectedCity = data["city"] as? String ?? ""
+                      
+                      if let startDate = (data["startDate"] as? Timestamp)?.dateValue(),
+                         let endDate = (data["endDate"] as? Timestamp)?.dateValue() {
+                          selectedDates = DateRange(startDate: startDate, endDate: endDate)
+                      }
+                      
+                      if let budget = data["budget"] as? [String: String] {
+                          minBudget = budget["min"] ?? ""
+                          maxBudget = budget["max"] ?? ""
+                      }
+                      
+                      if let transportArray = data["transportMethods"] as? [String] {
+                          selectedTransportMethods = Set(transportArray.compactMap { TransportMethod(rawValue: $0) })
+                      }
+                      
+                      if let packingArray = data["packingItems"] as? [String] {
+                          let predefinedItems = Set(packingArray.compactMap { PackingItem(rawValue: $0) })
+                          let customItems = Set(packingArray.filter { PackingItem(rawValue: $0) == nil })
+                          
+                          selectedPackingItems = predefinedItems
+                          customPackingItems = customItems
+                      }
+                      
+                      if let activitiesArray = data["activities"] as? [String] {
+                          let predefinedActivities = Set(activitiesArray.compactMap { Activity(rawValue: $0) })
+                          let customActivitiesList = Set(activitiesArray.filter { Activity(rawValue: $0) == nil })
+                          
+                          selectedActivities = predefinedActivities
+                          customActivities = customActivitiesList
+                      }
+                      
+                      numberOfPeople = data["numberOfPeople"] as? Int ?? 1
+                      notes = data["notes"] as? String ?? ""
+                      
+                      if let membersData = data["members"] as? [[String: Any]] {
+                          members = membersData.map { memberData in
+                              Member(
+                                  name: memberData["name"] as? String ?? "",
+                                  phoneNumber: memberData["phoneNumber"] as? String,
+                                  email: memberData["email"] as? String
+                              )
+                          }
+                      }
+                  }
+              }
+      }
     enum TransportMethod: String, CaseIterable {
         case bus = "Bus"
         case train = "Train"
@@ -691,19 +758,18 @@ struct TripPlannerDetailsView: View {
     }
 
     func saveTripDetails() {
-        
-        guard let currentUser = Auth.auth().currentUser else {
-                    showAlert(title: "Error", message: "Please sign in to save trip details")
-                    return
-                }
+            guard let userId = Auth.auth().currentUser?.uid else {
+                showAlert(title: "Error", message: "Please sign in to save trip details")
+                return
+            }
             
-        guard !selectedCity.isEmpty, let selectedDates = selectedDates else {
-                    showAlert(title: "Error", message: "Please fill in all required fields.")
-                    return
-                }
-
-            let tripData: [String: Any] = [
-                "userId": currentUser.uid,  // Add user ID to the trip data
+            guard !selectedCity.isEmpty, let selectedDates = selectedDates else {
+                showAlert(title: "Error", message: "Please fill in all required fields.")
+                return
+            }
+            
+            var tripData: [String: Any] = [
+                "userId": userId,
                 "city": selectedCity,
                 "startDate": selectedDates.startDate,
                 "endDate": selectedDates.endDate,
@@ -721,19 +787,49 @@ struct TripPlannerDetailsView: View {
                     "phoneNumber": $0.phoneNumber ?? "",
                     "email": $0.email ?? ""
                 ]},
-                "createdAt": FieldValue.serverTimestamp()
+                "updatedAt": FieldValue.serverTimestamp()
             ]
-
-        db.collection("trips").addDocument(data: tripData) { error in
+            
+            let plansCollection = db.collection("plans")
+            
+            if let tripId = tripId {
+                // Update existing document
+                plansCollection.document(tripId).updateData(tripData) { error in
+                    if let error = error {
+                        showAlert(title: "Error", message: "Error updating trip details: \(error.localizedDescription)")
+                    } else {
+                        plansCollection.addDocument(data: tripData)
+                        showAlert(title: "Success", message: "Trip plan updated successfully!")
+                        self.isEditMode=true
+                    }
+                }
+            } else {
+                // Create new document
+                tripData["createdAt"] = FieldValue.serverTimestamp()
+                plansCollection.addDocument(data: tripData) { error in
                     if let error = error {
                         showAlert(title: "Error", message: "Error saving trip details: \(error.localizedDescription)")
                     } else {
                         showAlert(title: "Success", message: "Trip plan created successfully!")
-                        
-                        clearFormFields()
+                        self.isEditMode=true
                     }
                 }
             }
+        }
+    private func setupAuthStateObserver() {
+        Auth.auth().addStateDidChangeListener { [self] auth, user in
+            if user != nil {
+                self.loadTripData()
+            } else {
+                // Only clear if not in edit mode
+                if self.isEditMode == false {
+                    self.clearFormFields()
+                    self.tripId = nil
+                }
+            }
+        }
+    }
+    
 
     private func saveTripToCaloendar() {
           guard let selectedDates = selectedDates else {
@@ -795,6 +891,7 @@ struct TripPlannerDetailsView: View {
           members = []
           customPackingItems = []
           customActivities = []
+          tripId=nil
       }
   }
 

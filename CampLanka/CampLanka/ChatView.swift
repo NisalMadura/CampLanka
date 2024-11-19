@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Models
+
 struct Message: Identifiable {
     let id = UUID()
     let content: String
@@ -54,10 +54,10 @@ struct ChatView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Navigation Bar
+        
             ChatNavigationBar(groupName: groupName, participants: participants)
             
-            // Messages List
+            
             ScrollView {
                 LazyVStack(spacing: 12) {
                     ForEach(viewModel.messages) { message in
@@ -67,7 +67,7 @@ struct ChatView: View {
                 .padding()
             }
             
-            // Message Input
+            
             MessageInputBar(
                 message: $viewModel.currentMessage,
                 onSend: {
@@ -83,7 +83,7 @@ struct ChatView: View {
         .sheet(isPresented: $showingImagePicker) {
             ImagePickerView(isShown: $showingImagePicker)
         }
-        .navigationBarBackButtonHidden(true)
+       // .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -229,7 +229,7 @@ struct ImagePickerView: UIViewControllerRepresentable {
     }
 }
 
-// MARK: - Preview
+
 struct ChatView_Previews: PreviewProvider {
     static var previews: some View {
         ChatView(

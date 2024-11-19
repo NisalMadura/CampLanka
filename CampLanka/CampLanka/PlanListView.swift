@@ -7,54 +7,167 @@
 
 
 
-struct Plan: Codable, Identifiable {
-    var id: String = UUID().uuidString
+import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
+
+
+struct Plan: Identifiable {
+    var id: String
     var name: String
     var imageName: String
     var dateCreated: Date
+    var userId: String
+    
+    init(id: String = UUID().uuidString,
+         name: String,
+         imageName: String = "default_image",
+         dateCreated: Date = Date(),
+         userId: String = Auth.auth().currentUser?.uid ?? "") {
+        self.id = id
+        self.name = name
+        self.imageName = imageName
+        self.dateCreated = dateCreated
+        self.userId = userId
+    }
+    
+    
+    static func fromFirestore(_ document: QueryDocumentSnapshot) -> Plan? {
+        let data = document.data()
+        
+        guard let name = data["name"] as? String else { return nil }
+        
+        let id = document.documentID
+        let imageName = data["imageName"] as? String ?? "default_image"
+        let timestamp = (data["dateCreated"] as? Timestamp)?.dateValue() ?? Date()
+        let userId = data["userId"] as? String ?? ""
+        
+        return Plan(id: id,
+                   name: name,
+                   imageName: imageName,
+                   dateCreated: timestamp,
+                   userId: userId)
+    }
+    
+    // Convert Plan to Firestore data
+    var firestoreData: [String: Any] {
+        return [
+            "name": name,
+            "imageName": imageName,
+            "dateCreated": Timestamp(date: dateCreated),
+            "userId": userId
+        ]
+    }
 }
-
 
 class PlanListViewModel: ObservableObject {
     @Published var plans: [Plan] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    
+    private var db = Firestore.firestore()
+    private var listenerRegistration: ListenerRegistration?
     
     init() {
         loadPlans()
     }
     
+    deinit {
+        listenerRegistration?.remove()
+    }
+    
     func loadPlans() {
-        if let data = UserDefaults.standard.data(forKey: "savedPlans"),
-           let decoded = try? JSONDecoder().decode([Plan].self, from: data) {
-            self.plans = decoded
+        guard let userId = Auth.auth().currentUser?.uid else {
+            errorMessage = "No user logged in"
+            return
         }
+        
+        isLoading = true
+        
+        listenerRegistration?.remove()
+        listenerRegistration = db.collection("plans")
+            .whereField("userId", isEqualTo: userId)
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let self = self else { return }
+                self.isLoading = false
+                
+                if let error = error {
+                    self.errorMessage = error.localizedDescription
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else {
+                    self.plans = []
+                    return
+                }
+                
+                self.plans = documents.compactMap { Plan.fromFirestore($0) }
+            }
     }
     
-    func savePlan(_ plan: Plan) {
-        plans.append(plan)
-        savePlans()
-    }
-    
-    func deletePlan(at indexSet: IndexSet) {
-        plans.remove(atOffsets: indexSet)
-        savePlans()
+    func savePlan(_ name: String) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            errorMessage = "No user logged in"
+            return
+        }
+        
+        isLoading = true
+        
+        let plan = Plan(name: name, userId: userId)
+        
+        db.collection("plans").document(plan.id).setData(plan.firestoreData) { [weak self] error in
+            guard let self = self else { return }
+            self.isLoading = false
+            
+            if let error = error {
+                self.errorMessage = error.localizedDescription
+            }
+        }
     }
     
     func deletePlan(plan: Plan) {
-        if let index = plans.firstIndex(where: { $0.id == plan.id }) {
-            plans.remove(at: index)
-            savePlans()
-        }
-    }
-    
-    private func savePlans() {
-        if let encoded = try? JSONEncoder().encode(plans) {
-            UserDefaults.standard.set(encoded, forKey: "savedPlans")
+        isLoading = true
+        
+        db.collection("plans").document(plan.id).delete { [weak self] error in
+            guard let self = self else { return }
+            self.isLoading = false
+            
+            if let error = error {
+                self.errorMessage = error.localizedDescription
+            }
         }
     }
 }
 
-
-import SwiftUI
+struct CreatePlanView: View {
+    @Environment(\.dismiss) var dismiss
+    @ObservedObject var viewModel: PlanListViewModel
+    @State private var planName: String = ""
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                TextField("Plan Name", text: $planName)
+            }
+            .navigationTitle("Create New Plan")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        viewModel.savePlan(planName)
+                        dismiss()
+                    }
+                    .disabled(planName.isEmpty)
+                }
+            }
+        }
+    }
+}
 
 struct SaveToPlanView: View {
     @StateObject private var viewModel = PlanListViewModel()
@@ -64,13 +177,17 @@ struct SaveToPlanView: View {
     var body: some View {
         NavigationView {
             VStack {
-                ScrollView {
-                    VStack(spacing: 16) {
-                        ForEach(viewModel.plans) { plan in
-                            PlanRowView(plan: plan, viewModel: viewModel)
+                if viewModel.isLoading {
+                    ProgressView()
+                } else {
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            ForEach(viewModel.plans) { plan in
+                                PlanRowView(plan: plan, viewModel: viewModel)
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
                 }
                 
                 VStack(spacing: 12) {
@@ -101,15 +218,25 @@ struct SaveToPlanView: View {
                 }
                 .padding()
             }
-            //.navigationTitle("Save To My Plan")
             .navigationBarTitleDisplayMode(.inline)
+            .alert("Error", isPresented: Binding(
+                get: { viewModel.errorMessage != nil },
+                set: { if !$0 { viewModel.errorMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {
+                    viewModel.errorMessage = nil
+                }
+            } message: {
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                }
+            }
         }
         .sheet(isPresented: $showingCreatePlan) {
             CreatePlanView(viewModel: viewModel)
         }
         .navigationBarBackButtonHidden(true)
     }
-    
 }
 
 struct PlanRowView: View {
@@ -118,13 +245,12 @@ struct PlanRowView: View {
     @State private var showingPreferences = false
     @State private var showDeleteAlert = false
     @State private var showGroupChat = false
-
+    
     var body: some View {
         Button(action: {
             showingPreferences = true
         }) {
             HStack(spacing: 12) {
-                
                 Image(plan.imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -182,273 +308,6 @@ struct PlanRowView: View {
         } message: {
             Text("Are you sure you want to delete this plan?")
         }
-    }
-}
-
-struct CreatePlanView: View {
-    @Environment(\.dismiss) var dismiss
-    @ObservedObject var viewModel: PlanListViewModel
-    @State private var planName: String = ""
-    
-    var body: some View {
-        NavigationView {
-            Form {
-                TextField("Plan Name", text: $planName)
-            }
-            .navigationTitle("Create New Plan")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        let newPlan = Plan(name: planName, imageName: "default_image", dateCreated: Date())
-                        viewModel.savePlan(newPlan)
-                        dismiss()
-                    }
-                    .disabled(planName.isEmpty)
-                }
-            }
-        }
-    }
-}
-
-struct CampingPreferenceViews: View {
-    @Environment(\.dismiss) var dismiss
-    var planName: String
-    
-    var body: some View {
-        NavigationView {
-            List {
-                Section(header: Text("Basic Information")) {
-                    NavigationLink(destination: DurationView()) {
-                        HStack {
-                            Image(systemName: "clock")
-                                .foregroundColor(.green)
-                            Text("Camping Duration")
-                        }
-                    }
-                    
-                    NavigationLink(destination: PeopleCountView()) {
-                        HStack {
-                            Image(systemName: "person.2")
-                                .foregroundColor(.green)
-                            Text("Number of People")
-                        }
-                    }
-                    
-                    NavigationLink(destination: LocationPreferenceView()) {
-                        HStack {
-                            Image(systemName: "map")
-                                .foregroundColor(.green)
-                            Text("Preferred Location")
-                        }
-                    }
-                }
-                
-                Section(header: Text("Amenities")) {
-                    NavigationLink(destination: FacilitiesView()) {
-                        HStack {
-                            Image(systemName: "house")
-                                .foregroundColor(.green)
-                            Text("Required Facilities")
-                        }
-                    }
-                    
-                    NavigationLink(destination: EquipmentView()) {
-                        HStack {
-                            Image(systemName: "tent")
-                                .foregroundColor(.green)
-                            Text("Equipment Needed")
-                        }
-                    }
-                }
-                
-                Section(header: Text("Activities")) {
-                    NavigationLink(destination: ActivitiesView()) {
-                        HStack {
-                            Image(systemName: "figure.hiking")
-                                .foregroundColor(.green)
-                            Text("Planned Activities")
-                        }
-                    }
-                    
-                    NavigationLink(destination: RequirementsView()) {
-                        HStack {
-                            Image(systemName: "list.clipboard")
-                                .foregroundColor(.green)
-                            Text("Special Requirements")
-                        }
-                    }
-                }
-            }
-            .navigationTitle(planName)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Detailed Views
-struct DurationView: View {
-    @State private var selectedDays = 1
-    @State private var selectedNights = 1
-    
-    var body: some View {
-        Form {
-            Section(header: Text("Trip Duration")) {
-                Stepper("Days: \(selectedDays)", value: $selectedDays, in: 1...30)
-                Stepper("Nights: \(selectedNights)", value: $selectedNights, in: 1...30)
-            }
-        }
-        .navigationTitle("Duration Settings")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct PeopleCountView: View {
-    @State private var adultCount = 1
-    @State private var childCount = 0
-    
-    var body: some View {
-        Form {
-            Section(header: Text("Group Size")) {
-                Stepper("Adults (18+): \(adultCount)", value: $adultCount, in: 1...20)
-                Stepper("Children: \(childCount)", value: $childCount, in: 0...10)
-            }
-            
-            Section(footer: Text("Total group size: \(adultCount + childCount)")) {
-              
-            }
-        }
-        .navigationTitle("People Count")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct LocationPreferenceView: View {
-    @State private var selectedRegion = "Central Province"
-    let regions = ["Central Province", "Eastern Province", "Northern Province", "Southern Province", "Western Province", "North Western Province", "North Central Province", "Uva Province", "Sabaragamuwa Province"]
-    
-    var body: some View {
-        Form {
-            Section(header: Text("Preferred Region")) {
-                Picker("Region", selection: $selectedRegion) {
-                    ForEach(regions, id: \.self) { region in
-                        Text(region).tag(region)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle())
-            }
-        }
-        .navigationTitle("Location Preference")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct FacilitiesView: View {
-    @State private var needsWater = true
-    @State private var needsElectricity = true
-    @State private var needsBathroom = true
-    @State private var needsKitchen = false
-    
-    var body: some View {
-        Form {
-            Section(header: Text("Basic Facilities")) {
-                Toggle("Water Supply", isOn: $needsWater)
-                Toggle("Electricity", isOn: $needsElectricity)
-                Toggle("Bathroom", isOn: $needsBathroom)
-                Toggle("Kitchen Access", isOn: $needsKitchen)
-            }
-        }
-        .navigationTitle("Required Facilities")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct EquipmentView: View {
-    @State private var needsTent = true
-    @State private var needsSleepingBag = true
-    @State private var needsCookingGear = false
-    @State private var needsFirstAid = true
-    
-    var body: some View {
-        Form {
-            Section(header: Text("Camping Equipment")) {
-                Toggle("Tent", isOn: $needsTent)
-                Toggle("Sleeping Bag", isOn: $needsSleepingBag)
-                Toggle("Cooking Gear", isOn: $needsCookingGear)
-                Toggle("First Aid Kit", isOn: $needsFirstAid)
-            }
-        }
-        .navigationTitle("Equipment Needed")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct ActivitiesView: View {
-    @State private var selectedActivities = Set<String>()
-    let activities = ["Hiking", "Swimming", "Fishing", "Bird Watching", "Photography", "Campfire", "Star Gazing"]
-    
-    var body: some View {
-        Form {
-            Section(header: Text("Select Activities")) {
-                ForEach(activities, id: \.self) { activity in
-                    Toggle(activity, isOn: Binding(
-                        get: { selectedActivities.contains(activity) },
-                        set: { isSelected in
-                            if isSelected {
-                                selectedActivities.insert(activity)
-                            } else {
-                                selectedActivities.remove(activity)
-                            }
-                        }
-                    ))
-                }
-            }
-        }
-        .navigationTitle("Planned Activities")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-struct RequirementsView: View {
-    @State private var specialDiet = false
-    @State private var accessibilityNeeds = false
-    @State private var medicalConditions = false
-    @State private var notes = ""
-    
-    var body: some View {
-        Form {
-            Section(header: Text("Special Requirements")) {
-                Toggle("Special Diet", isOn: $specialDiet)
-                Toggle("Accessibility Needs", isOn: $accessibilityNeeds)
-                Toggle("Medical Conditions", isOn: $medicalConditions)
-            }
-            
-            Section(header: Text("Additional Notes")) {
-                TextEditor(text: $notes)
-                    .frame(height: 100)
-            }
-        }
-        .navigationTitle("Special Requirements")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
