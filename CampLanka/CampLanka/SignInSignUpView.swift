@@ -27,20 +27,20 @@ struct SignInSignUpView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                // Logo
+                
                 Image("camplogo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
                     .padding(.top, 0)
                 
-                // Title
+                
                 Text("Sign In")
                     .font(.system(size: 28, weight: .bold))
                     .multilineTextAlignment(.center)
                     .padding(.top, 20)
                 
-                // Description
+            
                 Text("Join CampLanka to discover campsites!")
                     .font(.system(size: 16))
                     .multilineTextAlignment(.center)
@@ -83,7 +83,7 @@ struct SignInSignUpView: View {
                                    .padding(.trailing)
                                    
                                }
-                // Navigation Link to ForgotPasswordView
+                
                 NavigationLink(destination: ForgotPasswordView(), isActive: $showResetPassword) {
                     EmptyView()
                 }
@@ -99,13 +99,13 @@ struct SignInSignUpView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
-                        .background(Color(red: 0/255, green: 84/255, blue: 64/255)) // Dark Green
+                        .background(Color(red: 0/255, green: 84/255, blue: 64/255))
                         .cornerRadius(25)
                     }
                     .padding(.horizontal, 24)
                     
                                
-                // Social Login Buttons
+                
                 VStack(spacing: 16) {
                     // Apple Login Button
                     SignInWithAppleButton(.signIn) { request in
@@ -151,7 +151,7 @@ struct SignInSignUpView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 1)
                 
-                // Terms and Privacy
+                
                 VStack(alignment: .center, spacing: 4) {
                     Text("By continuing, you agree to our")
                         .foregroundColor(.black)
@@ -175,7 +175,7 @@ struct SignInSignUpView: View {
                 // Error Message Alert
                // .alert(errorMessage, isPresented: $showAlert) { }
                 
-                // Loading Overlay
+                
                 .overlay {
                     if isLoading {
                         LoadingScreen()
@@ -360,14 +360,14 @@ struct SignInSignUpView: View {
 }
 
 
-// Preview
+
 struct SignInSignUpView_Previews: PreviewProvider {
     static var previews: some View {
     SignInSignUpView()
     }
 }
 
-// Custom button style
+
 struct SocialButtonStyle: ButtonStyle {
     var backgroundColor: Color
     var foregroundColor: Color

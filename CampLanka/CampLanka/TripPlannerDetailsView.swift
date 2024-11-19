@@ -279,6 +279,7 @@ struct TripPlannerDetailsView: View {
                                 isPermissionGranted = granted
                             }
                         }
+                        .navigationBarBackButtonHidden(true)
                     }
                 }
     

@@ -215,8 +215,10 @@ struct CampgroundSection: View {
                 
                 Spacer()
                 
-                Button("View all", action: viewAll)
-                    .foregroundColor(.green)
+                NavigationLink(destination: CampgroundList(title: title, campgrounds: campgrounds)) {
+                    Text("View all")
+                        .foregroundColor(.green)
+                }
             }
             
             ScrollView(.horizontal, showsIndicators: false) {
@@ -282,8 +284,10 @@ struct BookableCampgroundSection: View {
                 
                 Spacer()
                 
-                Button("View all", action: viewAll)
-                    .foregroundColor(.green)
+                NavigationLink(destination: CampgroundList(title: title, campgrounds: campgrounds)) {
+                    Text("View all")
+                        .foregroundColor(.green)
+                }
             }
             
             ScrollView(.horizontal, showsIndicators: false) {
@@ -298,6 +302,7 @@ struct BookableCampgroundSection: View {
         }
     }
 }
+
 
 struct BookableCampgroundCard: View {
     let campground: CampgroundBox
@@ -368,8 +373,10 @@ struct PopularCampgroundSection: View {
                 
                 Spacer()
                 
-                Button("View all", action: viewAll)
-                    .foregroundColor(.green)
+                NavigationLink(destination: CampgroundList(title: subtitle, campgrounds: campgrounds)) {
+                    Text("View all")
+                        .foregroundColor(.green)
+                }
             }
             
             VStack(spacing: 15) {

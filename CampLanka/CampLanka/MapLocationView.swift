@@ -142,7 +142,9 @@ struct LocationSearchView: View {
             }
             .navigationBarHidden(true)
         }
+        .navigationBarBackButtonHidden(true)
     }
+    
 }
 
 struct SearchBart: View {

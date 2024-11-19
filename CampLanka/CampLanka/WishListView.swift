@@ -3,7 +3,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseAuth
 
-// MARK: - WishList ViewModel
+
 class WishListViewModel: ObservableObject {
     @Published var savedCampgrounds: [Campground] = []
     @Published var isLoading = false
@@ -81,7 +81,7 @@ struct SavedCampgroundCell: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Image and Heart Button
+            
             ZStack(alignment: .topTrailing) {
                 Image(campground.imageUrl)
                     .resizable()
@@ -135,10 +135,11 @@ struct SavedCampgroundCell: View {
         } message: {
             Text("Are you sure you want to remove this campground from your wishlist?")
         }
+        
     }
 }
 
-// MARK: - WishListView
+
 struct WishListView: View {
     @StateObject private var viewModel = WishListViewModel()
     @State private var showLoginView = false
@@ -147,7 +148,7 @@ struct WishListView: View {
         NavigationView {
             Group {
                 if Auth.auth().currentUser == nil {
-                    // Not logged in state
+                
                     VStack(spacing: 20) {
                         Image(systemName: "heart.slash")
                             .font(.system(size: 50))
@@ -176,7 +177,7 @@ struct WishListView: View {
                         }
                     }
                 } else {
-                    // Logged in state
+                    
                     ZStack {
                         if viewModel.isLoading {
                             ProgressView()
@@ -222,10 +223,12 @@ struct WishListView: View {
                 Text(viewModel.errorMessage)
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
+    
 }
 
-// MARK: - Preview Provider
+
 struct WishListView_Previews: PreviewProvider {
     static var previews: some View {
         WishListView()

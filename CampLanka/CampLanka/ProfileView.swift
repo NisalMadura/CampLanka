@@ -120,6 +120,7 @@ struct ProfileView: View {
         .sheet(isPresented: $showingHelpCenter) {
             HelpCenterView()
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     private func fetchUserData() {

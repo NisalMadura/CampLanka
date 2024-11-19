@@ -107,7 +107,9 @@ struct SaveToPlanView: View {
         .sheet(isPresented: $showingCreatePlan) {
             CreatePlanView(viewModel: viewModel)
         }
+        .navigationBarBackButtonHidden(true)
     }
+    
 }
 
 struct PlanRowView: View {
