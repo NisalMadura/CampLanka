@@ -44,6 +44,62 @@ struct CampgroundBase: Identifiable {
                 )
     }
 }
+struct WeatherInfo: Identifiable {
+    let id = UUID()
+    let date: Date
+    let temperature: Double
+    let condition: WeatherCondition
+    let precipitation: Int
+    let windSpeed: Double
+    let humidity: Int
+}
+
+enum WeatherCondition: String {
+    case sunny = "sun.max.fill"
+    case cloudy = "cloud.fill"
+    case rainy = "cloud.rain.fill"
+    case partlyCloudy = "cloud.sun.fill"
+    case thunderstorm = "cloud.bolt.rain.fill"
+}
+
+class WeatherViewModel: ObservableObject {
+    @Published var currentWeather: WeatherInfo?
+    @Published var hourlyForecast: [WeatherInfo] = []
+    @Published var dailyForecast: [WeatherInfo] = []
+    @Published var isLoading = false
+    
+    func loadMockWeather() {
+        
+        isLoading = true
+        
+        
+        currentWeather = WeatherInfo(
+            date: Date(),
+            temperature: 28,
+            condition: .sunny,
+            precipitation: 10,
+            windSpeed: 12,
+            humidity: 65
+        )
+        
+        
+        hourlyForecast = [
+            WeatherInfo(date: Date().addingTimeInterval(3600), temperature: 29, condition: .sunny, precipitation: 10, windSpeed: 13, humidity: 63),
+            WeatherInfo(date: Date().addingTimeInterval(7200), temperature: 30, condition: .partlyCloudy, precipitation: 20, windSpeed: 14, humidity: 60),
+            WeatherInfo(date: Date().addingTimeInterval(10800), temperature: 27, condition: .cloudy, precipitation: 40, windSpeed: 15, humidity: 70),
+            WeatherInfo(date: Date().addingTimeInterval(14400), temperature: 25, condition: .rainy, precipitation: 60, windSpeed: 18, humidity: 75)
+        ]
+        
+        
+        dailyForecast = [
+            WeatherInfo(date: Date().addingTimeInterval(86400), temperature: 27, condition: .partlyCloudy, precipitation: 30, windSpeed: 14, humidity: 68),
+            WeatherInfo(date: Date().addingTimeInterval(172800), temperature: 26, condition: .rainy, precipitation: 70, windSpeed: 16, humidity: 78),
+            WeatherInfo(date: Date().addingTimeInterval(259200), temperature: 28, condition: .sunny, precipitation: 10, windSpeed: 12, humidity: 65)
+        ]
+        
+        isLoading = false
+    }
+}
 
 struct ReservationInfo {
     let isReservationRequired: Bool
@@ -202,7 +258,7 @@ class CampgroundDetailViewModel: ObservableObject {
  @Published var showWishlistView = false
 
  init() {
- // Set up auth state listener
+ 
  Auth.auth().addStateDidChangeListener { [weak self] _, user in
  if let id = self?.campgroundDetail?.base.id {
  self?.checkWishlistStatus(for: id)
@@ -323,25 +379,25 @@ class CampgroundDetailViewModel: ObservableObject {
  }
 }
 
-// MARK: - Main View
+
 struct CampgroundDetailView: View {
- @StateObject private var viewModel = CampgroundDetailViewModel()
- @State private var selectedTab = 0
- let campgroundId: String
+      @StateObject private var viewModel = CampgroundDetailViewModel()
+      @State private var selectedTab = 0
+      let campgroundId: String
 
  var body: some View {
- ScrollView {
- if viewModel.isLoading {
- ProgressView()
- .padding()
- } else if let errorMessage = viewModel.errorMessage {
- Text(errorMessage)
- .foregroundColor(.red)
- .padding()
+    ScrollView {
+      if viewModel.isLoading {
+      ProgressView()
+      .padding()
+ }    else if let errorMessage = viewModel.errorMessage {
+           Text(errorMessage)
+           .foregroundColor(.red)
+            .padding()
  } else if let campground = viewModel.campgroundDetail {
- VStack(alignment: .leading, spacing: 0) {
- // Image section
- AsyncImage(url: URL(string: campground.base.imageUrl)) { image in
+        VStack(alignment: .leading, spacing: 0) {
+ 
+      AsyncImage(url: URL(string: campground.base.imageUrl)) { image in
  image
  .resizable()
  .aspectRatio(contentMode: .fill)
@@ -394,10 +450,10 @@ struct CampgroundDetailView: View {
  }
  .padding()
 
- // Tab bar
+ 
  tabBar(campground: campground)
 
- // Tab content
+ 
  tabContent(campground: campground)
  .padding(.horizontal)
  }
@@ -424,28 +480,34 @@ struct CampgroundDetailView: View {
     
     
     private func tabBar(campground: CampgroundDetail) -> some View {
-        HStack(spacing: 0) {
-            TabButton(title: "Overview", count: nil, isSelected: selectedTab == 0) {
-                selectedTab = 0
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                TabButton(title: "Overview", count: nil, isSelected: selectedTab == 0) {
+                    selectedTab = 0
+                }
+                
+                TabButton(title: "Services", count: nil, isSelected: selectedTab == 1) {
+                    selectedTab = 1
+                }
+                
+                TabButton(title: "Location", count: nil, isSelected: selectedTab == 2) {
+                    selectedTab = 2
+                }
+                
+                TabButton(title: "Reviews", count: nil, isSelected: selectedTab == 3) {
+                    selectedTab = 3
+                }
+                
+                TabButton(title: "Weather", count: nil, isSelected: selectedTab == 4) {
+                    selectedTab = 4
+                }
             }
-            
-            TabButton(title: "Services", count: nil, isSelected: selectedTab == 1) {
-                selectedTab = 1
-            }
-            
-            TabButton(title: "Location", count: nil, isSelected: selectedTab == 2) {
-                selectedTab = 2
-            }
-            
-            TabButton(title: "Reviews", count: nil, isSelected: selectedTab == 3) {
-                selectedTab = 3
-            }
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
     }
     
     private func tabContent(campground: CampgroundDetail) -> some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 29) {
             switch selectedTab {
             case 0:
                 OverviewTab(campground: campground)
@@ -455,6 +517,8 @@ struct CampgroundDetailView: View {
                 LocationTab(campground: campground)
             case 3:
                 ReviewsTab(campground: campground)
+            case 4:
+                WeatherTab(campground: campground)
             default:
                 EmptyView()
             }
@@ -706,7 +770,7 @@ struct ServicesTab: View {
     }
 }
 
-// Service Card View
+
 struct ServicesCardView: View {
     let service: ServiceCard
     
@@ -879,7 +943,7 @@ struct LocationTab: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
                 
-                // Directions Button
+                
                 Button(action: {
                     viewModel.getDirections()
                 }) {
@@ -935,8 +999,8 @@ class ReviewsViewModel: ObservableObject {
     @Published var ratingAnalytics = RatingAnalytics()
     
     func loadReviews(for campgroundId: String) {
-        // Simulate fetching reviews from Firebase
-        // In your actual implementation, fetch from Firestore
+        
+        
         let sampleReviews = [
             Review(rating: 5.0, date: Date(timeIntervalSinceNow: -86400 * 2),
                   comment: "A peaceful and scenic spot! Amazing experience.",
@@ -993,7 +1057,7 @@ struct ReviewsTab: View {
                 .foregroundColor(.blue)
             }
             
-            // Rating Summary
+        
             HStack(alignment: .top, spacing: 32) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(String(format: "%.1f", campground.base.rating))
@@ -1111,6 +1175,164 @@ struct ReviewsiScreen: View {
         }
     }
 }
+struct WeatherTab: View {
+    let campground: CampgroundDetail
+    @StateObject private var viewModel = WeatherViewModel()
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 24) {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .padding()
+                } else {
+                
+                    if let current = viewModel.currentWeather {
+                        currentWeatherView(weather: current)
+                    }
+                    
+                
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Hourly Forecast")
+                            .font(.headline)
+                            .foregroundColor(.green)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ForEach(viewModel.hourlyForecast) { weather in
+                                    hourlyForecastCard(weather: weather)
+                                }
+                            }
+                        }
+                    }
+                    
+                    
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("3-Day Forecast")
+                            .font(.headline)
+                            .foregroundColor(.green)
+                        
+                        VStack(spacing: 12) {
+                            ForEach(viewModel.dailyForecast) { weather in
+                                dailyForecastRow(weather: weather)
+                                if weather.id != viewModel.dailyForecast.last?.id {
+                                    Divider()
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .shadow(radius: 2)
+                    }
+                }
+            }
+            .padding()
+        }
+        .onAppear {
+            viewModel.loadMockWeather()
+        }
+    }
+    
+    private func currentWeatherView(weather: WeatherInfo) -> some View {
+        VStack(spacing: 16) {
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Current Weather")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Text("\(Int(weather.temperature))°C")
+                        .font(.system(size: 48, weight: .bold))
+                }
+                
+                Spacer()
+                
+                Image(systemName: weather.condition.rawValue)
+                    .font(.system(size: 48))
+                    .foregroundColor(.yellow)
+            }
+            
+            HStack(spacing: 24) {
+                WeatherDetailItem(icon: "drop.fill", value: "\(weather.humidity)%", label: "Humidity")
+                WeatherDetailItem(icon: "wind", value: "\(Int(weather.windSpeed)) km/h", label: "Wind")
+                WeatherDetailItem(icon: "umbrella.fill", value: "\(weather.precipitation)%", label: "Rain")
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(radius: 2)
+    }
+    
+    private func hourlyForecastCard(weather: WeatherInfo) -> some View {
+        VStack(spacing: 8) {
+            Text(hourFormatter.string(from: weather.date))
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Image(systemName: weather.condition.rawValue)
+                .font(.title2)
+                .foregroundColor(.yellow)
+            
+            Text("\(Int(weather.temperature))°")
+                .font(.title3)
+                .fontWeight(.semibold)
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(radius: 1)
+    }
+    
+    private func dailyForecastRow(weather: WeatherInfo) -> some View {
+        HStack {
+            Text(dayFormatter.string(from: weather.date))
+                .frame(width: 100, alignment: .leading)
+            
+            Image(systemName: weather.condition.rawValue)
+                .foregroundColor(.yellow)
+            
+            Spacer()
+            
+            Text("\(Int(weather.temperature))°")
+                .font(.title3)
+                .fontWeight(.semibold)
+        }
+    }
+}
+
+struct WeatherDetailItem: View {
+    let icon: String
+    let value: String
+    let label: String
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(.blue)
+            Text(value)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+
+private let hourFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "HH:mm"
+    return formatter
+}()
+
+private let dayFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "EEEE"
+    return formatter
+}()
 
 struct CampgroundDetailView_Previews: PreviewProvider {
     static var previews: some View {
