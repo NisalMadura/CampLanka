@@ -11,29 +11,29 @@ struct CampingPreferenceView: View {
     @State private var selectedOption: CampingOption?
     @Environment(\.dismiss) private var dismiss
     @State private var navigateToBudget = false
-
+    
     enum CampingOption: String, CaseIterable {
         case freeCamping = "Free Camping"
         case paidCamping = "Paid Camping"
         case solo = "Solo Camping"
         case groupCamping = "Group Camping"
     }
-
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
                 Text("How do you like to")
                     .font(.title2)
                     .fontWeight(.semibold)
-
+                
                 Text("camping?")
                     .font(.title2)
                     .fontWeight(.semibold)
-
+                
                 Text("What's your preference?")
                     .font(.subheadline)
                     .foregroundColor(.gray)
-
+                
                 LazyVGrid(columns: [
                     GridItem(.flexible()),
                     GridItem(.flexible())
@@ -47,14 +47,14 @@ struct CampingPreferenceView: View {
                     }
                 }
                 .padding(.horizontal)
-
+                
                 Spacer()
-
+                
                 VStack(spacing: 10) {
                     NavigationLink(destination: BudgetPreferenceView(), isActive: $navigateToBudget) {
                         //EmptyView()
                     }
-
+                    
                     Button(action: {
                         if selectedOption != nil {
                             navigateToBudget = true
@@ -69,7 +69,7 @@ struct CampingPreferenceView: View {
                             .cornerRadius(10)
                     }
                     .disabled(selectedOption == nil)
-
+                    
                     Button("Skip") {
                         navigateToBudget = true
                     }
@@ -88,7 +88,7 @@ struct CampingOptionCard: View {
     let option: CampingPreferenceView.CampingOption
     let isSelected: Bool
     let action: () -> Void
-
+    
     var body: some View {
         Button(action: action) {
             VStack(spacing: 18) {
@@ -96,7 +96,7 @@ struct CampingOptionCard: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 80, height: 70)
-
+                
                 Text(option.rawValue)
                     .font(.subheadline)
                     .foregroundColor(.black)
@@ -115,7 +115,7 @@ struct CampingOptionCard: View {
             )
         }
     }
-
+    
     private func iconName(for option: CampingPreferenceView.CampingOption) -> String {
         switch option {
         case .freeCamping:

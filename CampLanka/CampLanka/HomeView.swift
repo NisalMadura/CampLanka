@@ -55,7 +55,7 @@ class HomeViewModel: ObservableObject {
     func fetchCampgrounds() {
         isLoading = true
         
-        // Fetch Public Campgrounds
+        
         db.collection("campgrounds")
             .whereField("type", isEqualTo: "public")
             .getDocuments { [weak self] snapshot, error in
@@ -69,7 +69,7 @@ class HomeViewModel: ObservableObject {
                 } ?? []
             }
         
-        // Fetch Bookable Campgrounds
+        
         APIManager.shared.fetchGlampingSriLanka { [weak self] hotels, error in
             self?.isLoading = false
             
@@ -108,7 +108,7 @@ class HomeViewModel: ObservableObject {
             }
         }
         
-        // Fetch Popular Campgrounds
+        
         db.collection("campgrounds")
             .whereField("type", isEqualTo: "popular")
             .getDocuments { [weak self] snapshot, error in
@@ -184,7 +184,7 @@ struct HomeViewscn: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
-                        Button(action: {}) {
+                        NavigationLink(destination: NotificationHistoryView()){
                             Image(systemName: "bell")
                                 .foregroundColor(.black)
                         }
@@ -337,7 +337,7 @@ struct BookableCampgroundCard: View {
                 Spacer()
                 
                 Button("Book") {
-                   
+                    
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 8)
@@ -412,7 +412,7 @@ struct PopularCampgroundCard: View {
             Text(campground.location)
                 .foregroundColor(.gray)
             
-   
+            
         }
         .frame(width: 300)
         .padding()
@@ -469,5 +469,5 @@ struct HomeView_Previews: PreviewProvider {
         HomeViewscn()
     }
 }
-    
+
 

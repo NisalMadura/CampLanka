@@ -30,7 +30,7 @@ struct SplashScreenView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
-            
+                
                 Image("mainlogo")
                     .resizable()
                     .scaledToFit()

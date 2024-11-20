@@ -30,7 +30,7 @@ struct EmergencyCallingView: View {
     
     var body: some View {
         ZStack {
-            // Background gradient
+            
             RadialGradient(
                 gradient: Gradient(colors: [
                     Color.orange.opacity(0.2),
@@ -44,7 +44,7 @@ struct EmergencyCallingView: View {
             .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Custom Navigation Bar
+                
                 HStack {
                     Button(action: {
                         dismiss()
@@ -61,7 +61,7 @@ struct EmergencyCallingView: View {
                 .padding()
                 .background(Color.white.opacity(0.5))
                 
-                // Header Text
+                
                 Text("Calling emergency...")
                     .font(.title2)
                     .fontWeight(.semibold)
@@ -76,9 +76,9 @@ struct EmergencyCallingView: View {
                 
                 Spacer()
                 
-                // Main calling animation
+                
                 ZStack {
-                    // Ripple waves
+                    
                     ForEach(0..<3) { index in
                         Circle()
                             .stroke(Color.orange.opacity(0.3), lineWidth: 1)
@@ -93,7 +93,7 @@ struct EmergencyCallingView: View {
                             )
                     }
                     
-                    // Center circle with counter
+                    
                     Circle()
                         .fill(Color.orange)
                         .frame(width: 120, height: 120)
@@ -104,7 +104,7 @@ struct EmergencyCallingView: View {
                         )
                         .shadow(color: Color.black.opacity(0.1), radius: 10)
                     
-                    // Contact avatars
+                    
                     ForEach(contacts) { contact in
                         ContactAvatar(contact: contact)
                             .offset(
@@ -117,7 +117,7 @@ struct EmergencyCallingView: View {
                 
                 Spacer()
                 
-                // Bottom indicator
+                
                 RoundedRectangle(cornerRadius: 2.5)
                     .fill(Color.gray)
                     .frame(width: 40, height: 5)
@@ -155,7 +155,7 @@ struct ContactAvatar: View {
     }
 }
 
-// Preview
+
 struct EmergencyCallingView_Previews: PreviewProvider {
     static var previews: some View {
         EmergencyCallingView()

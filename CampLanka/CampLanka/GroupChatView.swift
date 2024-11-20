@@ -10,7 +10,7 @@
 import SwiftUI
 import PhotosUI
 
-// MARK: - Models
+
 struct GroupMember: Identifiable, Hashable, Equatable {
     let id = UUID()
     let name: String
@@ -18,12 +18,12 @@ struct GroupMember: Identifiable, Hashable, Equatable {
     let profileImage: UIImage?
     var isAdmin: Bool
     
-    // Implement Hashable
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
     
-    // Implement Equatable
+    
     static func == (lhs: GroupMember, rhs: GroupMember) -> Bool {
         lhs.id == rhs.id
     }
@@ -46,7 +46,7 @@ struct GroupSettings: Equatable {
     }
 }
 
-// MARK: - View Model
+
 class GroupSettingsViewModel: ObservableObject {
     @Published var settings: GroupSettings
     @Published var showingImagePicker = false
@@ -55,7 +55,7 @@ class GroupSettingsViewModel: ObservableObject {
     @Published var isEditingName = false
     
     init() {
-        // Sample data
+        
         self.settings = GroupSettings(
             name: "Office Group",
             photo: nil,
@@ -85,11 +85,11 @@ class GroupSettingsViewModel: ObservableObject {
     }
     
     func leaveGroup() {
-        // Handle leaving group
+        
     }
 }
 
-// MARK: - Views
+
 struct GroupSettingsView: View {
     @StateObject private var viewModel = GroupSettingsViewModel()
     @Environment(\.dismiss) private var dismiss
@@ -97,19 +97,19 @@ struct GroupSettingsView: View {
     var body: some View {
         NavigationView {
             List {
-                // Group Info Section
+                
                 Section {
                     GroupInfoHeader(viewModel: viewModel)
                 }
                 
-                // Media, Links & Docs Section
+                
                 Section {
                     NavigationLink("Media, Links & Docs") {
                         Text("Media Content View")
                     }
                 }
                 
-                // Members Section
+                
                 Section {
                     ForEach(viewModel.settings.members) { member in
                         MemberRow(member: member, viewModel: viewModel)
@@ -123,14 +123,14 @@ struct GroupSettingsView: View {
                     Text("MEMBERS (\(viewModel.settings.members.count))")
                 }
                 
-                // Settings Section
+                
                 Section {
                     Toggle("Mute Notifications", isOn: $viewModel.settings.muteNotifications)
                     Toggle("Pin Conversation", isOn: $viewModel.settings.pinConversation)
                     Toggle("Hide Alerts", isOn: $viewModel.settings.hideAlerts)
                 }
                 
-                // Leave Group Section
+                
                 Section {
                     Button(role: .destructive, action: viewModel.leaveGroup) {
                         Text("Leave Group")
@@ -157,7 +157,7 @@ struct AddMembersView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedContacts = Set<GroupMember>()
     
-    // Sample contacts data
+    
     let contacts = [
         GroupMember(name: "Person 1", phoneNumber: "0711232123", profileImage: nil, isAdmin: false),
         GroupMember(name: "Person 2", phoneNumber: "0778987678", profileImage: nil, isAdmin: false),
@@ -211,13 +211,13 @@ struct AddMembersView: View {
     }
 }
 
-// Supporting Views (GroupInfoHeader, MemberRow, ContactRow) remain the same
+
 struct GroupInfoHeader: View {
     @ObservedObject var viewModel: GroupSettingsViewModel
     
     var body: some View {
         VStack(spacing: 16) {
-            // Group Photo
+            
             Button(action: { viewModel.showingImagePicker = true }) {
                 if let photo = viewModel.settings.photo {
                     Image(uiImage: photo)
@@ -236,7 +236,7 @@ struct GroupInfoHeader: View {
                 }
             }
             
-            // Group Name
+            
             if viewModel.isEditingName {
                 TextField("Group Name", text: $viewModel.settings.name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -260,7 +260,7 @@ struct MemberRow: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Profile Image
+            
             if let image = member.profileImage {
                 Image(uiImage: image)
                     .resizable()
@@ -353,7 +353,7 @@ struct ContactRow: View {
     }
 }
 
-// MARK: - Preview Provider
+
 struct GroupSettingsView_Previews: PreviewProvider {
     static var previews: some View {
         GroupSettingsView()

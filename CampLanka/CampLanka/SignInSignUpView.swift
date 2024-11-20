@@ -37,20 +37,20 @@ struct SignInSignUpView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-            
+                
                 Image("camplogo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
                     .padding(.top, 20)
                 
-            
+                
                 Text("Sign In")
                     .font(.system(size: 28, weight: .bold))
                     .multilineTextAlignment(.center)
                     .padding(.top, 20)
                 
-            
+                
                 Text("Join CampLanka to discover campsites!")
                     .font(.system(size: 16))
                     .multilineTextAlignment(.center)
@@ -82,7 +82,7 @@ struct SignInSignUpView: View {
                     .padding(.horizontal, 24)
                 }
                 
-            
+                
                 TextField("Email", text: $email)
                     .textInputAutocapitalization(.never)
                     .keyboardType(.emailAddress)
@@ -184,7 +184,7 @@ struct SignInSignUpView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 1)
                 
-            
+                
                 VStack(alignment: .center, spacing: 4) {
                     Text("By continuing, you agree to our")
                         .foregroundColor(.black)
@@ -252,7 +252,7 @@ struct SignInSignUpView: View {
         isLoading = true
         
         context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics,
-                             localizedReason: "Log in to your account") { success, error in
+                               localizedReason: "Log in to your account") { success, error in
             DispatchQueue.main.async {
                 isLoading = false
                 
@@ -330,7 +330,7 @@ struct SignInSignUpView: View {
             }
             
             let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                         accessToken: user.accessToken.tokenString)
+                                                           accessToken: user.accessToken.tokenString)
             
             Auth.auth().signIn(with: credential) { result, error in
                 if let error = error {
@@ -368,8 +368,8 @@ struct SignInSignUpView: View {
             }
             
             let credential = OAuthProvider.appleCredential(withIDToken: idTokenString,
-                                                         rawNonce: nonce,
-                                                         fullName: appleIDCredential.fullName)
+                                                           rawNonce: nonce,
+                                                           fullName: appleIDCredential.fullName)
             
             Auth.auth().signIn(with: credential) { result, error in
                 if let error = error {

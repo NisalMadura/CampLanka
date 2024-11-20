@@ -15,12 +15,12 @@ struct AddToCommunityView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 24) {
-                // Header
+                
                 Text("Add to the Community")
                     .font(.title2)
                     .fontWeight(.bold)
                 
-                // Write a Review Button
+                
                 Button(action: {
                     showWriteReview = true
                 }) {
@@ -38,7 +38,7 @@ struct AddToCommunityView: View {
                     .cornerRadius(12)
                 }
                 
-                // Add a Location Button
+                
                 Button(action: {
                     showAddLocation = true
                 }) {
@@ -56,7 +56,7 @@ struct AddToCommunityView: View {
                     .cornerRadius(12)
                 }
                 
-                // Description Text
+                
                 Text("The CampLanka has the most reviews\nbecause of campers like you.")
                     .multilineTextAlignment(.center)
                     .font(.headline)
@@ -64,7 +64,7 @@ struct AddToCommunityView: View {
                 
                 Spacer()
                 
-                // Bottom Indicator
+                
                 RoundedRectangle(cornerRadius: 2)
                     .frame(width: 40, height: 4)
                     .foregroundColor(.gray.opacity(0.3))
@@ -81,7 +81,7 @@ struct AddToCommunityView: View {
     }
 }
 
-// Write Review View
+
 struct WriteReviewView: View {
     @Environment(\.dismiss) var dismiss
     @State private var reviewText = ""
@@ -90,7 +90,7 @@ struct WriteReviewView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // Rating Stars
+                
                 HStack {
                     ForEach(1...5, id: \.self) { index in
                         Image(systemName: index <= rating ? "star.fill" : "star")
@@ -102,7 +102,7 @@ struct WriteReviewView: View {
                     }
                 }
                 
-                // Review Text Editor
+                
                 TextEditor(text: $reviewText)
                     .frame(height: 200)
                     .padding()
@@ -122,7 +122,7 @@ struct WriteReviewView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Post") {
-                        // Handle posting review
+                        
                         dismiss()
                     }
                     .disabled(reviewText.isEmpty || rating == 0)
@@ -132,7 +132,7 @@ struct WriteReviewView: View {
     }
 }
 
-// Add Location View
+
 struct AddLocationView: View {
     @Environment(\.dismiss) var dismiss
     @State private var locationName = ""
@@ -151,7 +151,7 @@ struct AddLocationView: View {
                 
                 Section {
                     Button(action: {
-                        // Handle adding photos
+                        
                     }) {
                         HStack {
                             Image(systemName: "photo")
@@ -170,7 +170,7 @@ struct AddLocationView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Submit") {
-                        // Handle location submission
+                        
                         dismiss()
                     }
                     .disabled(locationName.isEmpty || address.isEmpty)
@@ -180,7 +180,7 @@ struct AddLocationView: View {
     }
 }
 
-// Add this to your HomeView where you want to show the Add to Community sheet
+
 struct HomeViewUpdate: View {
     @State private var showAddCommunity = false
     

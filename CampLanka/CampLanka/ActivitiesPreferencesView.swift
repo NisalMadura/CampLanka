@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-// MARK: - Models
+
 struct Activity: Identifiable {
     let id = UUID()
     let name: String
     var isSelected: Bool
 }
 
-// MARK: - View Models
+
 class ActivitiesViewModel: ObservableObject {
     @Published var activities: [Activity] = [
         Activity(name: "Hiking trails", isSelected: false),
@@ -41,7 +41,7 @@ class ActivitiesViewModel: ObservableObject {
     }
 }
 
-// MARK: - Views
+
 struct ActivitiesPreferencesView: View {
     @StateObject private var viewModel = ActivitiesViewModel()
     @Environment(\.presentationMode) var presentationMode
@@ -58,9 +58,9 @@ struct ActivitiesPreferencesView: View {
     ]
     
     var body: some View {
-        NavigationView {  // Wrapping the view in NavigationView
+        NavigationView {
             VStack(spacing: 20) {
-                // Navigation Bar with Centered Title
+                
                 ZStack {
                     HStack {
                         Button(action: {
@@ -81,7 +81,7 @@ struct ActivitiesPreferencesView: View {
                 
                 Divider()
                 
-                // Activities Grid
+                
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(viewModel.activities) { activity in
@@ -92,7 +92,7 @@ struct ActivitiesPreferencesView: View {
                             )
                         }
                         
-                        // Add More Button
+                        
                         Button(action: {
                             showingAddActivity = true
                         }) {
@@ -116,12 +116,12 @@ struct ActivitiesPreferencesView: View {
                 
                 Spacer()
                 
-                // Navigation Buttons
+                
                 VStack(spacing: 12) {
-                    // Next Button
+                    
                     Button(action: {
                         if viewModel.hasSelectedActivities {
-                            navigateToCampgroundList = true  // Trigger navigation
+                            navigateToCampgroundList = true
                         } else {
                             showingAlert = true
                         }
@@ -238,7 +238,7 @@ struct AddActivitySheet: View {
     }
 }
 
-// MARK: - Preview
+
 struct ActivitiesPreferencesView_Previews: PreviewProvider {
     static var previews: some View {
         ActivitiesPreferencesView()

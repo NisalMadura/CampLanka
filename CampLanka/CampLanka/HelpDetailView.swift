@@ -83,7 +83,7 @@ struct HelpItem {
     let content: String
 }
 
-// Preview Provider
+
 struct HelpCenterView_Previews: PreviewProvider {
     static var previews: some View {
         HelpCenterView()

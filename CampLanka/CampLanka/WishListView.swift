@@ -15,7 +15,7 @@ class WishListViewModel: ObservableObject {
     init() {
         fetchUserWishlist()
         
-        // Listen for auth state changes
+        
         Auth.auth().addStateDidChangeListener { [weak self] _, user in
             if user != nil {
                 self?.fetchUserWishlist()
@@ -100,7 +100,7 @@ struct SavedCampgroundCell: View {
                 }
             }
             
-            // Details
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(campground.name)
                     .font(.headline)
@@ -148,7 +148,7 @@ struct WishListView: View {
         NavigationView {
             Group {
                 if Auth.auth().currentUser == nil {
-                
+                    
                     VStack(spacing: 20) {
                         Image(systemName: "heart.slash")
                             .font(.system(size: 50))

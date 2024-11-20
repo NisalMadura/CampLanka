@@ -30,10 +30,10 @@ struct EmergencyView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            // Navigation Bar
+            
             HStack {
                 Button(action: {
-                    // Handle back action
+                    
                 }) {
                     HStack {
                         Image(systemName: "chevron.left")
@@ -46,14 +46,14 @@ struct EmergencyView: View {
                 
                 HStack(spacing: 20) {
                     Button(action: {
-                        // Handle camera action
+                        
                     }) {
                         Image(systemName: "camera")
                             .foregroundColor(.black)
                     }
                     
                     Button(action: {
-                        // Handle notification action
+                        
                     }) {
                         Image(systemName: "bell")
                             .foregroundColor(.black)
@@ -62,7 +62,7 @@ struct EmergencyView: View {
             }
             .padding()
             
-            // Header Section
+            
             VStack(alignment: .leading, spacing: 8) {
                 Text("Are you in an emergency?")
                     .font(.title2)
@@ -75,7 +75,7 @@ struct EmergencyView: View {
             }
             .padding(.horizontal)
             
-            // SOS Button
+            
             Button(action: {
                 handleSOSPress()
             }) {
@@ -101,7 +101,7 @@ struct EmergencyView: View {
             }
             .padding(.vertical, 30)
             
-            // Emergency Types Section
+            
             Text("What's your emergency?")
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -120,8 +120,8 @@ struct EmergencyView: View {
             
             Spacer()
             
-            // Custom Tab Bar placeholder
-           // CustomTabBar()
+            
+            // CustomTabBar()
         }
     }
     
@@ -137,16 +137,16 @@ struct EmergencyView: View {
         
         if pressCount >= 3 {
             isSOSPressed = true
-            // Trigger emergency actions here
+            
             triggerEmergency()
         }
     }
     
     private func triggerEmergency() {
-        // Implement emergency actions:
-        // 1. Get current location
-        // 2. Send alert to emergency contacts
-        // 3. Contact nearest help center
+        
+        
+        
+        
     }
 }
 

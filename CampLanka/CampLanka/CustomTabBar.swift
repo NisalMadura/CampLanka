@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// Tab Item Model
+
 enum TabItem: Int, CaseIterable {
     case home = 0
     case favorite
@@ -36,7 +36,7 @@ enum TabItem: Int, CaseIterable {
     }
 }
 
-// Reusable Custom Tab Bar
+
 struct MainView: View {
     @State private var selectedTab: TabItem = .home
     private let darkGreen = Color(red: 0/255, green: 78/255, blue: 56/255)
@@ -58,12 +58,12 @@ struct MainView: View {
                 }
             }
             
-            // Top Divider
+            
             Rectangle()
                 .frame(height: 0.5)
                 .foregroundColor(.gray.opacity(0.3))
             
-            // Tab Bar Content
+            
             HStack(spacing: 0) {
                 ForEach(TabItem.allCases, id: \.rawValue) { tab in
                     tabButton(for: tab)
@@ -82,7 +82,7 @@ struct MainView: View {
         }) {
             VStack(spacing: 4) {
                 if tab == .addPlan {
-                    // Special Add Plan Button
+                    
                     ZStack {
                         Circle()
                             .fill(darkGreen)
@@ -94,13 +94,13 @@ struct MainView: View {
                     }
                     .offset(y: -1)
                 } else {
-                    // Regular Tab Icons
+                    
                     Image(systemName: tab.icon)
                         .font(.system(size: 24))
                         .foregroundColor(selectedTab == tab ? darkGreen : .gray)
                 }
                 
-                // Tab Title
+                
                 Text(tab.title)
                     .font(.system(size: 12))
                     .foregroundColor(selectedTab == tab ? darkGreen : .gray)
@@ -110,7 +110,7 @@ struct MainView: View {
     }
 }
 
-// Example Views with Enhanced Design
+
 struct HomeView: View {
     var body: some View {
         NavigationView {
@@ -171,7 +171,7 @@ struct ProfileVoiew: View {
     }
 }
 
-// Custom View Modifiers
+
 struct TabBarModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -183,7 +183,7 @@ struct TabBarModifier: ViewModifier {
     }
 }
 
-// Preview
+
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
         MainView()

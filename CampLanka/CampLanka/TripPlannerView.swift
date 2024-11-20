@@ -17,7 +17,7 @@ struct TripPlannerView: View {
                 Color.white.edgesIgnoringSafeArea(.all)
                 
                 VStack(spacing: 0) {
-                   // StatusBarView()
+                    // StatusBarView()
                     
                     VStack(spacing: 0) {
                         Text("Trip Planner")

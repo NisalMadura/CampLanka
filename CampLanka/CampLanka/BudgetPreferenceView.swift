@@ -19,7 +19,7 @@ struct BudgetPreferenceView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // Title Section
+            
             VStack(alignment: .center, spacing: 36) {
                 Text("Budget Preferences")
                     .font(.title2)
@@ -32,7 +32,7 @@ struct BudgetPreferenceView: View {
             .frame(maxWidth: .infinity)
             .padding(.top, 8)
             
-            // Budget Options
+            
             VStack(spacing: 20) {
                 HStack(spacing: 16) {
                     BudgetOptionCard(
@@ -61,7 +61,7 @@ struct BudgetPreferenceView: View {
             Spacer()
             
             VStack(spacing: 28) {
-                // Next Button
+                
                 Button(action: {
                     if selectedOption != nil {
                         navigateToFacilities = true
@@ -77,7 +77,7 @@ struct BudgetPreferenceView: View {
                 }
                 .disabled(selectedOption == nil)
                 
-                // Skip Button
+                
                 Button(action: {
                     navigateToFacilities = true
                 }) {
@@ -88,7 +88,7 @@ struct BudgetPreferenceView: View {
             }
             .padding()
             
-            // Navigation link
+            
             NavigationLink(
                 destination: PreferredFacilitiesView(),
                 isActive: $navigateToFacilities,
@@ -134,7 +134,7 @@ struct BudgetOptionCard: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.white)
                     .shadow(color: isSelected ? .green.opacity(0.3) : .gray.opacity(0.2),
-                           radius: 8, x: 0, y: 2)
+                            radius: 8, x: 0, y: 2)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)

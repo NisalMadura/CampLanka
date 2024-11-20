@@ -117,7 +117,7 @@ struct PersonalDetailsView: View {
                         isEditing = true
                     }
                 }
-                .disabled(isSaving)
+                    .disabled(isSaving)
             )
             .onAppear {
                 fetchPersonalDetails()

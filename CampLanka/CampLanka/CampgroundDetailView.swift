@@ -29,7 +29,7 @@ struct CampgroundBase: Identifiable {
               let imageUrl = data["imageUrl"] as? String,
               let likes = data["likes"] as? Int,
               let rating = data["rating"] as? Double,
-             let coordinates = data["coordinates"] as? GeoPoint else{
+              let coordinates = data["coordinates"] as? GeoPoint else{
             return nil
         }
         self.name = name
@@ -39,9 +39,9 @@ struct CampgroundBase: Identifiable {
         self.rating = rating
         self.isFavorite = data["isFavorite"] as? Bool ?? false
         self.coordinates = CLLocationCoordinate2D(
-                    latitude: coordinates.latitude,
-                    longitude: coordinates.longitude
-                )
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude
+        )
     }
 }
 struct WeatherInfo: Identifiable {
@@ -214,7 +214,7 @@ struct CampgroundDetail {
             self.contactInfo = ContactInfo(office: "", phone: "", emergency: "", email: "")
         }
         
-    
+        
         if let accessData = detailData["accessMethods"] as? [[String: Any]] {
             self.accessMethods = accessData.map { data in
                 AccessMethod(
@@ -250,233 +250,233 @@ struct CampgroundDetail {
 
 
 class CampgroundDetailViewModel: ObservableObject {
- private let db = Firestore.firestore()
- @Published var campgroundDetail: CampgroundDetail?
- @Published var isLoading = true
- @Published var errorMessage: String?
- @Published var showLoginAlert = false
- @Published var showWishlistView = false
-
- init() {
- 
- Auth.auth().addStateDidChangeListener { [weak self] _, user in
- if let id = self?.campgroundDetail?.base.id {
- self?.checkWishlistStatus(for: id)
- }
- }
- }
-
- func fetchCampgroundDetail(id: String) {
- isLoading = true
- errorMessage = nil
-
- db.collection("campgrounds").document(id).getDocument { [weak self] baseSnapshot, error in
- if let error = error {
- DispatchQueue.main.async {
- self?.errorMessage = error.localizedDescription
- self?.isLoading = false
- }
- return
- }
-
- guard let baseData = baseSnapshot?.data() else {
- DispatchQueue.main.async {
- self?.errorMessage = "Campground not found"
- self?.isLoading = false
- }
- return
- }
-
- self?.db.collection("campgrounds").document(id).getDocument { detailSnapshot, error in
- DispatchQueue.main.async {
- if let error = error {
- self?.errorMessage = error.localizedDescription
- self?.isLoading = false
- return
- }
-
- guard let detailData = detailSnapshot?.data() else {
- self?.errorMessage = "Details not found"
- self?.isLoading = false
- return
- }
-
- if let campgroundDetail = CampgroundDetail(id: id, baseData: baseData, detailData: detailData) {
- self?.campgroundDetail = campgroundDetail
- self?.checkWishlistStatus(for: id)
- }
-
- self?.isLoading = false
- }
- }
- }
- }
-
- private func checkWishlistStatus(for campgroundId: String) {
- guard let userId = Auth.auth().currentUser?.uid else {
- if var detail = campgroundDetail {
- detail.base.isFavorite = false
- campgroundDetail = detail
- }
- return
- }
-
- db.collection("users").document(userId)
- .collection("wishlist")
- .document(campgroundId)
- .getDocument { [weak self] snapshot, error in
- if let exists = snapshot?.exists {
- DispatchQueue.main.async {
- if var detail = self?.campgroundDetail {
- detail.base.isFavorite = exists
- self?.campgroundDetail = detail
- }
- }
- }
- }
- }
-
- func handleFavoriteButtonTap() {
- if Auth.auth().currentUser != nil {
- toggleFavorite()
- } else {
- showLoginAlert = true
- }
- }
-
- func toggleFavorite() {
- guard let detail = campgroundDetail else { return }
- guard let userId = Auth.auth().currentUser?.uid else {
- showLoginAlert = true
- return
- }
-
- let newValue = !detail.base.isFavorite
- let wishlistRef = db.collection("users").document(userId).collection("wishlist")
-
- if newValue {
- // Add to wishlist
- wishlistRef.document(detail.base.id).setData([
- "addedAt": FieldValue.serverTimestamp(),
- "campgroundId": detail.base.id,
- "name": detail.base.name,
- "location": detail.base.location,
- "imageUrl": detail.base.imageUrl,
- "rating": detail.base.rating
- ])
- } else {
- // Remove from wishlist
- wishlistRef.document(detail.base.id).delete()
- }
-
- // Update local state
- DispatchQueue.main.async {
- if var updatedDetail = self.campgroundDetail {
- updatedDetail.base.isFavorite = newValue
- self.campgroundDetail = updatedDetail
- }
- }
- }
+    private let db = Firestore.firestore()
+    @Published var campgroundDetail: CampgroundDetail?
+    @Published var isLoading = true
+    @Published var errorMessage: String?
+    @Published var showLoginAlert = false
+    @Published var showWishlistView = false
+    
+    init() {
+        
+        Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            if let id = self?.campgroundDetail?.base.id {
+                self?.checkWishlistStatus(for: id)
+            }
+        }
+    }
+    
+    func fetchCampgroundDetail(id: String) {
+        isLoading = true
+        errorMessage = nil
+        
+        db.collection("campgrounds").document(id).getDocument { [weak self] baseSnapshot, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    self?.errorMessage = error.localizedDescription
+                    self?.isLoading = false
+                }
+                return
+            }
+            
+            guard let baseData = baseSnapshot?.data() else {
+                DispatchQueue.main.async {
+                    self?.errorMessage = "Campground not found"
+                    self?.isLoading = false
+                }
+                return
+            }
+            
+            self?.db.collection("campgrounds").document(id).getDocument { detailSnapshot, error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self?.errorMessage = error.localizedDescription
+                        self?.isLoading = false
+                        return
+                    }
+                    
+                    guard let detailData = detailSnapshot?.data() else {
+                        self?.errorMessage = "Details not found"
+                        self?.isLoading = false
+                        return
+                    }
+                    
+                    if let campgroundDetail = CampgroundDetail(id: id, baseData: baseData, detailData: detailData) {
+                        self?.campgroundDetail = campgroundDetail
+                        self?.checkWishlistStatus(for: id)
+                    }
+                    
+                    self?.isLoading = false
+                }
+            }
+        }
+    }
+    
+    private func checkWishlistStatus(for campgroundId: String) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            if var detail = campgroundDetail {
+                detail.base.isFavorite = false
+                campgroundDetail = detail
+            }
+            return
+        }
+        
+        db.collection("users").document(userId)
+            .collection("wishlist")
+            .document(campgroundId)
+            .getDocument { [weak self] snapshot, error in
+                if let exists = snapshot?.exists {
+                    DispatchQueue.main.async {
+                        if var detail = self?.campgroundDetail {
+                            detail.base.isFavorite = exists
+                            self?.campgroundDetail = detail
+                        }
+                    }
+                }
+            }
+    }
+    
+    func handleFavoriteButtonTap() {
+        if Auth.auth().currentUser != nil {
+            toggleFavorite()
+        } else {
+            showLoginAlert = true
+        }
+    }
+    
+    func toggleFavorite() {
+        guard let detail = campgroundDetail else { return }
+        guard let userId = Auth.auth().currentUser?.uid else {
+            showLoginAlert = true
+            return
+        }
+        
+        let newValue = !detail.base.isFavorite
+        let wishlistRef = db.collection("users").document(userId).collection("wishlist")
+        
+        if newValue {
+            // Add to wishlist
+            wishlistRef.document(detail.base.id).setData([
+                "addedAt": FieldValue.serverTimestamp(),
+                "campgroundId": detail.base.id,
+                "name": detail.base.name,
+                "location": detail.base.location,
+                "imageUrl": detail.base.imageUrl,
+                "rating": detail.base.rating
+            ])
+        } else {
+            
+            wishlistRef.document(detail.base.id).delete()
+        }
+        
+        
+        DispatchQueue.main.async {
+            if var updatedDetail = self.campgroundDetail {
+                updatedDetail.base.isFavorite = newValue
+                self.campgroundDetail = updatedDetail
+            }
+        }
+    }
 }
 
 
 struct CampgroundDetailView: View {
-      @StateObject private var viewModel = CampgroundDetailViewModel()
-      @State private var selectedTab = 0
-      let campgroundId: String
-
- var body: some View {
-    ScrollView {
-      if viewModel.isLoading {
-      ProgressView()
-      .padding()
- }    else if let errorMessage = viewModel.errorMessage {
-           Text(errorMessage)
-           .foregroundColor(.red)
-            .padding()
- } else if let campground = viewModel.campgroundDetail {
-        VStack(alignment: .leading, spacing: 0) {
- 
-      AsyncImage(url: URL(string: campground.base.imageUrl)) { image in
- image
- .resizable()
- .aspectRatio(contentMode: .fill)
- } placeholder: {
- Rectangle()
- .fill(Color.gray.opacity(0.2))
- }
- .frame(height: 250)
- .clipped()
-
- // Header section
- VStack(alignment: .leading, spacing: 8) {
- HStack {
- Text(campground.base.name)
- .font(.title)
- .fontWeight(.bold)
-
- Spacer()
-
- Button(action: {
- viewModel.handleFavoriteButtonTap()
- }) {
- Image(systemName: campground.base.isFavorite ? "heart.fill" : "heart")
- .foregroundColor(campground.base.isFavorite ? .red : .gray)
- .font(.title2)
- }
- }
-
- Text(campground.base.location)
- .foregroundColor(.gray)
-
- HStack(spacing: 4) {
- Image(systemName: "star.fill")
- .foregroundColor(.yellow)
- Text(String(format: "%.1f", campground.base.rating))
- Text("(\(campground.numberOfReviews) Reviews)")
- .foregroundColor(.gray)
- }
-
- Button(action: { }) {
- HStack {
- Image(systemName: "doc.text")
- Text("Add to plan")
- }
- .padding(.vertical, 8)
- .padding(.horizontal, 12)
- .background(Color(.systemGray6))
- .cornerRadius(8)
- }
- }
- .padding()
-
- 
- tabBar(campground: campground)
-
- 
- tabContent(campground: campground)
- .padding(.horizontal)
- }
- }
- }
- .navigationBarTitleDisplayMode(.inline)
- .alert("Sign in Required", isPresented: $viewModel.showLoginAlert) {
- Button("Sign In") {
- viewModel.showWishlistView = true
- }
- Button("Cancel", role: .cancel) {}
- } message: {
- Text("Please sign in to add items to your wishlist")
- }
- .sheet(isPresented: $viewModel.showWishlistView) {
- NavigationView {
- SignInView()
- }
- }
- .onAppear {
- viewModel.fetchCampgroundDetail(id: campgroundId)
- }
- }
+    @StateObject private var viewModel = CampgroundDetailViewModel()
+    @State private var selectedTab = 0
+    let campgroundId: String
+    
+    var body: some View {
+        ScrollView {
+            if viewModel.isLoading {
+                ProgressView()
+                    .padding()
+            }    else if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .padding()
+            } else if let campground = viewModel.campgroundDetail {
+                VStack(alignment: .leading, spacing: 0) {
+                    
+                    AsyncImage(url: URL(string: campground.base.imageUrl)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.2))
+                    }
+                    .frame(height: 250)
+                    .clipped()
+                    
+                    // Header section
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text(campground.base.name)
+                                .font(.title)
+                                .fontWeight(.bold)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                viewModel.handleFavoriteButtonTap()
+                            }) {
+                                Image(systemName: campground.base.isFavorite ? "heart.fill" : "heart")
+                                    .foregroundColor(campground.base.isFavorite ? .red : .gray)
+                                    .font(.title2)
+                            }
+                        }
+                        
+                        Text(campground.base.location)
+                            .foregroundColor(.gray)
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.yellow)
+                            Text(String(format: "%.1f", campground.base.rating))
+                            Text("(\(campground.numberOfReviews) Reviews)")
+                                .foregroundColor(.gray)
+                        }
+                        
+                        Button(action: { }) {
+                            HStack {
+                                Image(systemName: "doc.text")
+                                Text("Add to plan")
+                            }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 12)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                        }
+                    }
+                    .padding()
+                    
+                    
+                    tabBar(campground: campground)
+                    
+                    
+                    tabContent(campground: campground)
+                        .padding(.horizontal)
+                }
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .alert("Sign in Required", isPresented: $viewModel.showLoginAlert) {
+            Button("Sign In") {
+                viewModel.showWishlistView = true
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Please sign in to add items to your wishlist")
+        }
+        .sheet(isPresented: $viewModel.showWishlistView) {
+            NavigationView {
+                SignInView()
+            }
+        }
+        .onAppear {
+            viewModel.fetchCampgroundDetail(id: campgroundId)
+        }
+    }
     
     
     private func tabBar(campground: CampgroundDetail) -> some View {
@@ -534,8 +534,8 @@ struct BackButton: View {
         Button(action: {
             presentationMode.wrappedValue.dismiss()
         }) {
-           /* Image(systemName: "chevron.left")
-                .foregroundColor(.primary)*/
+            /* Image(systemName: "chevron.left")
+             .foregroundColor(.primary)*/
         }
     }
 }
@@ -779,7 +779,7 @@ struct ServicesCardView: View {
             
             Image(service.imageUrl)
                 .resizable()
-              //  .aspectRatio(contentMode: .fill)
+            //  .aspectRatio(contentMode: .fill)
                 .frame(height: 200)
                 .clipped()
                 .cornerRadius(12)
@@ -824,7 +824,7 @@ struct ServicesCardView: View {
                 
                 Spacer()
                 
-            
+                
                 VStack(alignment: .leading, spacing: 4) {
                     Text(service.title)
                         .font(.title3)
@@ -993,7 +993,7 @@ struct RatingAnalytics {
     }
 }
 
-// Add ViewModel to handle reviews data
+
 class ReviewsViewModel: ObservableObject {
     @Published var reviews: [Review] = []
     @Published var ratingAnalytics = RatingAnalytics()
@@ -1003,17 +1003,17 @@ class ReviewsViewModel: ObservableObject {
         
         let sampleReviews = [
             Review(rating: 5.0, date: Date(timeIntervalSinceNow: -86400 * 2),
-                  comment: "A peaceful and scenic spot! Amazing experience.",
-                  authorName: "Carter Botosh"),
+                   comment: "A peaceful and scenic spot! Amazing experience.",
+                   authorName: "Carter Botosh"),
             Review(rating: 4.0, date: Date(timeIntervalSinceNow: -86400 * 3),
-                  comment: "Great campsite, very well maintained.",
-                  authorName: "Jaxson Septimus"),
+                   comment: "Great campsite, very well maintained.",
+                   authorName: "Jaxson Septimus"),
             Review(rating: 3.0, date: Date(timeIntervalSinceNow: -86400 * 4),
-                  comment: "Decent place, but could use better facilities.",
-                  authorName: "Carla Press"),
+                   comment: "Decent place, but could use better facilities.",
+                   authorName: "Carla Press"),
             Review(rating: 5.0, date: Date(timeIntervalSinceNow: -86400 * 5),
-                  comment: "Best camping experience ever!",
-                  authorName: "John Doe")
+                   comment: "Best camping experience ever!",
+                   authorName: "John Doe")
         ]
         
         self.reviews = sampleReviews
@@ -1057,7 +1057,7 @@ struct ReviewsTab: View {
                 .foregroundColor(.blue)
             }
             
-        
+            
             HStack(alignment: .top, spacing: 32) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(String(format: "%.1f", campground.base.rating))
@@ -1106,7 +1106,7 @@ struct ReviewsiScreen: View {
     
     var body: some View {
         VStack(spacing: 0) {
-        
+            
             HStack {
                 Button(action: {
                     dismiss()
@@ -1134,7 +1134,7 @@ struct ReviewsiScreen: View {
                     HStack(alignment: .top, spacing: 32) {
                         VStack(alignment: .leading, spacing: 4) {
                             let averageRating = viewModel.reviews.isEmpty ? 0 :
-                                viewModel.reviews.reduce(0) { $0 + $1.rating } / Double(viewModel.reviews.count)
+                            viewModel.reviews.reduce(0) { $0 + $1.rating } / Double(viewModel.reviews.count)
                             Text(String(format: "%.1f", averageRating))
                                 .font(.system(size: 40, weight: .bold))
                             StarRatingView(rating: averageRating)
@@ -1186,12 +1186,12 @@ struct WeatherTab: View {
                     ProgressView()
                         .padding()
                 } else {
-                
+                    
                     if let current = viewModel.currentWeather {
                         currentWeatherView(weather: current)
                     }
                     
-                
+                    
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Hourly Forecast")
                             .font(.headline)

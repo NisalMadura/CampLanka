@@ -28,7 +28,7 @@ struct AccountAndPasswordView: View {
     var body: some View {
         NavigationView {
             Form {
-                // Account Information Section
+                
                 Section(header: Text("Account Information")) {
                     if let user = Auth.auth().currentUser {
                         HStack {
@@ -55,7 +55,7 @@ struct AccountAndPasswordView: View {
                 }
                 .headerProminence(.increased)
                 
-                // Password Change Section
+                
                 Section(header: Text("Change Password")) {
                     if !showChangePassword {
                         Button(action: {
@@ -109,21 +109,21 @@ struct AccountAndPasswordView: View {
                 }
                 .headerProminence(.increased)
                 
-                // Password Requirements
+                
                 if showChangePassword {
                     Section(header: Text("Password Requirements")) {
                         PasswordRequirementRow(text: "At least 8 characters long",
-                                            isMet: newPassword.count >= 8)
+                                               isMet: newPassword.count >= 8)
                         PasswordRequirementRow(text: "Contains uppercase letter",
-                                            isMet: newPassword.contains(where: { $0.isUppercase }))
+                                               isMet: newPassword.contains(where: { $0.isUppercase }))
                         PasswordRequirementRow(text: "Contains number",
-                                            isMet: newPassword.contains(where: { $0.isNumber }))
+                                               isMet: newPassword.contains(where: { $0.isNumber }))
                         PasswordRequirementRow(text: "Passwords match",
-                                            isMet: !newPassword.isEmpty && newPassword == confirmPassword)
+                                               isMet: !newPassword.isEmpty && newPassword == confirmPassword)
                     }
                 }
                 
-                // Account Actions Section
+                
                 Section(header: Text("Account Actions")) {
                     Button(action: {
                         showDeleteAccountAlert = true
@@ -142,7 +142,7 @@ struct AccountAndPasswordView: View {
             .navigationBarItems(
                 leading: Button("Close") {
                     if showChangePassword && hasUnsavedChanges() {
-                        // Show confirmation dialog
+                        
                         showDiscardChangesAlert()
                     } else {
                         presentationMode.wrappedValue.dismiss()
@@ -192,10 +192,10 @@ struct AccountAndPasswordView: View {
     
     private func isValidPasswordInput() -> Bool {
         return !currentPassword.isEmpty &&
-               newPassword.count >= 8 &&
-               newPassword.contains(where: { $0.isUppercase }) &&
-               newPassword.contains(where: { $0.isNumber }) &&
-               newPassword == confirmPassword
+        newPassword.count >= 8 &&
+        newPassword.contains(where: { $0.isUppercase }) &&
+        newPassword.contains(where: { $0.isNumber }) &&
+        newPassword == confirmPassword
     }
     
     private func hasUnsavedChanges() -> Bool {
@@ -218,28 +218,28 @@ struct AccountAndPasswordView: View {
             return
         }
         
-        // First, reauthenticate the user
+        
         let credential = EmailAuthProvider.credential(withEmail: email, password: currentPassword)
         
         user.reauthenticate(with: credential) { _, error in
             if let error = error {
                 isLoading = false
                 showError(title: "Authentication Failed",
-                         message: "Please check your current password and try again.")
+                          message: "Please check your current password and try again.")
                 print("Debug error: \(error.localizedDescription)")
                 return
             }
             
-            // Then update the password
+            
             user.updatePassword(to: newPassword) { error in
                 isLoading = false
                 
                 if let error = error {
                     showError(title: "Password Update Failed",
-                             message: "Unable to update your password. Please try again later.")
+                              message: "Unable to update your password. Please try again later.")
                     print("Debug error: \(error.localizedDescription)")
                 } else {
-                    // Success
+                    
                     showingSuccessToast = true
                     currentPassword = ""
                     newPassword = ""
@@ -259,11 +259,11 @@ struct AccountAndPasswordView: View {
         user.delete { error in
             if let error = error {
                 showError(title: "Account Deletion Failed",
-                         message: "Unable to delete your account. Please try again later.")
+                          message: "Unable to delete your account. Please try again later.")
                 print("Debug error: \(error.localizedDescription)")
             } else {
-                // Handle successful account deletion
-                // You might want to navigate to the sign-in screen or update app state
+                
+                
                 presentationMode.wrappedValue.dismiss()
             }
         }

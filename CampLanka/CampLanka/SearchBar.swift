@@ -34,7 +34,7 @@ struct SearchBar: View {
     }
 }
 
-// Preview Provider
+
 struct SearchBar_Previews: PreviewProvider {
     static var previews: some View {
         SearchBar(text: .constant(""))

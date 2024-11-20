@@ -78,7 +78,7 @@ struct EmergencyCircleView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            
             HStack {
                 Text("Emergency circle")
                     .font(.title3)
@@ -100,7 +100,7 @@ struct EmergencyCircleView: View {
             .padding()
             .background(Color(UIColor.systemGray6))
             
-            // Search Bar
+            
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
@@ -126,7 +126,7 @@ struct EmergencyCircleView: View {
             )
             .padding()
             
-            // Contact Groups List
+            
             ScrollView {
                 LazyVStack(spacing: 12) {
                     ForEach(filteredGroups) { group in
@@ -150,8 +150,8 @@ struct EmergencyCircleView: View {
             
             Spacer()
             
-            // Custom Tab Bar
-           // CustomTabBar()
+            
+            // CustomTabBar()
         }
         .sheet(isPresented: $showingAddSheet) {
             AddContactSheet(contactGroups: $contactGroups)
@@ -175,13 +175,13 @@ struct ContactGroupRow: View {
     
     var body: some View {
         HStack {
-            // Group Image
+            
             ZStack {
                 Circle()
                     .fill(group.name == "General" ? Color.green.opacity(0.2) :
-                          group.name == "Family" ? Color.blue.opacity(0.2) :
-                          group.name == "Relatives" ? Color.orange.opacity(0.2) :
-                          Color.purple.opacity(0.2))
+                            group.name == "Family" ? Color.blue.opacity(0.2) :
+                            group.name == "Relatives" ? Color.orange.opacity(0.2) :
+                            Color.purple.opacity(0.2))
                     .frame(width: 50, height: 50)
                 
                 Image(systemName: group.image)
@@ -191,13 +191,13 @@ struct ContactGroupRow: View {
                     .foregroundColor(.black)
             }
             
-            // Group Name
+            
             Text(group.name)
                 .font(.system(size: 16, weight: .medium))
             
             Spacer()
             
-            // Contacts Count
+            
             Text("\(group.contacts) Contacts")
                 .font(.system(size: 14))
                 .foregroundColor(.gray)
@@ -215,7 +215,7 @@ struct ContactGroupRow: View {
     }
 }
 
-// Preview Provider
+
 struct EmergencyCircleView_Previews: PreviewProvider {
     static var previews: some View {
         EmergencyCircleView()

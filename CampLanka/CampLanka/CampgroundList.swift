@@ -51,7 +51,7 @@ struct CampgroundListCard: View {
             .frame(width: 120, height: 120)
             .cornerRadius(12)
             
-            // Info
+            
             VStack(alignment: .leading, spacing: 8) {
                 Text(campground.name)
                     .font(.headline)

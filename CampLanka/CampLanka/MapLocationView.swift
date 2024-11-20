@@ -2,7 +2,7 @@ import SwiftUI
 import MapKit
 import Combine
 
-// Location data model
+
 struct LocationData: Identifiable {
     let id = UUID()
     let name: String
@@ -13,7 +13,7 @@ struct LocationData: Identifiable {
     let category: String
     var isFavorite: Bool = false
     
-    // Create from MKMapItem
+    
     init(mapItem: MKMapItem) {
         self.name = mapItem.name ?? ""
         self.city = mapItem.placemark.locality ?? ""
@@ -23,7 +23,7 @@ struct LocationData: Identifiable {
         self.category = mapItem.pointOfInterestCategory?.rawValue ?? ""
     }
     
-    // Custom init for preview/testing
+    
     init(name: String, city: String, country: String, coordinate: CLLocationCoordinate2D, images: [String], category: String) {
         self.name = name
         self.city = city
@@ -46,7 +46,7 @@ class LocationSearchViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        // Debounce search text changes to avoid too many API calls
+        
         $searchText
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .sink { [weak self] searchText in
@@ -73,14 +73,14 @@ class LocationSearchViewModel: ObservableObject {
             
             DispatchQueue.main.async {
                 self?.searchResults = response.mapItems.map { LocationData(mapItem: $0) }
-
+                
             }
         }
     }
     
     func selectLocation(_ location: LocationData) {
         selectedLocation = location
-        // Update region to center on selected location
+        
         region = MKCoordinateRegion(
             center: location.coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
@@ -95,7 +95,7 @@ struct LocationSearchView: View {
     var body: some View {
         NavigationView {
             ZStack(alignment: .top) {
-                // Map View
+                
                 Map(coordinateRegion: $viewModel.region,
                     showsUserLocation: true,
                     annotationItems: viewModel.selectedLocation.map { [$0] } ?? []) { location in
@@ -103,15 +103,15 @@ struct LocationSearchView: View {
                         MapPinView()
                     }
                 }
-                .ignoresSafeArea()
+                    .ignoresSafeArea()
                 
-                // Search UI
+                
                 VStack(spacing: 0) {
-                    // Search Bar
+                    
                     SearchBar(text: $viewModel.searchText)
                         .padding()
                     
-                    // Search Results
+                    
                     if !viewModel.searchResults.isEmpty {
                         ScrollView {
                             VStack(spacing: 0) {
@@ -120,7 +120,7 @@ struct LocationSearchView: View {
                                         .onTapGesture {
                                             viewModel.selectLocation(location)
                                             showingLocationDetail = true
-                                            // Clear search after selection
+                                            
                                             viewModel.searchText = ""
                                             viewModel.searchResults = []
                                         }
@@ -212,7 +212,7 @@ struct LocationDetailView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            
             HStack {
                 Text(location.name)
                     .font(.headline)
@@ -225,7 +225,7 @@ struct LocationDetailView: View {
             .padding()
             .background(Color.white)
             
-            // Location info
+            
             HStack {
                 Text("City")
                     .font(.subheadline)
@@ -241,23 +241,23 @@ struct LocationDetailView: View {
             .padding(.horizontal)
             .padding(.bottom)
             
-            // Action buttons
+            
             HStack(spacing: 20) {
                 ActionButton(title: "Directions", icon: "location.fill", color: .blue) {
                     openInMaps(location: location)
                 }
                 
                 ActionButton(title: "Download", icon: "arrow.down.circle", color: .blue.opacity(0.8)) {
-                    // Handle download
+                    
                 }
                 
                 ActionButton(title: "More", icon: "ellipsis", color: .gray) {
-                    // Handle more options
+                    
                 }
             }
             .padding()
             
-            // Map preview
+            
             Map(coordinateRegion: .constant(MKCoordinateRegion(
                 center: location.coordinate,
                 span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
@@ -301,7 +301,7 @@ struct ActionButton: View {
     }
 }
 
-// Preview
+
 struct LocationSearchView_Previews: PreviewProvider {
     static var previews: some View {
         LocationSearchView()

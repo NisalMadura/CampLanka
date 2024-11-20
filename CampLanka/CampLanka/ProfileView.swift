@@ -5,6 +5,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
 import PhotosUI
+import UserNotifications
 
 struct ProfileView: View {
     @State private var selectedTab = 4
@@ -20,7 +21,9 @@ struct ProfileView: View {
     @State private var showingPersonalDetails = false
     @State private var showingAccountAndPassword = false
     @State private var showingHelpCenter = false
-
+    @State private var showingNotificationSettings = false
+    
+    
     
     private let darkGreen = Color(red: 0/255, green: 78/255, blue: 56/255)
     
@@ -80,6 +83,8 @@ struct ProfileView: View {
                     VStack(spacing: 0) {
                         MenuLink(title: "Personal Details", iconName: "person.fill") {showingPersonalDetails = true}
                         MenuLink(title: "Account & Password", iconName: "lock.fill") {showingAccountAndPassword = true}
+                        MenuLink(title: "Notification Settings", iconName: "bell.fill") {showingNotificationSettings = true
+                        }
                         MenuLink(title: "Help Center", iconName: "questionmark.circle.fill") {showingHelpCenter = true}
                         MenuLink(title: "Sign Out", iconName: "rectangle.portrait.and.arrow.right") {
                             showingLogoutAlert = true
@@ -102,7 +107,7 @@ struct ProfileView: View {
                 )
             }
             .fullScreenCover(isPresented: $isLoggedOut) {
-                SignInView()
+                SignInSignUpView()
             }
             .onAppear {
                 fetchUserData()
@@ -116,6 +121,9 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showingAccountAndPassword) {
             AccountAndPasswordView()
+        }
+        .sheet(isPresented: $showingNotificationSettings) {
+            NotificationSettingsView()
         }
         .sheet(isPresented: $showingHelpCenter) {
             HelpCenterView()
@@ -134,7 +142,7 @@ struct ProfileView: View {
             userName = "Guest"
             return
         }
-
+        
         let db = Firestore.firestore()
         db.collection("users").document(userID).getDocument { document, error in
             if let document = document, document.exists, let name = document.data()?["name"] as? String, !name.isEmpty {
@@ -237,20 +245,20 @@ struct EditProfileView: View {
                     .padding(.vertical, 10)
                     
                     PhotosPicker(selection: $imagePickerItem,
-                               matching: .images) {
+                                 matching: .images) {
                         Text("Change Photo")
                             .foregroundColor(.blue)
                     }
-                               .onChange(of: imagePickerItem) { oldValue, newValue in
-                                   Task {
-                                       if let data = try? await newValue?.loadTransferable(type: Data.self),
-                                          let image = UIImage(data: data) {
-                                           await MainActor.run {
-                                               selectedImage = image
-                                           }
-                                       }
-                                   }
-                               }
+                                 .onChange(of: imagePickerItem) { oldValue, newValue in
+                                     Task {
+                                         if let data = try? await newValue?.loadTransferable(type: Data.self),
+                                            let image = UIImage(data: data) {
+                                             await MainActor.run {
+                                                 selectedImage = image
+                                             }
+                                         }
+                                     }
+                                 }
                 }
                 
                 Section(header: Text("Personal Information")) {
@@ -266,7 +274,7 @@ struct EditProfileView: View {
                 trailing: Button(isSaving ? "Saving..." : "Save") {
                     saveProfile()
                 }
-                .disabled(isSaving || (name.isEmpty && selectedImage == nil))
+                    .disabled(isSaving || (name.isEmpty && selectedImage == nil))
             )
             .alert(isPresented: $showingErrorAlert) {
                 Alert(
@@ -417,7 +425,221 @@ class KeychainHelpers {
     
 }
 
+struct NotificationSettingsView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @State private var pushNotifications = false
+    @State private var emailNotifications = false
+    @State private var isLoading = true
+    @State private var showError = false
+    @State private var errorMessage = ""
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Notification Preferences")) {
+                    Toggle(isOn: $pushNotifications) {
+                        HStack {
+                            Image(systemName: "bell.fill")
+                                .foregroundColor(.blue)
+                            Text("Push Notifications")
+                        }
+                    }
+                    .onChange(of: pushNotifications) { oldValue, newValue in
+                        updateNotificationSettings(type: "push", enabled: newValue)
+                    }
+                    
+                    Toggle(isOn: $emailNotifications) {
+                        HStack {
+                            Image(systemName: "envelope.fill")
+                                .foregroundColor(.blue)
+                            Text("Email Notifications")
+                        }
+                    }
+                    .onChange(of: emailNotifications) { oldValue, newValue in
+                        updateNotificationSettings(type: "email", enabled: newValue)
+                    }
+                }
+                
+                Section(header: Text("About Notifications"), footer: Text("Push notifications may include camping alerts, booking confirmations, and important updates. Email notifications include weekly newsletters and promotional offers.")) {
+                    NavigationLink(destination: NotificationHistoryView()) {
+                        HStack {
+                            Image(systemName: "clock.fill")
+                                .foregroundColor(.blue)
+                            Text("Notification History")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Notifications")
+            .navigationBarItems(leading: Button("Done") {
+                presentationMode.wrappedValue.dismiss()
+            })
+            .alert("Error", isPresented: $showError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(errorMessage)
+            }
+            .onAppear {
+                fetchNotificationSettings()
+                requestNotificationPermissions()
+            }
+        }
+    }
+    
+    private func fetchNotificationSettings() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            isLoading = false
+            return
+        }
+        
+        let db = Firestore.firestore()
+        db.collection("users").document(userID).getDocument { document, error in
+            isLoading = false
+            
+            if let error = error {
+                errorMessage = error.localizedDescription
+                showError = true
+                return
+            }
+            
+            if let document = document, document.exists {
+                let data = document.data()
+                pushNotifications = data?["pushNotificationsEnabled"] as? Bool ?? false
+                emailNotifications = data?["emailNotificationsEnabled"] as? Bool ?? false
+            }
+        }
+    }
+    
+    private func updateNotificationSettings(type: String, enabled: Bool) {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        
+        let db = Firestore.firestore()
+        let field = type == "push" ? "pushNotificationsEnabled" : "emailNotificationsEnabled"
+        
+        db.collection("users").document(userID).setData([
+            field: enabled
+        ], merge: true) { error in
+            if let error = error {
+                errorMessage = error.localizedDescription
+                showError = true
+            }
+        }
+    }
+    
+    private func requestNotificationPermissions() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if granted {
+                print("Notification permission granted")
+            } else if let error = error {
+                print("Error requesting notification permissions: \(error)")
+            }
+        }
+    }
+}
 
+
+struct NotificationHistoryView: View {
+    @State private var notifications: [NotificationItem] = []
+    @State private var isLoading = true
+    
+    var body: some View {
+        List {
+            if isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, alignment: .center)
+            } else if notifications.isEmpty {
+                Text("No notifications yet")
+                    .foregroundColor(.gray)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                ForEach(notifications) { notification in
+                    NotificationItemView(notification: notification)
+                }
+            }
+        }
+        .navigationTitle("Notification History")
+        .onAppear {
+            fetchNotificationHistory()
+        }
+    }
+    
+    private func fetchNotificationHistory() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            isLoading = false
+            return
+        }
+        
+        let db = Firestore.firestore()
+        db.collection("users")
+            .document(userID)
+            .collection("notifications")
+            .order(by: "timestamp", descending: true)
+            .limit(to: 50)
+            .addSnapshotListener { querySnapshot, error in
+                isLoading = false
+                
+                if let error = error {
+                    print("Error fetching notifications: \(error)")
+                    return
+                }
+                
+                notifications = querySnapshot?.documents.compactMap { document -> NotificationItem? in
+                    let data = document.data()
+                    return NotificationItem(
+                        id: document.documentID,
+                        title: data["title"] as? String ?? "",
+                        message: data["message"] as? String ?? "",
+                        type: data["type"] as? String ?? "",
+                        timestamp: (data["timestamp"] as? Timestamp)?.dateValue() ?? Date(),
+                        isRead: data["isRead"] as? Bool ?? false
+                    )
+                } ?? []
+            }
+    }
+}
+
+
+struct NotificationItem: Identifiable {
+    let id: String
+    let title: String
+    let message: String
+    let type: String
+    let timestamp: Date
+    let isRead: Bool
+}
+
+
+struct NotificationItemView: View {
+    let notification: NotificationItem
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: notification.type == "push" ? "bell.fill" : "envelope.fill")
+                    .foregroundColor(.blue)
+                Text(notification.title)
+                    .font(.headline)
+                Spacer()
+                Text(timeAgo(from: notification.timestamp))
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            
+            Text(notification.message)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 8)
+        .opacity(notification.isRead ? 0.8 : 1.0)
+    }
+    
+    private func timeAgo(from date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        return formatter.localizedString(for: date, relativeTo: Date())
+    }
+}
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()

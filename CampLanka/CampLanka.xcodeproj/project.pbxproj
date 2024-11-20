@@ -21,9 +21,6 @@
 		8223557D2CDA4D7700CF7554 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223557C2CDA4D7700CF7554 /* AppDelegate.swift */; };
 		822355802CDA548200CF7554 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 8223557F2CDA548200CF7554 /* GoogleSignIn */; };
 		822355822CDA548200CF7554 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 822355812CDA548200CF7554 /* GoogleSignInSwift */; };
-		823B6D032CEB65BF00B943DE /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823B6D022CEB65BF00B943DE /* NotificationManager.swift */; };
-		823B6D052CEB69EE00B943DE /* NotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823B6D042CEB69EE00B943DE /* NotificationSettingsViewController.swift */; };
-		823B6D072CEB7B0D00B943DE /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823B6D062CEB7B0D00B943DE /* NotificationSettingsView.swift */; };
 		8249E7D12CE8D6E200685B60 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8249E7D02CE8D6E200685B60 /* FirebaseAnalytics */; };
 		8249E7D32CE8D6E200685B60 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 8249E7D22CE8D6E200685B60 /* FirebaseStorage */; };
 		825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825822002CD8A5F0006E225B /* CampgroundServicesView.swift */; };
@@ -42,6 +39,8 @@
 		82981D042CCE477200924439 /* TripPlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D032CCE477200924439 /* TripPlannerView.swift */; };
 		82981D062CCE481100924439 /* NotificationPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D052CCE481100924439 /* NotificationPermissionView.swift */; };
 		82981D082CCE483400924439 /* RegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D072CCE483400924439 /* RegistrationView.swift */; };
+		82A9A83F2CEDA1EB00BEB90F /* NotificationManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A9A83E2CEDA1EB00BEB90F /* NotificationManger.swift */; };
+		82A9A8412CEDA76600BEB90F /* NotificationManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A9A8402CEDA76600BEB90F /* NotificationManagementViewController.swift */; };
 		82AAE6FA2CE31049005E1189 /* CampgroundDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */; };
 		82AAE6FC2CE32BA8005E1189 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAE6FB2CE32BA8005E1189 /* SearchBar.swift */; };
 		82AAE6FE2CE37EE8005E1189 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAE6FD2CE37EE8005E1189 /* APIManager.swift */; };
@@ -101,9 +100,6 @@
 		8223557B2CDA3E3000CF7554 /* CampLanka.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CampLanka.entitlements; sourceTree = "<group>"; };
 		8223557C2CDA4D7700CF7554 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		822355832CDA58C800CF7554 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		823B6D022CEB65BF00B943DE /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
-		823B6D042CEB69EE00B943DE /* NotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsViewController.swift; sourceTree = "<group>"; };
-		823B6D062CEB7B0D00B943DE /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
 		825822002CD8A5F0006E225B /* CampgroundServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundServicesView.swift; sourceTree = "<group>"; };
 		82981CCB2CCE45C100924439 /* CampLanka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampLanka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82981CCE2CCE45C100924439 /* CampLankaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampLankaApp.swift; sourceTree = "<group>"; };
@@ -123,6 +119,8 @@
 		82981D032CCE477200924439 /* TripPlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPlannerView.swift; sourceTree = "<group>"; };
 		82981D052CCE481100924439 /* NotificationPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionView.swift; sourceTree = "<group>"; };
 		82981D072CCE483400924439 /* RegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationView.swift; sourceTree = "<group>"; };
+		82A9A83E2CEDA1EB00BEB90F /* NotificationManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManger.swift; sourceTree = "<group>"; };
+		82A9A8402CEDA76600BEB90F /* NotificationManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManagementViewController.swift; sourceTree = "<group>"; };
 		82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundDetailView.swift; sourceTree = "<group>"; };
 		82AAE6FB2CE32BA8005E1189 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		82AAE6FD2CE37EE8005E1189 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
@@ -218,11 +216,9 @@
 				82981D012CCE473D00924439 /* SignInSignUpView.swift */,
 				82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */,
 				8223557C2CDA4D7700CF7554 /* AppDelegate.swift */,
-				823B6D042CEB69EE00B943DE /* NotificationSettingsViewController.swift */,
+				82A9A8402CEDA76600BEB90F /* NotificationManagementViewController.swift */,
 				82981D032CCE477200924439 /* TripPlannerView.swift */,
 				822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */,
-				823B6D022CEB65BF00B943DE /* NotificationManager.swift */,
-				823B6D062CEB7B0D00B943DE /* NotificationSettingsView.swift */,
 				82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */,
 				82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */,
 				82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */,
@@ -233,6 +229,7 @@
 				82B2A90F2CE07B7100568194 /* KeychainHelper.swift */,
 				82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */,
 				82981D052CCE481100924439 /* NotificationPermissionView.swift */,
+				82A9A83E2CEDA1EB00BEB90F /* NotificationManger.swift */,
 				82D49DA32CD628CE00AC989F /* SaveToPlanView.swift */,
 				82D49DA52CD62C6000AC989F /* PlanListView.swift */,
 				82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */,
@@ -450,18 +447,16 @@
 				82D49DA62CD62C6000AC989F /* PlanListView.swift in Sources */,
 				82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */,
 				82AAE6FC2CE32BA8005E1189 /* SearchBar.swift in Sources */,
-				823B6D032CEB65BF00B943DE /* NotificationManager.swift in Sources */,
 				82D49DA82CD62FD700AC989F /* CampingPreferenceView.swift in Sources */,
 				82D49DAA2CD6374300AC989F /* BudgetPreferenceView.swift in Sources */,
 				82981D022CCE473D00924439 /* SignInSignUpView.swift in Sources */,
 				82DCC4662CD785D30050CF26 /* CampgroundListView.swift in Sources */,
 				82B2A9102CE07B7100568194 /* KeychainHelper.swift in Sources */,
 				82D49DA42CD628CE00AC989F /* SaveToPlanView.swift in Sources */,
-				823B6D072CEB7B0D00B943DE /* NotificationSettingsView.swift in Sources */,
 				82981CD12CCE45C100924439 /* ConteentView.swift in Sources */,
 				82B0948A2CEA04430035A3B7 /* HelpDetailView.swift in Sources */,
-				823B6D052CEB69EE00B943DE /* NotificationSettingsViewController.swift in Sources */,
 				822355672CD9D49800CF7554 /* HomeView.swift in Sources */,
+				82A9A8412CEDA76600BEB90F /* NotificationManagementViewController.swift in Sources */,
 				8223556D2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift in Sources */,
 				825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */,
 				82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */,
@@ -472,6 +467,7 @@
 				82D49DAC2CD63B8400AC989F /* WishListView.swift in Sources */,
 				822355712CDA21A600CF7554 /* TripPlannerDetailsView.swift in Sources */,
 				82B094862CE9FE990035A3B7 /* PersonalDetailsView.swift in Sources */,
+				82A9A83F2CEDA1EB00BEB90F /* NotificationManger.swift in Sources */,
 				82B1942C2CEC550000BA9F35 /* CampgroundList.swift in Sources */,
 				82DCC46A2CD795A20050CF26 /* ActivitiesPreferencesView.swift in Sources */,
 				82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */,

@@ -10,7 +10,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseAuth
 
-// MARK: - Models
+
 struct Campground: Identifiable, Codable {
     let id: String
     let name: String
@@ -31,7 +31,7 @@ struct Campground: Identifiable, Codable {
     }
 }
 
-// MARK: - View Models
+
 class CampgroundViewModel: ObservableObject {
     @Published var campgrounds: [Campground] = [
         Campground(name: "Wild Glamping Gal Oya", location: "Campgrounds in Ampara", imageUrl: "glamping", likes: 25, rating: 5.0),
@@ -47,7 +47,7 @@ class CampgroundViewModel: ObservableObject {
     private let db = Firestore.firestore()
     
     init() {
-        // Set up auth state listener
+        
         Auth.auth().addStateDidChangeListener { [weak self] _, user in
             if user != nil {
                 self?.loadWishlist()
@@ -78,7 +78,7 @@ class CampgroundViewModel: ObservableObject {
                     }
                 }
                 
-                // Update isFavorite status in campgrounds
+                
                 self?.updateCampgroundFavoriteStatus()
             }
     }
@@ -108,7 +108,7 @@ class CampgroundViewModel: ObservableObject {
                 } catch {
                     errorMessage = "Error saving to wishlist: \(error.localizedDescription)"
                     showError = true
-                
+                    
                     campgrounds[index].isFavorite.toggle()
                 }
             } else {
@@ -117,7 +117,7 @@ class CampgroundViewModel: ObservableObject {
                     if let error = error {
                         self?.errorMessage = "Error removing from wishlist: \(error.localizedDescription)"
                         self?.showError = true
-                    
+                        
                         DispatchQueue.main.async {
                             self?.campgrounds[index].isFavorite.toggle()
                         }
@@ -152,7 +152,7 @@ struct CampgroundCell: View {
                 }
             }
             
-            // Details
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(campground.name)
                     .font(.headline)
@@ -239,7 +239,7 @@ struct CampgroundListView: View {
                             .font(.system(size: 20, weight: .bold))
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: TripPlannerDetailsView(), isActive: $navigateToDetails) {
+                        NavigationLink(destination: SaveToPlanView(), isActive: $navigateToDetails) {
                             Text("Next")
                                 .font(.headline)
                                 .foregroundColor(.blue)

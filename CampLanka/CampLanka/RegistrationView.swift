@@ -19,11 +19,11 @@ struct RegistrationView: View {
     @State private var showSuccessAlert = false
     @State private var errorMessage = ""
     
-    // Reference to Firestore
+    
     private let db = Firestore.firestore()
     private let campGreen = Color(red: 0/255, green: 84/255, blue: 64/255)
     
-    // User struct for Firestore
+    
     struct UserData: Codable {
         let name: String
         let email: String
@@ -34,20 +34,20 @@ struct RegistrationView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 24) {
-                // Logo
+                
                 Image("camplogo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
                     .padding(.top, 50)
                 
-                // Title
+                
                 Text("Sign Up")
                     .font(.system(size: 28, weight: .bold))
                     .multilineTextAlignment(.center)
                     .padding(.top, 10)
                 
-                // Form Fields
+                
                 VStack(spacing: 12) {
                     CustomTextField(
                         text: $name,
@@ -77,7 +77,7 @@ struct RegistrationView: View {
                 }
                 .padding(.top, 20)
                 
-                // Divider
+                
                 HStack {
                     Rectangle()
                         .frame(height: 1)
@@ -129,7 +129,7 @@ struct RegistrationView: View {
                     .padding(.horizontal, 0)
                 }
                 
-                // Terms Checkbox
+                
                 HStack(alignment: .center, spacing: 8) {
                     Button(action: {
                         isTermsAccepted.toggle()
@@ -148,7 +148,7 @@ struct RegistrationView: View {
                 }
                 .padding(.top, 10)
                 
-                // Continue Button
+                
                 Button(action: {
                     registerUser()
                 }) {
@@ -318,7 +318,7 @@ struct RegistrationView: View {
     }
 }
 
-// CustomTextField Component remains unchanged
+
 struct CustomTextField: View {
     @Binding var text: String
     let placeholder: String

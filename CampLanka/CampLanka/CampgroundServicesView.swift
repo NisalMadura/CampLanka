@@ -10,7 +10,7 @@ import SwiftUI
 struct CampgroundServicesView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    // Model for service cards
+    
     struct ServiceCard: Identifiable {
         let id = UUID()
         let title: String
@@ -20,7 +20,7 @@ struct CampgroundServicesView: View {
         let isFeatured: Bool
     }
     
-    // Sample data
+    
     let services = [
         ServiceCard(
             title: "Tent Rental",
@@ -41,9 +41,9 @@ struct CampgroundServicesView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            
             VStack(spacing: 16) {
-                // Navigation Bar
+                
                 HStack {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
@@ -59,7 +59,7 @@ struct CampgroundServicesView: View {
                 }
                 .padding(.horizontal)
                 
-                // Title
+                
                 HStack {
                     Text("Campground Services")
                         .font(.title2)
@@ -70,7 +70,7 @@ struct CampgroundServicesView: View {
             }
             .padding(.vertical, 8)
             
-            // Services List
+            
             ScrollView {
                 VStack(spacing: 16) {
                     ForEach(services) { service in
@@ -80,20 +80,20 @@ struct CampgroundServicesView: View {
                 .padding()
             }
             
-            // Using your existing CustomTabBar
-           // CustomTabBar()
+            
+            // CustomTabBar()
             .navigationBarBackButtonHidden(true)
         }
     }
 }
 
-// Service Card View
+
 struct ServiceCardView: View {
     let service: CampgroundServicesView.ServiceCard
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            // Background Image
+            
             Image(service.imageUrl)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -108,9 +108,9 @@ struct ServiceCardView: View {
                     )
                 )
             
-            // Content Overlay
+            
             VStack(alignment: .leading, spacing: 8) {
-                // Tags
+                
                 HStack(spacing: 8) {
                     if service.isVerified {
                         HStack(spacing: 4) {
@@ -141,7 +141,7 @@ struct ServiceCardView: View {
                 
                 Spacer()
                 
-                // Title and Contact
+                
                 VStack(alignment: .leading, spacing: 4) {
                     Text(service.title)
                         .font(.title3)
@@ -155,9 +155,9 @@ struct ServiceCardView: View {
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
                 
-                // View Button
+                
                 Button(action: {
-                    // Handle view action
+                    
                     callPhoneNumber(service.contactNumber)
                 }) {
                     Text("View")
@@ -176,7 +176,7 @@ struct ServiceCardView: View {
         .shadow(radius: 5)
     }
     
-    // Function to handle phone call
+    
     private func callPhoneNumber(_ number: String) {
         let cleanNumber = number.replacingOccurrences(of: " ", with: "")
         if let url = URL(string: "tel://\(cleanNumber)") {
@@ -185,7 +185,7 @@ struct ServiceCardView: View {
     }
 }
 
-// Preview Provider
+
 struct CampgroundServicesView_Previews: PreviewProvider {
     static var previews: some View {
         CampgroundServicesView()

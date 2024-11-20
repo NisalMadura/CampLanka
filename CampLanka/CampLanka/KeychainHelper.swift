@@ -40,7 +40,7 @@ final class KeychainHelper {
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
-    
+        
         if status == errSecDuplicateItem {
             let searchQuery = [
                 kSecClass: kSecClassGenericPassword,
@@ -79,7 +79,7 @@ final class KeychainHelper {
         SecItemDelete(query)
     }
     
-    // Convenience methods for storing strings
+    
     func save(_ string: String, forKey key: String, withBiometricProtection protection: BiometricProtectionLevel = .none) {
         if let data = string.data(using: .utf8) {
             save(data, forKey: key, withBiometricProtection: protection)
@@ -91,7 +91,7 @@ final class KeychainHelper {
         return String(data: data, encoding: .utf8)
     }
     
-    // Check if biometric authentication is available
+    
     func canUseBiometricAuthentication() -> Bool {
         let context = LAContext()
         var error: NSError?
@@ -99,7 +99,7 @@ final class KeychainHelper {
         return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
     }
     
-    // Perform biometric authentication
+    
     func authenticateWithBiometric(reason: String = "Authenticate to sign in", completion: @escaping (Result<Void, Error>) -> Void) {
         let context = LAContext()
         var error: NSError?

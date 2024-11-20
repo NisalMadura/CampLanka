@@ -14,7 +14,7 @@ struct Member: Identifiable {
     var phoneNumber: String?
     var email: String?
     
-
+    
     init(from contact: CNContact) {
         self.name = "\(contact.givenName) \(contact.familyName)".trimmingCharacters(in: .whitespaces)
         self.imageUrl = "person.circle.fill"
@@ -22,7 +22,7 @@ struct Member: Identifiable {
         self.email = contact.emailAddresses.first?.value as String?
     }
     
-
+    
     init(name: String, imageUrl: String = "person.circle.fill", phoneNumber: String? = nil, email: String? = nil) {
         self.name = name
         self.imageUrl = imageUrl
@@ -46,7 +46,7 @@ struct ContactPickerViewController: UIViewControllerRepresentable {
             
             let newMembers = contacts.map { Member(from: $0) }
             
-        
+            
             DispatchQueue.main.async {
                 self.parent.members.append(contentsOf: newMembers)
                 
@@ -137,28 +137,28 @@ extension TripPlannerDetailsView {
         }
     }
 }
+
+
+func requestContactsAccess(completion: @escaping (Bool) -> Void) {
+    let store = CNContactStore()
     
-    // Update requestContactsAccess function
-    func requestContactsAccess(completion: @escaping (Bool) -> Void) {
-        let store = CNContactStore()
-        
-        switch CNContactStore.authorizationStatus(for: .contacts) {
-        case .authorized:
-            completion(true)
-        case .notDetermined:
-            store.requestAccess(for: .contacts) { granted, _ in
-                DispatchQueue.main.async {
-                    completion(granted)
-                }
-            }
-        default:
+    switch CNContactStore.authorizationStatus(for: .contacts) {
+    case .authorized:
+        completion(true)
+    case .notDetermined:
+        store.requestAccess(for: .contacts) { granted, _ in
             DispatchQueue.main.async {
-                completion(false)
-                // Show alert to guide user to Settings app
-                // You might want to add an alert here
+                completion(granted)
             }
         }
+    default:
+        DispatchQueue.main.async {
+            completion(false)
+            
+            
+        }
     }
+}
 
 
 
@@ -175,13 +175,13 @@ struct TripPlannerDetailsView: View {
     @State private var showingDatePicker = false
     @State private var notes: String = ""
     @State private var isShowingContactPicker = false
-    @State private var members: [Member] = [] // Initialize as empty array
-       // @State private var isShowingContactPicker = false
-        @State private var showingSettingsAlert = false
+    @State private var members: [Member] = []
+    // @State private var isShowingContactPicker = false
+    @State private var showingSettingsAlert = false
     @State private var tripId: String?
-        @State private var isEditMode: Bool = false
+    @State private var isEditMode: Bool = false
     
-    // New state variables for custom items
+    
     @State private var customPackingItems: Set<String> = []
     @State private var newPackingItem: String = ""
     @State private var showingAddPackingItem = false
@@ -197,80 +197,80 @@ struct TripPlannerDetailsView: View {
     @State private var eventKitManager = EventKitManager()
     @State private var isPermissionGranted = false
     @State private var showingError = false
-        @State private var errorMessage = ""
+    @State private var errorMessage = ""
     @State private var showingSaveSuccess = false
-        @State private var showingCalendarSuccess = false
-        @State private var showingAlert = false
-        @State private var alertTitle = ""
-        @State private var alertMessage = ""
+    @State private var showingCalendarSuccess = false
+    @State private var showingAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
     
     private var db = Firestore.firestore()
     
     private func loadTripData() {
-          guard let userId = Auth.auth().currentUser?.uid else { return }
-          
-          db.collection("plans")
-             
-              .getDocuments { snapshot, error in
-                  if let error = error {
-                      print("Error loading trip data: \(error)")
-                      return
-                  }
-                  
-                  guard let document = snapshot?.documents.first else { return }
-                  let data = document.data()
-                  
-                  tripId = document.documentID
-                  
-                  // Update UI with loaded data
-                  DispatchQueue.main.async {
-                      selectedCity = data["city"] as? String ?? ""
-                      
-                      if let startDate = (data["startDate"] as? Timestamp)?.dateValue(),
-                         let endDate = (data["endDate"] as? Timestamp)?.dateValue() {
-                          selectedDates = DateRange(startDate: startDate, endDate: endDate)
-                      }
-                      
-                      if let budget = data["budget"] as? [String: String] {
-                          minBudget = budget["min"] ?? ""
-                          maxBudget = budget["max"] ?? ""
-                      }
-                      
-                      if let transportArray = data["transportMethods"] as? [String] {
-                          selectedTransportMethods = Set(transportArray.compactMap { TransportMethod(rawValue: $0) })
-                      }
-                      
-                      if let packingArray = data["packingItems"] as? [String] {
-                          let predefinedItems = Set(packingArray.compactMap { PackingItem(rawValue: $0) })
-                          let customItems = Set(packingArray.filter { PackingItem(rawValue: $0) == nil })
-                          
-                          selectedPackingItems = predefinedItems
-                          customPackingItems = customItems
-                      }
-                      
-                      if let activitiesArray = data["activities"] as? [String] {
-                          let predefinedActivities = Set(activitiesArray.compactMap { Activity(rawValue: $0) })
-                          let customActivitiesList = Set(activitiesArray.filter { Activity(rawValue: $0) == nil })
-                          
-                          selectedActivities = predefinedActivities
-                          customActivities = customActivitiesList
-                      }
-                      
-                      numberOfPeople = data["numberOfPeople"] as? Int ?? 1
-                      notes = data["notes"] as? String ?? ""
-                      
-                      if let membersData = data["members"] as? [[String: Any]] {
-                          members = membersData.map { memberData in
-                              Member(
-                                  name: memberData["name"] as? String ?? "",
-                                  phoneNumber: memberData["phoneNumber"] as? String,
-                                  email: memberData["email"] as? String
-                              )
-                          }
-                      }
-                  }
-              }
-      }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        db.collection("plans")
+        
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("Error loading trip data: \(error)")
+                    return
+                }
+                
+                guard let document = snapshot?.documents.first else { return }
+                let data = document.data()
+                
+                tripId = document.documentID
+                
+                
+                DispatchQueue.main.async {
+                    selectedCity = data["city"] as? String ?? ""
+                    
+                    if let startDate = (data["startDate"] as? Timestamp)?.dateValue(),
+                       let endDate = (data["endDate"] as? Timestamp)?.dateValue() {
+                        selectedDates = DateRange(startDate: startDate, endDate: endDate)
+                    }
+                    
+                    if let budget = data["budget"] as? [String: String] {
+                        minBudget = budget["min"] ?? ""
+                        maxBudget = budget["max"] ?? ""
+                    }
+                    
+                    if let transportArray = data["transportMethods"] as? [String] {
+                        selectedTransportMethods = Set(transportArray.compactMap { TransportMethod(rawValue: $0) })
+                    }
+                    
+                    if let packingArray = data["packingItems"] as? [String] {
+                        let predefinedItems = Set(packingArray.compactMap { PackingItem(rawValue: $0) })
+                        let customItems = Set(packingArray.filter { PackingItem(rawValue: $0) == nil })
+                        
+                        selectedPackingItems = predefinedItems
+                        customPackingItems = customItems
+                    }
+                    
+                    if let activitiesArray = data["activities"] as? [String] {
+                        let predefinedActivities = Set(activitiesArray.compactMap { Activity(rawValue: $0) })
+                        let customActivitiesList = Set(activitiesArray.filter { Activity(rawValue: $0) == nil })
+                        
+                        selectedActivities = predefinedActivities
+                        customActivities = customActivitiesList
+                    }
+                    
+                    numberOfPeople = data["numberOfPeople"] as? Int ?? 1
+                    notes = data["notes"] as? String ?? ""
+                    
+                    if let membersData = data["members"] as? [[String: Any]] {
+                        members = membersData.map { memberData in
+                            Member(
+                                name: memberData["name"] as? String ?? "",
+                                phoneNumber: memberData["phoneNumber"] as? String,
+                                email: memberData["email"] as? String
+                            )
+                        }
+                    }
+                }
+            }
+    }
     enum TransportMethod: String, CaseIterable {
         case bus = "Bus"
         case train = "Train"
@@ -291,8 +291,8 @@ struct TripPlannerDetailsView: View {
         case bbqDinner = "BBQ Dinner"
         case cycling = "Cycling"
     }
-
-   
+    
+    
     
     struct DateRange {
         var startDate: Date
@@ -328,26 +328,26 @@ struct TripPlannerDetailsView: View {
                 .padding()
             }
             .navigationBarTitle("Plan Your Tour", displayMode: .inline)
-                        .navigationBarBackButtonHidden(true)
-                        .sheet(isPresented: $showingDatePicker) {
-                            DatePickerView(selectedDates: $selectedDates, isPresented: $showingDatePicker)
-                        }
-                        .sheet(isPresented: $showingAddPackingItem) {
-                            addItemSheet
-                        }
-                        .sheet(isPresented: $showingAddActivity) {
-                            addActivitySheet
-                        }
-                        .sheet(isPresented: $showingAddMember) {
-                            addMemberSheet
-                        }
-                        .onAppear {
-                            eventKitManager.requestCalendarPermission { granted in
-                                isPermissionGranted = granted
-                            }
-                        }
-                    }
+            .navigationBarBackButtonHidden(true)
+            .sheet(isPresented: $showingDatePicker) {
+                DatePickerView(selectedDates: $selectedDates, isPresented: $showingDatePicker)
+            }
+            .sheet(isPresented: $showingAddPackingItem) {
+                addItemSheet
+            }
+            .sheet(isPresented: $showingAddActivity) {
+                addActivitySheet
+            }
+            .sheet(isPresented: $showingAddMember) {
+                addMemberSheet
+            }
+            .onAppear {
+                eventKitManager.requestCalendarPermission { granted in
+                    isPermissionGranted = granted
                 }
+            }
+        }
+    }
     
     
     
@@ -422,46 +422,46 @@ struct TripPlannerDetailsView: View {
     }
     
     private var packingListSection: some View {
-          VStack(alignment: .leading, spacing: 8) {
-              Text("Packing List")
-                  .font(.headline)
-              
-              LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 10) {
-                  ForEach(PackingItem.allCases, id: \.self) { item in
-                      Toggle(isOn: Binding(
-                          get: { selectedPackingItems.contains(item) },
-                          set: { isSelected in
-                              if isSelected {
-                                  selectedPackingItems.insert(item)
-                              } else {
-                                  selectedPackingItems.remove(item)
-                              }
-                          }
-                      )) {
-                          Text(item.rawValue)
-                      }
-                  }
-                  
-                  
-                  ForEach(Array(customPackingItems), id: \.self) { item in
-                      Toggle(isOn: .constant(true)) {
-                          Text(item)
-                      }
-                  }
-              }
-              
-              Button(action: { showingAddPackingItem.toggle() }) {
-                  HStack {
-                      Image(systemName: "plus.circle.fill")
-                      Text("Add Item")
-                  }
-                  .foregroundColor(.white)
-                  .padding()
-                  .background(Color.green)
-                  .cornerRadius(8)
-              }
-          }
-      }
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Packing List")
+                .font(.headline)
+            
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 10) {
+                ForEach(PackingItem.allCases, id: \.self) { item in
+                    Toggle(isOn: Binding(
+                        get: { selectedPackingItems.contains(item) },
+                        set: { isSelected in
+                            if isSelected {
+                                selectedPackingItems.insert(item)
+                            } else {
+                                selectedPackingItems.remove(item)
+                            }
+                        }
+                    )) {
+                        Text(item.rawValue)
+                    }
+                }
+                
+                
+                ForEach(Array(customPackingItems), id: \.self) { item in
+                    Toggle(isOn: .constant(true)) {
+                        Text(item)
+                    }
+                }
+            }
+            
+            Button(action: { showingAddPackingItem.toggle() }) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                    Text("Add Item")
+                }
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.green)
+                .cornerRadius(8)
+            }
+        }
+    }
     
     private var peopleCountSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -499,107 +499,107 @@ struct TripPlannerDetailsView: View {
     }
     
     private var activitiesSection: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Activities to enjoy")
-                    .font(.headline)
-                
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 10) {
-                    ForEach(Activity.allCases, id: \.self) { activity in
-                        Toggle(isOn: Binding(
-                            get: { selectedActivities.contains(activity) },
-                            set: { isSelected in
-                                if isSelected {
-                                    selectedActivities.insert(activity)
-                                } else {
-                                    selectedActivities.remove(activity)
-                                }
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Activities to enjoy")
+                .font(.headline)
+            
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 10) {
+                ForEach(Activity.allCases, id: \.self) { activity in
+                    Toggle(isOn: Binding(
+                        get: { selectedActivities.contains(activity) },
+                        set: { isSelected in
+                            if isSelected {
+                                selectedActivities.insert(activity)
+                            } else {
+                                selectedActivities.remove(activity)
                             }
-                        )) {
-                            Text(activity.rawValue)
                         }
-                    }
-                    
-                
-                    ForEach(Array(customActivities), id: \.self) { activity in
-                        Toggle(isOn: .constant(true)) {
-                            Text(activity)
-                        }
+                    )) {
+                        Text(activity.rawValue)
                     }
                 }
                 
-                Button(action: { showingAddActivity.toggle() }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                        Text("Add Activity")
+                
+                ForEach(Array(customActivities), id: \.self) { activity in
+                    Toggle(isOn: .constant(true)) {
+                        Text(activity)
                     }
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.green)
-                    .cornerRadius(8)
                 }
             }
+            
+            Button(action: { showingAddActivity.toggle() }) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                    Text("Add Activity")
+                }
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.green)
+                .cornerRadius(8)
+            }
         }
-        
+    }
     
-        private var addItemSheet: some View {
-            NavigationView {
-                VStack(spacing: 20) {
-                    TextField("Enter new item", text: $newPackingItem)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding()
-                    
-                    Button(action: {
-                        if !newPackingItem.isEmpty {
-                            customPackingItems.insert(newPackingItem)
-                            newPackingItem = ""
-                            showingAddPackingItem = false
-                        }
-                    }) {
-                        Text("Add Item")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .cornerRadius(8)
-                    }
+    
+    private var addItemSheet: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                TextField("Enter new item", text: $newPackingItem)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
+                
+                Button(action: {
+                    if !newPackingItem.isEmpty {
+                        customPackingItems.insert(newPackingItem)
+                        newPackingItem = ""
+                        showingAddPackingItem = false
+                    }
+                }) {
+                    Text("Add Item")
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.green)
+                        .cornerRadius(8)
                 }
-                .navigationBarTitle("Add New Item", displayMode: .inline)
-                .navigationBarItems(trailing: Button("Cancel") {
-                    showingAddPackingItem = false
-                })
+                .padding()
             }
+            .navigationBarTitle("Add New Item", displayMode: .inline)
+            .navigationBarItems(trailing: Button("Cancel") {
+                showingAddPackingItem = false
+            })
         }
-        
+    }
+    
     private var addActivitySheet: some View {
-            NavigationView {
-                VStack(spacing: 20) {
-                    TextField("Enter new activity", text: $newActivity)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding()
-                    
-                    Button(action: {
-                        if !newActivity.isEmpty {
-                            customActivities.insert(newActivity)
-                            newActivity = ""
-                            showingAddActivity = false
-                        }
-                    }) {
-                        Text("Add Activity")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .cornerRadius(8)
-                    }
+        NavigationView {
+            VStack(spacing: 20) {
+                TextField("Enter new activity", text: $newActivity)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
+                
+                Button(action: {
+                    if !newActivity.isEmpty {
+                        customActivities.insert(newActivity)
+                        newActivity = ""
+                        showingAddActivity = false
+                    }
+                }) {
+                    Text("Add Activity")
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.green)
+                        .cornerRadius(8)
                 }
-                .navigationBarTitle("Add New Activity", displayMode: .inline)
-                .navigationBarItems(trailing: Button("Cancel") {
-                    showingAddActivity = false
-                })
+                .padding()
             }
+            .navigationBarTitle("Add New Activity", displayMode: .inline)
+            .navigationBarItems(trailing: Button("Cancel") {
+                showingAddActivity = false
+            })
         }
+    }
     
     private var addMemberSheet: some View {
         NavigationView {
@@ -631,9 +631,9 @@ struct TripPlannerDetailsView: View {
             })
         }
     }
-   // @State private var isShowingContactPicker = false
+    // @State private var isShowingContactPicker = false
     @State private var fetchedContacts: [CNContact] = []
-
+    
     private var contactPicker: some View {
         NavigationView {
             List {
@@ -653,7 +653,7 @@ struct TripPlannerDetailsView: View {
             })
         }
     }
-
+    
     private var membersSkection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Who’s coming along?")
@@ -690,7 +690,7 @@ struct TripPlannerDetailsView: View {
             contactPicker
         }
     }
-
+    
     
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -705,33 +705,33 @@ struct TripPlannerDetailsView: View {
     }
     
     private var actionButtons: some View {
-            HStack {
-                Button(action: saveTripDetails) {
-                    Text("Save Details")
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-                
-                Button(action: saveTripToCalendar) {
-                    Text("Save to Calendar")
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
+        HStack {
+            Button(action: saveTripDetails) {
+                Text("Save Details")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
             }
-            .alert(isPresented: $showingAlert) {
-                Alert(
-                    title: Text(alertTitle),
-                    message: Text(alertMessage),
-                    dismissButton: .default(Text("OK"))
-                )
+            
+            Button(action: saveTripToCalendar) {
+                Text("Save to Calendar")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
             }
         }
+        .alert(isPresented: $showingAlert) {
+            Alert(
+                title: Text(alertTitle),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+    }
     func requestContkactsAccess(completion: @escaping (Bool) -> Void) {
         let store = CNContactStore()
         store.requestAccess(for: .contacts) { granted, error in
@@ -756,72 +756,72 @@ struct TripPlannerDetailsView: View {
         }
         return contacts
     }
-
+    
     func saveTripDetails() {
-            guard let userId = Auth.auth().currentUser?.uid else {
-                showAlert(title: "Error", message: "Please sign in to save trip details")
-                return
-            }
+        guard let userId = Auth.auth().currentUser?.uid else {
+            showAlert(title: "Error", message: "Please sign in to save trip details")
+            return
+        }
+        
+        guard !selectedCity.isEmpty, let selectedDates = selectedDates else {
+            showAlert(title: "Error", message: "Please fill in all required fields.")
+            return
+        }
+        
+        var tripData: [String: Any] = [
+            "userId": userId,
+            "city": selectedCity,
+            "startDate": selectedDates.startDate,
+            "endDate": selectedDates.endDate,
+            "budget": [
+                "min": minBudget,
+                "max": maxBudget
+            ],
+            "transportMethods": Array(selectedTransportMethods.map { $0.rawValue }),
+            "packingItems": Array(selectedPackingItems.map { $0.rawValue }) + Array(customPackingItems),
+            "activities": Array(selectedActivities.map { $0.rawValue }) + Array(customActivities),
+            "numberOfPeople": numberOfPeople,
+            "notes": notes,
+            "members": members.map { [
+                "name": $0.name,
+                "phoneNumber": $0.phoneNumber ?? "",
+                "email": $0.email ?? ""
+            ]},
+            "updatedAt": FieldValue.serverTimestamp()
+        ]
+        
+        let plansCollection = db.collection("plans")
+        
+        if let tripId = tripId {
             
-            guard !selectedCity.isEmpty, let selectedDates = selectedDates else {
-                showAlert(title: "Error", message: "Please fill in all required fields.")
-                return
-            }
-            
-            var tripData: [String: Any] = [
-                "userId": userId,
-                "city": selectedCity,
-                "startDate": selectedDates.startDate,
-                "endDate": selectedDates.endDate,
-                "budget": [
-                    "min": minBudget,
-                    "max": maxBudget
-                ],
-                "transportMethods": Array(selectedTransportMethods.map { $0.rawValue }),
-                "packingItems": Array(selectedPackingItems.map { $0.rawValue }) + Array(customPackingItems),
-                "activities": Array(selectedActivities.map { $0.rawValue }) + Array(customActivities),
-                "numberOfPeople": numberOfPeople,
-                "notes": notes,
-                "members": members.map { [
-                    "name": $0.name,
-                    "phoneNumber": $0.phoneNumber ?? "",
-                    "email": $0.email ?? ""
-                ]},
-                "updatedAt": FieldValue.serverTimestamp()
-            ]
-            
-            let plansCollection = db.collection("plans")
-            
-            if let tripId = tripId {
-                // Update existing document
-                plansCollection.document(tripId).updateData(tripData) { error in
-                    if let error = error {
-                        showAlert(title: "Error", message: "Error updating trip details: \(error.localizedDescription)")
-                    } else {
-                        plansCollection.addDocument(data: tripData)
-                        showAlert(title: "Success", message: "Trip plan updated successfully!")
-                        self.isEditMode=true
-                    }
+            plansCollection.document(tripId).updateData(tripData) { error in
+                if let error = error {
+                    showAlert(title: "Error", message: "Error updating trip details: \(error.localizedDescription)")
+                } else {
+                    plansCollection.addDocument(data: tripData)
+                    showAlert(title: "Success", message: "Trip plan updated successfully!")
+                    self.isEditMode=true
                 }
-            } else {
-                // Create new document
-                tripData["createdAt"] = FieldValue.serverTimestamp()
-                plansCollection.addDocument(data: tripData) { error in
-                    if let error = error {
-                        showAlert(title: "Error", message: "Error saving trip details: \(error.localizedDescription)")
-                    } else {
-                        showAlert(title: "Success", message: "Trip plan created successfully!")
-                        self.isEditMode=true
-                    }
+            }
+        } else {
+            
+            tripData["createdAt"] = FieldValue.serverTimestamp()
+            plansCollection.addDocument(data: tripData) { error in
+                if let error = error {
+                    showAlert(title: "Error", message: "Error saving trip details: \(error.localizedDescription)")
+                } else {
+                    showAlert(title: "Success", message: "Trip plan created successfully!")
+                    self.isEditMode=true
                 }
             }
         }
+    }
     private func setupAuthStateObserver() {
         Auth.auth().addStateDidChangeListener { [self] auth, user in
             if user != nil {
                 self.loadTripData()
             } else {
-                // Only clear if not in edit mode
+                
                 if self.isEditMode == false {
                     self.clearFormFields()
                     self.tripId = nil
@@ -830,70 +830,70 @@ struct TripPlannerDetailsView: View {
         }
     }
     
-
+    
     private func saveTripToCaloendar() {
-          guard let selectedDates = selectedDates else {
-              showAlert(title: "Error", message: "Please select trip dates first")
-              return
-          }
-          
-          guard !selectedCity.isEmpty else {
-              showAlert(title: "Error", message: "Please enter a destination")
-              return
-          }
-          
-          let notes = """
+        guard let selectedDates = selectedDates else {
+            showAlert(title: "Error", message: "Please select trip dates first")
+            return
+        }
+        
+        guard !selectedCity.isEmpty else {
+            showAlert(title: "Error", message: "Please enter a destination")
+            return
+        }
+        
+        let notes = """
           Budget: \(minBudget)-\(maxBudget)$
           Transport: \(selectedTransportMethods.map { $0.rawValue }.joined(separator: ", "))
           Activities: \(selectedActivities.map { $0.rawValue }.joined(separator: ", "))
           Notes: \(notes)
           """
-          
-          
-          let event = EKEvent(eventStore: eventKitManager.eventStore)
-          event.title = "Trip to \(selectedCity)"
-          event.startDate = selectedDates.startDate
-          event.endDate = selectedDates.endDate
-          event.notes = notes
-          
-          
-          let reminder = EKReminder(eventStore: eventKitManager.eventStore)
-          reminder.title = "Prepare for trip to \(selectedCity)"
-          reminder.notes = "Your trip to \(selectedCity) is coming up!"
-          reminder.dueDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: Calendar.current.date(byAdding: .day, value: -1, to: selectedDates.startDate) ?? selectedDates.startDate)
-          reminder.priority = 1
-          
-          do {
-              try eventKitManager.eventStore.save(event, span: .thisEvent)
-              try eventKitManager.eventStore.save(reminder, commit: true)
-              showAlert(title: "Success", message: "Trip has been added to your calendar and reminders!")
-          } catch {
-              showAlert(title: "Error", message: "Failed to save to calendar: \(error.localizedDescription)")
-          }
-      }
-      
-      private func showAlert(title: String, message: String) {
-          alertTitle = title
-          alertMessage = message
-          showingAlert = true
-      }
-      
-      private func clearFormFields() {
-          selectedCity = ""
-          selectedDates = nil
-          minBudget = ""
-          maxBudget = ""
-          selectedTransportMethods = []
-          selectedPackingItems = []
-          selectedActivities = []
-          numberOfPeople = 1
-          notes = ""
-          members = []
-          customPackingItems = []
-          customActivities = []
-          tripId=nil
-      }
-  }
+        
+        
+        let event = EKEvent(eventStore: eventKitManager.eventStore)
+        event.title = "Trip to \(selectedCity)"
+        event.startDate = selectedDates.startDate
+        event.endDate = selectedDates.endDate
+        event.notes = notes
+        
+        
+        let reminder = EKReminder(eventStore: eventKitManager.eventStore)
+        reminder.title = "Prepare for trip to \(selectedCity)"
+        reminder.notes = "Your trip to \(selectedCity) is coming up!"
+        reminder.dueDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: Calendar.current.date(byAdding: .day, value: -1, to: selectedDates.startDate) ?? selectedDates.startDate)
+        reminder.priority = 1
+        
+        do {
+            try eventKitManager.eventStore.save(event, span: .thisEvent)
+            try eventKitManager.eventStore.save(reminder, commit: true)
+            showAlert(title: "Success", message: "Trip has been added to your calendar and reminders!")
+        } catch {
+            showAlert(title: "Error", message: "Failed to save to calendar: \(error.localizedDescription)")
+        }
+    }
+    
+    private func showAlert(title: String, message: String) {
+        alertTitle = title
+        alertMessage = message
+        showingAlert = true
+    }
+    
+    private func clearFormFields() {
+        selectedCity = ""
+        selectedDates = nil
+        minBudget = ""
+        maxBudget = ""
+        selectedTransportMethods = []
+        selectedPackingItems = []
+        selectedActivities = []
+        numberOfPeople = 1
+        notes = ""
+        members = []
+        customPackingItems = []
+        customActivities = []
+        tripId=nil
+    }
+}
 
 
 struct DatePickerView: View {
@@ -952,7 +952,7 @@ struct DatePickerView: View {
     }
 }
 
-    
+
 class EventKitManager: ObservableObject {
     let eventStore = EKEventStore()
     @Published var isAuthorized = false
@@ -987,138 +987,138 @@ class EventKitManager: ObservableObject {
     }
     
     func saveEventToCalendar(title: String, startDate: Date, endDate: Date, notes: String, completion: @escaping (Bool, String) -> Void) {
-          
-          let authStatus = EKEventStore.authorizationStatus(for: .event)
-          
-          guard authStatus == .authorized else {
-              completion(false, "Calendar access not authorized")
-              return
-          }
-          
-          // Ensure we have a calendar to save to
-          guard let calendar = eventStore.defaultCalendarForNewEvents else {
-              // If no default calendar, try to get the first available calendar
-              let calendars = eventStore.calendars(for: .event)
-              guard let firstCalendar = calendars.first else {
-                  completion(false, "No calendar available")
-                  return
-              }
-              
-              let event = EKEvent(eventStore: eventStore)
-              event.calendar = firstCalendar
-              event.title = title
-              event.startDate = startDate
-              event.endDate = endDate
-              event.notes = notes
-              
-              
-              let alarm = EKAlarm(relativeOffset: -86400) // 24 hours in seconds
-              event.addAlarm(alarm)
-              
-              do {
-                  try eventStore.save(event, span: .thisEvent)
-                  saveReminderForTrip(title: "Prepare for \(title)", notes: notes, dueDate: startDate)
-                  completion(true, "Event saved successfully")
-              } catch {
-                  completion(false, "Failed to save event: \(error.localizedDescription)")
-              }
-              return
-          }
-          
-          
-          let event = EKEvent(eventStore: eventStore)
-          event.calendar = calendar
-          event.title = title
-          event.startDate = startDate
-          event.endDate = endDate
-          event.notes = notes
-          
-          
-          let alarm = EKAlarm(relativeOffset: -86400)
-          event.addAlarm(alarm)
-          
-          do {
-              try eventStore.save(event, span: .thisEvent)
-              saveReminderForTrip(title: "Prepare for \(title)", notes: notes, dueDate: startDate)
-              completion(true, "Event saved successfully")
-          } catch {
-              completion(false, "Failed to save event: \(error.localizedDescription)")
-          }
-      }
-      
-      private func saveReminderForTrip(title: String, notes: String, dueDate: Date) {
-          guard EKEventStore.authorizationStatus(for: .reminder) == .authorized else { return }
-          
-          let reminder = EKReminder(eventStore: eventStore)
-          reminder.title = title
-          reminder.notes = notes
-          reminder.calendar = eventStore.defaultCalendarForNewReminders()
-          
         
-          let oneDayBefore = Calendar.current.date(byAdding: .day, value: -1, to: dueDate) ?? dueDate
-          reminder.dueDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: oneDayBefore)
-          
+        let authStatus = EKEventStore.authorizationStatus(for: .event)
         
-          let alarm = EKAlarm(absoluteDate: oneDayBefore)
-          reminder.addAlarm(alarm)
-          
-          do {
-              try eventStore.save(reminder, commit: true)
-          } catch {
-              print("Failed to save reminder: \(error.localizedDescription)")
-          }
-      }
-  }
+        guard authStatus == .authorized else {
+            completion(false, "Calendar access not authorized")
+            return
+        }
+        
+        
+        guard let calendar = eventStore.defaultCalendarForNewEvents else {
+            
+            let calendars = eventStore.calendars(for: .event)
+            guard let firstCalendar = calendars.first else {
+                completion(false, "No calendar available")
+                return
+            }
+            
+            let event = EKEvent(eventStore: eventStore)
+            event.calendar = firstCalendar
+            event.title = title
+            event.startDate = startDate
+            event.endDate = endDate
+            event.notes = notes
+            
+            
+            let alarm = EKAlarm(relativeOffset: -86400)
+            event.addAlarm(alarm)
+            
+            do {
+                try eventStore.save(event, span: .thisEvent)
+                saveReminderForTrip(title: "Prepare for \(title)", notes: notes, dueDate: startDate)
+                completion(true, "Event saved successfully")
+            } catch {
+                completion(false, "Failed to save event: \(error.localizedDescription)")
+            }
+            return
+        }
+        
+        
+        let event = EKEvent(eventStore: eventStore)
+        event.calendar = calendar
+        event.title = title
+        event.startDate = startDate
+        event.endDate = endDate
+        event.notes = notes
+        
+        
+        let alarm = EKAlarm(relativeOffset: -86400)
+        event.addAlarm(alarm)
+        
+        do {
+            try eventStore.save(event, span: .thisEvent)
+            saveReminderForTrip(title: "Prepare for \(title)", notes: notes, dueDate: startDate)
+            completion(true, "Event saved successfully")
+        } catch {
+            completion(false, "Failed to save event: \(error.localizedDescription)")
+        }
+    }
+    
+    private func saveReminderForTrip(title: String, notes: String, dueDate: Date) {
+        guard EKEventStore.authorizationStatus(for: .reminder) == .authorized else { return }
+        
+        let reminder = EKReminder(eventStore: eventStore)
+        reminder.title = title
+        reminder.notes = notes
+        reminder.calendar = eventStore.defaultCalendarForNewReminders()
+        
+        
+        let oneDayBefore = Calendar.current.date(byAdding: .day, value: -1, to: dueDate) ?? dueDate
+        reminder.dueDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: oneDayBefore)
+        
+        
+        let alarm = EKAlarm(absoluteDate: oneDayBefore)
+        reminder.addAlarm(alarm)
+        
+        do {
+            try eventStore.save(reminder, commit: true)
+        } catch {
+            print("Failed to save reminder: \(error.localizedDescription)")
+        }
+    }
+}
 
-  extension TripPlannerDetailsView {
-      private func saveTripToCalendar() {
-          guard let selectedDates = selectedDates else {
-              showAlert(title: "Error", message: "Please select trip dates first")
-              return
-          }
-          
-          guard !selectedCity.isEmpty else {
-              showAlert(title: "Error", message: "Please enter a destination")
-              return
-          }
-          
-          let notes = """
+extension TripPlannerDetailsView {
+    private func saveTripToCalendar() {
+        guard let selectedDates = selectedDates else {
+            showAlert(title: "Error", message: "Please select trip dates first")
+            return
+        }
+        
+        guard !selectedCity.isEmpty else {
+            showAlert(title: "Error", message: "Please enter a destination")
+            return
+        }
+        
+        let notes = """
           Trip to \(selectedCity)
           Budget: \(minBudget)-\(maxBudget)$
           Transport: \(selectedTransportMethods.map { $0.rawValue }.joined(separator: ", "))
           Activities: \(selectedActivities.map { $0.rawValue }.joined(separator: ", "))
           Additional Notes: \(self.notes)
           """
-          
-          
-          eventKitManager.requestCalendarPermission { granted in
-              if granted {
-                  
-                  eventKitManager.saveEventToCalendar(
-                      title: "Trip to \(selectedCity)",
-                      startDate: selectedDates.startDate,
-                      endDate: selectedDates.endDate,
-                      notes: notes
-                  ) { success, message in
-                      DispatchQueue.main.async {
-                          if success {
-                              showAlert(title: "Success", message: "Trip has been added to your calendar and reminders!")
-                          } else {
-                              showAlert(title: "Error", message: message)
-                          }
-                      }
-                  }
-              } else {
-                  showAlert(title: "Error", message: "Calendar access denied. Please enable calendar access in Settings.")
-              }
-          }
-      }
-  }
         
         
-
-    struct TripPlannerDetailsView_Previews: PreviewProvider {
-        static var previews: some View {
-            TripPlannerDetailsView()
+        eventKitManager.requestCalendarPermission { granted in
+            if granted {
+                
+                eventKitManager.saveEventToCalendar(
+                    title: "Trip to \(selectedCity)",
+                    startDate: selectedDates.startDate,
+                    endDate: selectedDates.endDate,
+                    notes: notes
+                ) { success, message in
+                    DispatchQueue.main.async {
+                        if success {
+                            showAlert(title: "Success", message: "Trip has been added to your calendar and reminders!")
+                        } else {
+                            showAlert(title: "Error", message: message)
+                        }
+                    }
+                }
+            } else {
+                showAlert(title: "Error", message: "Calendar access denied. Please enable calendar access in Settings.")
+            }
         }
     }
+}
+
+
+
+struct TripPlannerDetailsView_Previews: PreviewProvider {
+    static var previews: some View {
+        TripPlannerDetailsView()
+    }
+}

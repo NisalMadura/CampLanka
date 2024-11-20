@@ -43,10 +43,10 @@ struct Plan: Identifiable {
         let userId = data["userId"] as? String ?? ""
         
         return Plan(id: id,
-                   name: name,
-                   imageName: imageName,
-                   dateCreated: timestamp,
-                   userId: userId)
+                    name: name,
+                    imageName: imageName,
+                    dateCreated: timestamp,
+                    userId: userId)
     }
     
     // Convert Plan to Firestore data

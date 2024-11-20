@@ -8,27 +8,27 @@
 import SwiftUI
 import PhotosUI
 
-// MARK: - Review Submission Model
+
 struct ReviewSubmission {
     var rating: Int = 0
     var comment: String = ""
     var images: [UIImage] = []
 }
 
-// MARK: - Review Submission Screen
+
 struct ReviewSubmissionScreen: View {
     @Environment(\.dismiss) private var dismiss
     @State private var reviewSubmission = ReviewSubmission()
     @State private var showImagePicker = false
     @State private var isSubmitting = false
     
-    // For text input height calculation
+    
     @State private var textHeight: CGFloat = 100
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Header
+                
                 HStack {
                     Button(action: { dismiss() }) {
                         Image(systemName: "xmark")
@@ -47,7 +47,7 @@ struct ReviewSubmissionScreen: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
-                        // Star Rating
+                        
                         HStack(spacing: 12) {
                             ForEach(1...5, id: \.self) { star in
                                 Button(action: { reviewSubmission.rating = star }) {
@@ -60,7 +60,7 @@ struct ReviewSubmissionScreen: View {
                         .padding(.top, 8)
                         .centered()
                         
-                        // Review Text Area
+                        
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Detail Review")
                                 .font(.system(size: 16, weight: .medium))
@@ -82,7 +82,7 @@ struct ReviewSubmissionScreen: View {
                         }
                         .padding(.horizontal)
                         
-                        // Image Section
+                        
                         VStack(spacing: 12) {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
@@ -104,7 +104,7 @@ struct ReviewSubmissionScreen: View {
                     }
                 }
                 
-                // Submit Button
+                
                 Button(action: submitReview) {
                     if isSubmitting {
                         ProgressView()
@@ -132,7 +132,7 @@ struct ReviewSubmissionScreen: View {
     private func submitReview() {
         isSubmitting = true
         
-        // Simulate network request
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             isSubmitting = false
             dismiss()
@@ -140,7 +140,7 @@ struct ReviewSubmissionScreen: View {
     }
 }
 
-// MARK: - Image Thumbnail View
+
 struct ImageThumbnail: View {
     let image: UIImage
     let onDelete: () -> Void
@@ -164,7 +164,7 @@ struct ImageThumbnail: View {
     }
 }
 
-// MARK: - Add Photo Button
+
 struct AddPhotoButton: View {
     let action: () -> Void
     
@@ -186,7 +186,7 @@ struct AddPhotoButton: View {
     }
 }
 
-// MARK: - Image Picker
+
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var images: [UIImage]
     @Environment(\.presentationMode) var presentationMode
@@ -234,7 +234,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-// MARK: - View Extension
+
 extension View {
     func centered() -> some View {
         HStack {
@@ -245,7 +245,7 @@ extension View {
     }
 }
 
-// MARK: - Preview Provider
+
 struct ReviewSubmissionScreen_Previews: PreviewProvider {
     static var previews: some View {
         ReviewSubmissionScreen()

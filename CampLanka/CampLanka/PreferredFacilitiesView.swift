@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-// MARK: - Models
+
 struct Facility: Identifiable {
     let id = UUID()
     let name: String
     var isSelected: Bool
 }
 
-// MARK: - View Models
+
 class FacilitiesViewModel: ObservableObject {
     @Published var facilities: [Facility] = [
         Facility(name: "Restrooms", isSelected: false),
@@ -39,7 +39,7 @@ class FacilitiesViewModel: ObservableObject {
     }
 }
 
-// MARK: - Views
+
 struct PreferredFacilitiesView: View {
     @StateObject private var viewModel = FacilitiesViewModel()
     @Environment(\.presentationMode) var presentationMode
@@ -60,7 +60,7 @@ struct PreferredFacilitiesView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                // Navigation Bar with Centered Title
+                
                 ZStack {
                     HStack {
                     }
@@ -84,7 +84,7 @@ struct PreferredFacilitiesView: View {
                             )
                         }
                         
-                        // Add More Button
+                        
                         Button(action: {
                             showingAddFacility = true
                         }) {
@@ -106,7 +106,7 @@ struct PreferredFacilitiesView: View {
                     .padding()
                 }
                 
-                // Next Button
+                
                 Button(action: {
                     if hasSelectedFacilities {
                         navigateToActivities = true
@@ -219,7 +219,7 @@ struct AddFacilitySheet: View {
 
 
 
-// MARK: - Preview
+
 struct PreferredFacilitiesView_Previews: PreviewProvider {
     static var previews: some View {
         PreferredFacilitiesView()

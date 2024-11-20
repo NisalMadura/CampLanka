@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: - Models
+
 struct Review: Identifiable {
     let id = UUID()
     let rating: Double
@@ -16,7 +16,7 @@ struct Review: Identifiable {
     let authorName: String
 }
 
-// MARK: - Review Cell View
+
 struct ReviewCellView: View {
     let review: Review
     
@@ -39,7 +39,7 @@ struct ReviewCellView: View {
                     .font(.system(size: 14))
                 Spacer()
                 Button(action: {
-                    // Handle more button action
+                    
                 }) {
                     Image(systemName: "ellipsis")
                         .foregroundColor(.gray)
@@ -59,7 +59,7 @@ struct ReviewCellView: View {
     }
 }
 
-// MARK: - Star Rating View
+
 struct StarRatingView: View {
     let rating: Double
     let maxRating = 5
@@ -75,7 +75,6 @@ struct StarRatingView: View {
     }
 }
 
-// MARK: - Rating Bar View
 struct RatingBarView: View {
     let rating: Int
     let count: Int
@@ -100,7 +99,7 @@ struct RatingBarView: View {
     }
 }
 
-// MARK: - Reviews Screen
+
 struct ReviewsScreen: View {
     @State private var reviews: [Review] = []
     @State private var isLoading = false
@@ -122,7 +121,7 @@ struct ReviewsScreen: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Navigation Bar
+            
             HStack {
                 Button(action: {
                     dismiss()
@@ -140,14 +139,14 @@ struct ReviewsScreen: View {
                         .font(.system(size: 28, weight: .bold))
                         .padding(.horizontal)
                     
-                    // Rating Summary
+                    
                     HStack(alignment: .top, spacing: 22) {
-                     
+                        
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 8)
                     
-                    // Reviews List
+                    
                     VStack(alignment: .leading, spacing: 0) {
                         ForEach(reviews) { review in
                             ReviewCellView(review: review)
@@ -175,41 +174,41 @@ struct ReviewsScreen: View {
             }
         }
         .navigationBarHidden(true)
-
-
+        
+        
         .onAppear {
             loadInitialReviews()
         }
     }
     
-    // MARK: - Methods
+    
     private func loadInitialReviews() {
-        // Simulated initial data
+        
         let sampleReviews = [
             Review(rating: 4.4, date: Date(timeIntervalSinceNow: -86400 * 2),
-                  comment: "A peaceful and scenic spot! Loved waking up to misty mornings and exploring the nearby trails. Make sure to bring all your supplies as it's quite remote.",
-                  authorName: "Carter Botosh"),
+                   comment: "A peaceful and scenic spot! Loved waking up to misty mornings and exploring the nearby trails. Make sure to bring all your supplies as it's quite remote.",
+                   authorName: "Carter Botosh"),
             Review(rating: 4.2, date: Date(timeIntervalSinceNow: -86400 * 3),
-                  comment: "A peaceful and scenic spot! Loved waking up to misty mornings and exploring the nearby trails. Make sure to bring all your supplies as it's quite remote.",
-                  authorName: "Jaxson Septimus"),
+                   comment: "A peaceful and scenic spot! Loved waking up to misty mornings and exploring the nearby trails. Make sure to bring all your supplies as it's quite remote.",
+                   authorName: "Jaxson Septimus"),
             Review(rating: 4.1, date: Date(timeIntervalSinceNow: -86400 * 4),
-                  comment: "A peaceful and scenic spot! Loved waking up to misty mornings and exploring the nearby trails. Make sure to bring all your supplies as it's quite remote.",
-                  authorName: "Carla Press")
+                   comment: "A peaceful and scenic spot! Loved waking up to misty mornings and exploring the nearby trails. Make sure to bring all your supplies as it's quite remote.",
+                   authorName: "Carla Press")
         ]
         reviews = sampleReviews
     }
     
     private func loadMoreReviews() {
         isLoading = true
-        // Simulate network delay
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            // Add more reviews here
+            
             isLoading = false
         }
     }
 }
 
-// MARK: - Preview Provider
+
 struct ReviewsScreen_Previews: PreviewProvider {
     static var previews: some View {
         ReviewsScreen()

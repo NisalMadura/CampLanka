@@ -35,9 +35,9 @@ class ChatViewModel: ObservableObject {
     
     func sendMessage(_ content: String, sender: User) {
         let message = Message(content: content,
-                            sender: sender,
-                            timestamp: Date(),
-                            isLiked: false)
+                              sender: sender,
+                              timestamp: Date(),
+                              isLiked: false)
         messages.append(message)
         currentMessage = ""
     }
@@ -54,7 +54,7 @@ struct ChatView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-        
+            
             ChatNavigationBar(groupName: groupName, participants: participants)
             
             
@@ -83,7 +83,7 @@ struct ChatView: View {
         .sheet(isPresented: $showingImagePicker) {
             ImagePickerView(isShown: $showingImagePicker)
         }
-       // .navigationBarBackButtonHidden(true)
+        // .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -105,16 +105,16 @@ struct ChatNavigationBar: View {
             Spacer()
             
             NavigationLink(destination: GroupSettingsView()) {
-                            HStack(spacing: -8) {
-                                ForEach(participants.prefix(3)) { participant in
-                                    Circle()
-                                        .fill(Color.gray.opacity(0.3))
-                                        .frame(width: 30, height: 30)
-                                        .overlay(
-                                            Text(participant.name.prefix(1))
-                                                .foregroundColor(.gray)
-                                        )
-                                }
+                HStack(spacing: -8) {
+                    ForEach(participants.prefix(3)) { participant in
+                        Circle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(width: 30, height: 30)
+                            .overlay(
+                                Text(participant.name.prefix(1))
+                                    .foregroundColor(.gray)
+                            )
+                    }
                 }
             }
         }
