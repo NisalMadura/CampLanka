@@ -184,6 +184,10 @@ struct HomeViewscn: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
+                        NavigationLink(destination: EmergencyView()) {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .foregroundColor(.red)
+                                    }
                         NavigationLink(destination: NotificationHistoryView()){
                             Image(systemName: "bell")
                                 .foregroundColor(.black)

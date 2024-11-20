@@ -18,6 +18,7 @@ struct EmergencyView: View {
     @State private var isSOSPressed = false
     @State private var sosTimer: Timer?
     @State private var pressCount = 0
+    @State private var navigateToEmergencyCalling = false
     
     let emergencyTypes = [
         EmergencyType(name: "Medical", icon: "cross.case.fill", color: .green.opacity(0.2)),
@@ -35,12 +36,7 @@ struct EmergencyView: View {
                 Button(action: {
                     
                 }) {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.blue)
-                        Text("Back")
-                            .foregroundColor(.blue)
-                    }
+                    
                 }
                 Spacer()
                 
@@ -61,6 +57,9 @@ struct EmergencyView: View {
                 }
             }
             .padding()
+            .navigationDestination(isPresented: $navigateToEmergencyCalling) {
+                                EmergencyCallingView()
+                            }
             
             
             VStack(alignment: .leading, spacing: 8) {
@@ -77,7 +76,7 @@ struct EmergencyView: View {
             
             
             Button(action: {
-                handleSOSPress()
+                navigateToEmergencyCalling = true
             }) {
                 ZStack {
                     Circle()
@@ -123,6 +122,7 @@ struct EmergencyView: View {
             
             // CustomTabBar()
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     private func handleSOSPress() {
@@ -136,10 +136,11 @@ struct EmergencyView: View {
         }
         
         if pressCount >= 3 {
-            isSOSPressed = true
-            
-            triggerEmergency()
-        }
+                    isSOSPressed = true
+                    navigateToEmergencyCalling = true
+                    triggerEmergency()
+                }
+        
     }
     
     private func triggerEmergency() {
@@ -148,6 +149,7 @@ struct EmergencyView: View {
         
         
     }
+    
 }
 
 struct EmergencyTypeButton: View {

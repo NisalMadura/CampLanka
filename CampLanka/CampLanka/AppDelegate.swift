@@ -36,10 +36,29 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         
         NotificationManager.shared.scheduleCampingReminder(
-            title: "Camping Reminder",
-            body: "Time to check your camping gear!",
+            title: "Weather Alert",
+            body: "Don't forget to check the weather forecast for your camping trip!",
+            date: Date().addingTimeInterval(30),
+            identifier: UUID().uuidString
+            
+            
+            
+        )
+        NotificationManager.shared.scheduleCampingReminder(
+            title: "Packing Checklist",
+            body: "Make sure your camping essentials are packed!",
             date: Date().addingTimeInterval(60),
             identifier: UUID().uuidString
+            
+            
+            
+        )
+        NotificationManager.shared.scheduleCampingReminder(
+            title: "Camping Reminder",
+            body: "Time to check your camping gear!",
+            date: Date().addingTimeInterval(90),
+            identifier: UUID().uuidString
+            
             
             
         )
