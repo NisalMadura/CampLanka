@@ -6,158 +6,329 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+//import FirebaseFirestoreSwift
+import FirebaseAuth
 
 
-struct Message: Identifiable {
-    let id = UUID()
-    let content: String
-    let sender: User
-    let timestamp: Date
-    let isLiked: Bool
+struct ChatRoom: Identifiable, Codable {
+    @DocumentID var id: String?
+    let planId: String
+    let participants: [String]
+    let createdAt: Date
+    let lastMessage: String?
+    let lastMessageTimestamp: Date?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, planId, participants, createdAt, lastMessage, lastMessageTimestamp
+    }
 }
 
-struct User: Identifiable {
-    let id = UUID()
-    let name: String
-    let avatar: String
+struct ChatMessage: Identifiable, Codable {
+    @DocumentID var id: String?
+    let content: String
+    let senderId: String
+    let senderName: String
+    let timestamp: Date
+    var isRead: Bool
+    let messageType: MessageType
+    
+    enum MessageType: String, Codable {
+        case text
+        case image
+        case file
+    }
+}
+
+struct ChatUser: Identifiable, Codable {
+    let id: String
+    var name: String
+    var email: String
+    var avatarURL: String?
+    var isOnline: Bool
+    var lastSeen: Date?
 }
 
 
 class ChatViewModel: ObservableObject {
-    @Published var messages: [Message] = [
-        Message(content: "Hey team, how's the project going?", sender: User(name: "Michael Tran", avatar: "person.circle"), timestamp: Date().addingTimeInterval(-300), isLiked: false),
-        Message(content: "Hi Madura, we're making good progress!", sender: User(name: "Chris", avatar: "person.circle"), timestamp: Date().addingTimeInterval(-200), isLiked: false),
-        Message(content: "Great to hear! Let me know if you need any help.", sender: User(name: "Michael Tran", avatar: "person.circle"), timestamp: Date().addingTimeInterval(-150), isLiked: false),
-        Message(content: "Thanks! We’re just working on the final touches now.", sender: User(name: "Kristen Decastro", avatar: "person.circle"), timestamp: Date().addingTimeInterval(-100), isLiked: false),
-        Message(content: "Sounds perfect. Let’s aim to finish by Friday.", sender: User(name: "You", avatar: "person.circle"), timestamp: Date().addingTimeInterval(-50), isLiked: false)
-    ]
+    @Published var messages: [ChatMessage] = []
     @Published var currentMessage: String = ""
+    @Published var isLoading: Bool = false
+    @Published var error: String?
+    @Published var participants: [ChatUser] = []
     
-    func sendMessage(_ content: String, sender: User) {
-        let message = Message(content: content,
-                              sender: sender,
-                              timestamp: Date(),
-                              isLiked: false)
-        messages.append(message)
-        currentMessage = ""
+    private var db = Firestore.firestore()
+    private var messagesListener: ListenerRegistration?
+    private var participantsListener: ListenerRegistration?
+    
+    let planId: String
+    let currentUser: ChatUser
+    
+    init(planId: String, currentUser: ChatUser) {
+        self.planId = planId
+        self.currentUser = currentUser
+        setupListeners()
+    }
+    
+    deinit {
+        messagesListener?.remove()
+        participantsListener?.remove()
+    }
+    
+    private func setupListeners() {
+        setupMessagesListener()
+        setupParticipantsListener()
+    }
+    
+    private func setupMessagesListener() {
+        let messagesRef = db.collection("plans")
+            .document(planId)
+            .collection("chats")
+            .order(by: "timestamp", descending: false)
+        
+        messagesListener = messagesRef.addSnapshotListener { [weak self] snapshot, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.error = error.localizedDescription
+                return
+            }
+            
+            guard let documents = snapshot?.documents else { return }
+            
+            self.messages = documents.compactMap { document -> ChatMessage? in
+                try? document.data(as: ChatMessage.self)
+            }
+        }
+    }
+    
+    private func setupParticipantsListener() {
+        
+        db.collection("plans").document(planId).getDocument { [weak self] document, error in
+            guard let self = self,
+                  let document = document,
+                  let chatRoom = try? document.data(as: ChatRoom.self) else { return }
+            
+            
+            for userId in chatRoom.participants {
+                self.db.collection("users").document(userId)
+                    .addSnapshotListener { [weak self] document, error in
+                        guard let document = document,
+                              let user = try? document.data(as: ChatUser.self) else { return }
+                        
+                        self?.updateParticipant(user)
+                    }
+            }
+        }
+    }
+    
+    private func updateParticipant(_ user: ChatUser) {
+        if let index = participants.firstIndex(where: { $0.id == user.id }) {
+            participants[index] = user
+        } else {
+            participants.append(user)
+        }
+    }
+    
+    func sendMessage(_ content: String, type: ChatMessage.MessageType = .text) {
+        guard !content.isEmpty else { return }
+        isLoading = true
+        
+        let message = ChatMessage(
+            content: content,
+            senderId: currentUser.id,
+            senderName: currentUser.name,
+            timestamp: Date(),
+            isRead: false,
+            messageType: type
+        )
+        
+        do {
+            try db.collection("plans")
+                .document(planId)
+                .collection("chats")
+                .addDocument(from: message) { [weak self] error in
+                    guard let self = self else { return }
+                    
+                    self.isLoading = false
+                    if let error = error {
+                        self.error = error.localizedDescription
+                        return
+                    }
+                    
+                    
+                    self.updateChatRoomLastMessage(content)
+                    self.currentMessage = ""
+                }
+        } catch {
+            self.error = error.localizedDescription
+            self.isLoading = false
+        }
+    }
+    
+    private func updateChatRoomLastMessage(_ content: String) {
+        let data: [String: Any] = [
+            "lastMessage": content,
+            "lastMessageTimestamp": Date()
+        ]
+        
+        db.collection("plans")
+            .document(planId)
+            .updateData(data)
     }
 }
 
 
-
 struct ChatView: View {
-    @StateObject private var viewModel = ChatViewModel()
+    @StateObject private var viewModel: ChatViewModel
     @State private var showingImagePicker = false
+    @State private var showingError = false
     
-    let groupName: String
-    let participants: [User]
+    init(planId: String, currentUser: ChatUser) {
+        _viewModel = StateObject(wrappedValue: ChatViewModel(planId: planId, currentUser: currentUser))
+    }
     
     var body: some View {
         VStack(spacing: 0) {
-            
-            ChatNavigationBar(groupName: groupName, participants: participants)
-            
-            
-            ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(viewModel.messages) { message in
-                        MessageBubble(message: message)
-                    }
-                }
-                .padding()
-            }
-            
-            
-            MessageInputBar(
+            ChatHeaderView(participants: viewModel.participants)
+            MessageListView(
+                messages: viewModel.messages,
+                currentUserId: viewModel.currentUser.id
+            )
+            MessageInputView(
                 message: $viewModel.currentMessage,
+                isLoading: viewModel.isLoading,
                 onSend: {
-                    guard !viewModel.currentMessage.isEmpty else { return }
-                    viewModel.sendMessage(
-                        viewModel.currentMessage,
-                        sender: User(name: "You", avatar: "person.circle")
-                    )
+                    viewModel.sendMessage(viewModel.currentMessage)
                 },
                 onAttachment: { showingImagePicker.toggle() }
             )
         }
-        .sheet(isPresented: $showingImagePicker) {
-            ImagePickerView(isShown: $showingImagePicker)
+        .alert("Error", isPresented: $showingError, actions: {
+            Button("OK", role: .cancel) {}
+        }, message: {
+            Text(viewModel.error ?? "Unknown error occurred")
+        })
+        .onChange(of: viewModel.error) { error in
+            showingError = error != nil
         }
-        // .navigationBarBackButtonHidden(true)
     }
 }
 
-struct ChatNavigationBar: View {
-    let groupName: String
-    let participants: [User]
+struct ChatHeaderView: View {
+    let participants: [ChatUser]
     
     var body: some View {
-        HStack(spacing: 12) {
-            Button(action: {}) {
-                
-            }
-            
-            Spacer()
-            
-            Text(groupName)
-                .font(.headline)
-            
-            Spacer()
-            
-            NavigationLink(destination: GroupSettingsView()) {
-                HStack(spacing: -8) {
-                    ForEach(participants.prefix(3)) { participant in
-                        Circle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(width: 30, height: 30)
-                            .overlay(
-                                Text(participant.name.prefix(1))
-                                    .foregroundColor(.gray)
-                            )
-                    }
+        VStack(spacing: 8) {
+            HStack {
+                ForEach(participants.prefix(3)) { user in
+                    UserAvatarView(user: user)
                 }
+                
+                if participants.count > 3 {
+                    Text("+\(participants.count - 3)")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
             }
+            .padding(.horizontal)
+            
+            Divider()
         }
-        .padding()
+        .padding(.top)
         .background(Color.white)
-        .shadow(radius: 1)
     }
 }
 
-struct MessageBubble: View {
-    let message: Message
+struct UserAvatarView: View {
+    let user: ChatUser
+    
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Circle()
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 40, height: 40)
+                .overlay(
+                    Text(user.name.prefix(1).uppercased())
+                        .foregroundColor(.gray)
+                )
+            
+            if user.isOnline {
+                Circle()
+                    .fill(Color.green)
+                    .frame(width: 12, height: 12)
+                    .overlay(
+                        Circle()
+                            .stroke(Color.white, lineWidth: 2)
+                    )
+            }
+        }
+    }
+}
+
+struct MessageListView: View {
+    let messages: [ChatMessage]
+    let currentUserId: String
+    
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(messages) { message in
+                    MessageBubbleView(
+                        message: message,
+                        isCurrentUser: message.senderId == currentUserId
+                    )
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+struct MessageBubbleView: View {
+    let message: ChatMessage
+    let isCurrentUser: Bool
     
     var body: some View {
         HStack(alignment: .bottom) {
-            if message.sender.name != "You" {
-                Circle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 32, height: 32)
-                    .overlay(
-                        Text(message.sender.name.prefix(1))
-                            .foregroundColor(.gray)
-                    )
+            if !isCurrentUser {
+                UserAvatarView(user: ChatUser(
+                    id: message.senderId,
+                    name: message.senderName,
+                    email: "",
+                    isOnline: false
+                ))
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                if message.sender.name != "You" {
-                    Text(message.sender.name)
+                if !isCurrentUser {
+                    Text(message.senderName)
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
                 
                 Text(message.content)
                     .padding(12)
-                    .background(message.sender.name == "You" ? Color.blue : Color.gray.opacity(0.2))
-                    .foregroundColor(message.sender.name == "You" ? .white : .black)
+                    .background(isCurrentUser ? Color.blue : Color.gray.opacity(0.2))
+                    .foregroundColor(isCurrentUser ? .white : .black)
                     .cornerRadius(16)
                 
-                Text(formatDate(message.timestamp))
-                    .font(.caption2)
-                    .foregroundColor(.gray)
+                HStack {
+                    Text(formatDate(message.timestamp))
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                    
+                    if message.isRead {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.blue)
+                            .font(.caption2)
+                    }
+                }
             }
             
-            if message.sender.name == "You" {
+            if isCurrentUser {
                 Spacer()
             }
         }
@@ -170,33 +341,40 @@ struct MessageBubble: View {
     }
 }
 
-struct MessageInputBar: View {
+struct MessageInputView: View {
     @Binding var message: String
+    let isLoading: Bool
     let onSend: () -> Void
     let onAttachment: () -> Void
     
     var body: some View {
         HStack(spacing: 12) {
             Button(action: onAttachment) {
-                Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(.gray)
-            }
-            
-            TextField("iMessage", text: $message)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            
-            Button(action: onSend) {
-                Image(systemName: "mic.fill")
+                Image(systemName: "paperclip")
                     .font(.system(size: 20))
                     .foregroundColor(.gray)
             }
+            
+            TextField("Type a message", text: $message)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            Button(action: onSend) {
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                } else {
+                    Image(systemName: "paperplane.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(.blue)
+                }
+            }
+            .disabled(message.isEmpty || isLoading)
         }
         .padding()
         .background(Color.white)
+        .shadow(radius: 1)
     }
 }
-
 struct ImagePickerView: UIViewControllerRepresentable {
     @Binding var isShown: Bool
     
@@ -233,12 +411,15 @@ struct ImagePickerView: UIViewControllerRepresentable {
 struct ChatView_Previews: PreviewProvider {
     static var previews: some View {
         ChatView(
-            groupName: "Office Group",
-            participants: [
-                User(name: "Michael Tran", avatar: "person.circle"),
-                User(name: "Chris", avatar: "person.circle"),
-                User(name: "Kristen Decastro", avatar: "person.circle")
-            ]
+            planId: "C25097C5-A6BC-49FA-B77C-4E7332907FF5",
+            currentUser: ChatUser(
+                id: "mockUserId",
+                name: "Mock User",
+                email: "mock@example.com",
+                avatarURL: nil,
+                isOnline: true
+            )
         )
     }
 }
+

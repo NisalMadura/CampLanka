@@ -267,12 +267,8 @@ struct PlanRowView: View {
                 HStack(spacing: 16) {
                     NavigationLink(
                         destination: ChatView(
-                            groupName: plan.name,
-                            participants: [
-                                User(name: "Michael Tran", avatar: "person.circle"),
-                                User(name: "Chris", avatar: "person.circle"),
-                                User(name: "Kristen Decastro", avatar: "person.circle")
-                            ]
+                            planId: plan.id, // Pass the plan ID as a parameter
+                            currentUser: ChatUser(id: "mockUserId", name: "Mock User", email: "mock@example.com", avatarURL: nil, isOnline: true) // Pass the current user as a parameter
                         ),
                         isActive: $showGroupChat
                     ) {
@@ -280,7 +276,7 @@ struct PlanRowView: View {
                             .foregroundColor(.green)
                             .font(.system(size: 22))
                     }
-                    
+
                     Button(action: {
                         showDeleteAlert = true
                     }) {
@@ -289,6 +285,7 @@ struct PlanRowView: View {
                             .font(.system(size: 22))
                     }
                 }
+
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

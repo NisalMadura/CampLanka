@@ -825,7 +825,7 @@ struct TripPlannerDetailsView: View {
         
         let plansCollection = db.collection("plans")
         
-        // Always use the passed planId instead of creating a new document
+      
         plansCollection.document(planId).setData(tripData, merge: true) { error in
             if let error = error {
                 showAlert(title: "Error", message: "Error saving trip details: \(error.localizedDescription)")
