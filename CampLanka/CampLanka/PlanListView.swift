@@ -10,6 +10,7 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
+import Foundation
 
 
 struct Plan: Identifiable {
@@ -49,7 +50,7 @@ struct Plan: Identifiable {
                     userId: userId)
     }
     
-    // Convert Plan to Firestore data
+    
     var firestoreData: [String: Any] {
         return [
             "name": name,
@@ -298,7 +299,7 @@ struct PlanRowView: View {
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .sheet(isPresented: $showingPreferences) {
-            TripPlannerDetailsView()
+            TripPlannerDetailsView(planId: plan.id)
         }
         .alert("Delete Plan", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) {}

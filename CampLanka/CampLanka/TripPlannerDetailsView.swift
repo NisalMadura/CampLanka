@@ -5,6 +5,7 @@ import FirebaseAuth
 import Contacts
 import ContactsUI
 import EventKitUI
+import Foundation
 
 
 struct Member: Identifiable {
@@ -164,6 +165,8 @@ func requestContactsAccess(completion: @escaping (Bool) -> Void) {
 
 struct TripPlannerDetailsView: View {
     
+    let planId: String
+    
     @State private var selectedCity: String = ""
     @State private var selectedDates: DateRange?
     @State private var minBudget: String = ""
@@ -206,71 +209,95 @@ struct TripPlannerDetailsView: View {
     
     private var db = Firestore.firestore()
     
+    init(planId: String) {
+        self.planId = planId
+        print("\(planId)")
+    }
+    
     private func loadTripData() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
-        db.collection("plans")
         
-            .getDocuments { snapshot, error in
+        db.collection("plans")
+            .document(planId)
+            .getDocument { document, error in
                 if let error = error {
                     print("Error loading trip data: \(error)")
                     return
                 }
                 
-                guard let document = snapshot?.documents.first else { return }
-                let data = document.data()
+                guard let document = document,
+                      document.exists,
+                      let data = document.data() else {
+                    print("Document does not exist")
+                    return
+                }
                 
-                tripId = document.documentID
                 
+                let documentUserId = data["userId"] as? String ?? ""
+                let isSubmitted = data["isSubmitted"] as? Bool ?? false
                 
-                DispatchQueue.main.async {
-                    selectedCity = data["city"] as? String ?? ""
+                if isSubmitted && documentUserId == userId {
                     
-                    if let startDate = (data["startDate"] as? Timestamp)?.dateValue(),
-                       let endDate = (data["endDate"] as? Timestamp)?.dateValue() {
-                        selectedDates = DateRange(startDate: startDate, endDate: endDate)
-                    }
-                    
-                    if let budget = data["budget"] as? [String: String] {
-                        minBudget = budget["min"] ?? ""
-                        maxBudget = budget["max"] ?? ""
-                    }
-                    
-                    if let transportArray = data["transportMethods"] as? [String] {
-                        selectedTransportMethods = Set(transportArray.compactMap { TransportMethod(rawValue: $0) })
-                    }
-                    
-                    if let packingArray = data["packingItems"] as? [String] {
-                        let predefinedItems = Set(packingArray.compactMap { PackingItem(rawValue: $0) })
-                        let customItems = Set(packingArray.filter { PackingItem(rawValue: $0) == nil })
+                    DispatchQueue.main.async {
+                        selectedCity = data["city"] as? String ?? ""
                         
-                        selectedPackingItems = predefinedItems
-                        customPackingItems = customItems
-                    }
-                    
-                    if let activitiesArray = data["activities"] as? [String] {
-                        let predefinedActivities = Set(activitiesArray.compactMap { Activity(rawValue: $0) })
-                        let customActivitiesList = Set(activitiesArray.filter { Activity(rawValue: $0) == nil })
-                        
-                        selectedActivities = predefinedActivities
-                        customActivities = customActivitiesList
-                    }
-                    
-                    numberOfPeople = data["numberOfPeople"] as? Int ?? 1
-                    notes = data["notes"] as? String ?? ""
-                    
-                    if let membersData = data["members"] as? [[String: Any]] {
-                        members = membersData.map { memberData in
-                            Member(
-                                name: memberData["name"] as? String ?? "",
-                                phoneNumber: memberData["phoneNumber"] as? String,
-                                email: memberData["email"] as? String
-                            )
+                        if let startDate = (data["startDate"] as? Timestamp)?.dateValue(),
+                           let endDate = (data["endDate"] as? Timestamp)?.dateValue() {
+                            selectedDates = DateRange(startDate: startDate, endDate: endDate)
                         }
+                        
+                        if let budget = data["budget"] as? [String: String] {
+                            minBudget = budget["min"] ?? ""
+                            maxBudget = budget["max"] ?? ""
+                        }
+                        
+                        if let transportArray = data["transportMethods"] as? [String] {
+                            selectedTransportMethods = Set(transportArray.compactMap { TransportMethod(rawValue: $0) })
+                        }
+                        
+                        if let packingArray = data["packingItems"] as? [String] {
+                            let predefinedItems = Set(packingArray.compactMap { PackingItem(rawValue: $0) })
+                            let customItems = Set(packingArray.filter { PackingItem(rawValue: $0) == nil })
+                            
+                            selectedPackingItems = predefinedItems
+                            customPackingItems = customItems
+                        }
+                        
+                        if let activitiesArray = data["activities"] as? [String] {
+                            let predefinedActivities = Set(activitiesArray.compactMap { Activity(rawValue: $0) })
+                            let customActivitiesList = Set(activitiesArray.filter { Activity(rawValue: $0) == nil })
+                            
+                            selectedActivities = predefinedActivities
+                            customActivities = customActivitiesList
+                        }
+                        
+                        numberOfPeople = data["numberOfPeople"] as? Int ?? 1
+                        notes = data["notes"] as? String ?? ""
+                        
+                        if let membersData = data["members"] as? [[String: Any]] {
+                            members = membersData.map { memberData in
+                                Member(
+                                    name: memberData["name"] as? String ?? "",
+                                    phoneNumber: memberData["phoneNumber"] as? String,
+                                    email: memberData["email"] as? String
+                                )
+                            }
+                        }
+                        
+                        isEditMode = true
+                    }
+                } else {
+                    
+                    DispatchQueue.main.async {
+                        clearFormFields()
+                        isEditMode = false
                     }
                 }
             }
     }
+    
+    
     enum TransportMethod: String, CaseIterable {
         case bus = "Bus"
         case train = "Train"
@@ -347,7 +374,11 @@ struct TripPlannerDetailsView: View {
                 }
             }
         }
+        .onAppear{
+            loadTripData()
+        }
     }
+    
     
     
     
@@ -768,7 +799,7 @@ struct TripPlannerDetailsView: View {
             return
         }
         
-        var tripData: [String: Any] = [
+        let tripData: [String: Any] = [
             "userId": userId,
             "city": selectedCity,
             "startDate": selectedDates.startDate,
@@ -787,32 +818,20 @@ struct TripPlannerDetailsView: View {
                 "phoneNumber": $0.phoneNumber ?? "",
                 "email": $0.email ?? ""
             ]},
-            "updatedAt": FieldValue.serverTimestamp()
+            "updatedAt": FieldValue.serverTimestamp(),
+            "isSubmitted": true
+            
         ]
         
         let plansCollection = db.collection("plans")
         
-        if let tripId = tripId {
-            
-            plansCollection.document(tripId).updateData(tripData) { error in
-                if let error = error {
-                    showAlert(title: "Error", message: "Error updating trip details: \(error.localizedDescription)")
-                } else {
-                    plansCollection.addDocument(data: tripData)
-                    showAlert(title: "Success", message: "Trip plan updated successfully!")
-                    self.isEditMode=true
-                }
-            }
-        } else {
-            
-            tripData["createdAt"] = FieldValue.serverTimestamp()
-            plansCollection.addDocument(data: tripData) { error in
-                if let error = error {
-                    showAlert(title: "Error", message: "Error saving trip details: \(error.localizedDescription)")
-                } else {
-                    showAlert(title: "Success", message: "Trip plan created successfully!")
-                    self.isEditMode=true
-                }
+        // Always use the passed planId instead of creating a new document
+        plansCollection.document(planId).setData(tripData, merge: true) { error in
+            if let error = error {
+                showAlert(title: "Error", message: "Error saving trip details: \(error.localizedDescription)")
+            } else {
+                showAlert(title: "Success", message: "Trip plan updated successfully!")
+                self.isEditMode = true
             }
         }
     }
@@ -1119,6 +1138,6 @@ extension TripPlannerDetailsView {
 
 struct TripPlannerDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        TripPlannerDetailsView()
+        TripPlannerDetailsView(planId: "SampleID")
     }
 }
