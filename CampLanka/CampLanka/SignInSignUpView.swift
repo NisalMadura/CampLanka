@@ -27,7 +27,7 @@ struct SignInSignUpView: View {
     @State private var showResetPassword: Bool = false
     @State private var biometryType: LABiometryType = .none
     @State private var isBiometricAvailable: Bool = false
-    
+    @Environment(\.presentationMode) var presentationMode
     
     init() {
         checkBiometricAvailability()
@@ -42,7 +42,7 @@ struct SignInSignUpView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
-                    .padding(.top, 20)
+                    .padding(.top, 15)
                 
                 
                 Text("Sign In")
@@ -218,7 +218,21 @@ struct SignInSignUpView: View {
                 MainView()
                     .navigationBarBackButtonHidden(true)
             }
-        }
+        
+                   .toolbar {
+                       ToolbarItem(placement: .navigationBarLeading) {
+                           Button(action: {
+                               presentationMode.wrappedValue.dismiss()
+                           }) {
+                               HStack {
+                                   Image(systemName: "chevron.left") // Back icon
+                                   Text("Back")
+                               }
+                               .foregroundColor(.blue)
+                           }
+                       }
+                   }
+               }
         .navigationBarBackButtonHidden(true)
         .onAppear {
             checkBiometricAvailability()

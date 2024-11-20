@@ -408,7 +408,7 @@ struct CampgroundDetailView: View {
                     .frame(height: 250)
                     .clipped()
                     
-                    // Header section
+                    
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text(campground.base.name)
@@ -903,7 +903,7 @@ struct LocationTab: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Map
+            
             Map(coordinateRegion: $viewModel.region, annotationItems: [campground.base]) { item in
                 MapAnnotation(coordinate: item.coordinates) {
                     VStack {
