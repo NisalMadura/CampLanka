@@ -24,10 +24,8 @@ Plan trips that suit solo and group travel styles.
 🖥️ Technologies Used
 
 Swift: Native iOS app development.
-Core Data: Manage app data efficiently.
 Firebase: Real-time group chat and trip collaboration.
 MapKit: Interactive campsite location features.
-Weather API: Real-time weather updates for campsites.
 📲 Getting Started
 
 Prerequisites
