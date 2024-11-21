@@ -6,20 +6,25 @@ Discover, plan, and manage unforgettable camping experiences across Sri Lanka wi
 🚀 Features
 
 🔍 Explore Campsites
+
 Discover a variety of campsites across Sri Lanka.
+
 Access detailed information, including:
 Campsite facilities and services
 Real-time weather conditions
 Free and bookable campsites
 
 📋 Plan and Manage Trips
+
 Create and customize trip plans.
 Manage your package list with ease.
 Personalize your camping experience to suit your needs.
 
 📱 Collaborative Trip Planning
+
 Add contacts from your phone.
 Collaborate with group members via an integrated group chat feature.
+
 🛠️ Personalization and Flexibility
 Tailored recommendations for campsites based on your preferences.
 Plan trips that suit solo and group travel styles.
