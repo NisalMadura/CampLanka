@@ -174,6 +174,8 @@ struct SaveToPlanView: View {
     @StateObject private var viewModel = PlanListViewModel()
     @State private var showingCreatePlan = false
     @Environment(\.dismiss) var dismiss
+    @State private var isNavigateToHome = false
+    
     
     var body: some View {
         NavigationView {
@@ -206,15 +208,20 @@ struct SaveToPlanView: View {
                             )
                     }
                     
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Text("Done")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
+                    NavigationLink(
+                        destination: HomeViewscn(),
+                        isActive: $isNavigateToHome
+                    ) {
+                        Button(action: {
+                            isNavigateToHome = true
+                        }) {
+                            Text("Done")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.green)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
                     }
                 }
                 .padding()
@@ -276,7 +283,7 @@ struct PlanRowView: View {
                             .foregroundColor(.green)
                             .font(.system(size: 22))
                     }
-
+                    
                     Button(action: {
                         showDeleteAlert = true
                     }) {
@@ -285,7 +292,7 @@ struct PlanRowView: View {
                             .font(.system(size: 22))
                     }
                 }
-
+                
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

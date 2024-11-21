@@ -16,7 +16,7 @@ struct CampgroundBase: Identifiable {
     let id: String
     let name: String
     let location: String
-    let imageUrl: String
+    let imageUrls: [String]
     let likes: Int
     let rating: Double
     var isFavorite: Bool
@@ -26,7 +26,7 @@ struct CampgroundBase: Identifiable {
         self.id = id
         guard let name = data["name"] as? String,
               let location = data["location"] as? String,
-              let imageUrl = data["imageUrl"] as? String,
+              let imageUrls = data["imageUrls"] as? [String],
               let likes = data["likes"] as? Int,
               let rating = data["rating"] as? Double,
               let coordinates = data["coordinates"] as? GeoPoint else{
@@ -34,7 +34,7 @@ struct CampgroundBase: Identifiable {
         }
         self.name = name
         self.location = location
-        self.imageUrl = imageUrl
+        self.imageUrls = imageUrls
         self.likes = likes
         self.rating = rating
         self.isFavorite = data["isFavorite"] as? Bool ?? false
@@ -259,7 +259,7 @@ class CampgroundDetailViewModel: ObservableObject {
     
     init() {
         
-        Auth.auth().addStateDidChangeListener { [weak self] _, user in
+        _ = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             if let id = self?.campgroundDetail?.base.id {
                 self?.checkWishlistStatus(for: id)
             }
@@ -361,7 +361,7 @@ class CampgroundDetailViewModel: ObservableObject {
                 "campgroundId": detail.base.id,
                 "name": detail.base.name,
                 "location": detail.base.location,
-                "imageUrl": detail.base.imageUrl,
+                "imageUrls": detail.base.imageUrls,
                 "rating": detail.base.rating
             ])
         } else {
@@ -396,14 +396,27 @@ struct CampgroundDetailView: View {
                     .padding()
             } else if let campground = viewModel.campgroundDetail {
                 VStack(alignment: .leading, spacing: 0) {
-                    
-                    AsyncImage(url: URL(string: campground.base.imageUrl)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.2))
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            // Example: Multiple campground images
+                            // You would replace these with actual image URLs from your data model
+                            ForEach(campground.base.imageUrls, id: \.self) { imageUrl in
+                                AsyncImage(url: URL(string: imageUrl)) { image in
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 300, height: 250)
+                                        .cornerRadius(12)
+                                        .clipped()
+                                } placeholder: {
+                                    Rectangle()
+                                        .fill(Color.gray.opacity(0.2))
+                                        .frame(width: 300, height: 250)
+                                        .cornerRadius(12)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
                     }
                     .frame(height: 250)
                     .clipped()

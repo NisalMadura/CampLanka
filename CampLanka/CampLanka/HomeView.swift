@@ -17,6 +17,7 @@ struct CampgroundBox: Identifiable {
     let rating: Double
     let likes: Int
     let image: String
+    let imageUrls: [String]
     var isFavorite: Bool
     var startPrice: Double?
     
@@ -27,6 +28,7 @@ struct CampgroundBox: Identifiable {
         self.rating = rating
         self.likes = likes
         self.image = image
+        self.imageUrls = [image]
         self.isFavorite = isFavorite
         self.startPrice = startPrice
     }
@@ -38,6 +40,7 @@ struct CampgroundBox: Identifiable {
         self.rating = data["rating"] as? Double ?? 0.0
         self.likes = data["likes"] as? Int ?? 0
         self.image = data["imageUrl"] as? String ?? ""
+        self.imageUrls = data["imageUrls"] as? [String] ?? [self.image]
         self.isFavorite = data["isFavorite"] as? Bool ?? false
         self.startPrice = data["startPrice"] as? Double
     }
@@ -185,9 +188,9 @@ struct HomeViewscn: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
                         NavigationLink(destination: EmergencyView()) {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .foregroundColor(.red)
-                                    }
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.red)
+                        }
                         NavigationLink(destination: NotificationHistoryView()){
                             Image(systemName: "bell")
                                 .foregroundColor(.black)
@@ -271,6 +274,7 @@ struct CampgroundCard: View {
             }
         }
         .frame(width: 300)
+        Spacer()
     }
 }
 
