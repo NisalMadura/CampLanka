@@ -11,19 +11,19 @@ struct SignInView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 24) {
-                // Logo from assets
+                
                 Image("camplogo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
                     .padding(.top, 60)
                 
-                // Title
+                
                 Text("Sign in or create a\nfree profile")
                     .font(.system(size: 28, weight: .bold))
                     .multilineTextAlignment(.center)
                 
-                // Description
+                
                 Text("CampLanka makes camping easy with personalized campsite suggestions, trip planning, and group collaboration. Sign up now and start exploring!")
                     .font(.system(size: 16))
                     .multilineTextAlignment(.center)
@@ -32,9 +32,9 @@ struct SignInView: View {
                 
                 VStack(spacing: 16) {
                     // Sign In Button
-                    Button(action: {
-                        // Handle sign in
-                    }) {
+                    NavigationLink(destination: SignInSignUpView()) {
+                        
+                        
                         Text("Sign In")
                             .font(.system(size: 17, weight: .semibold))
                             .frame(maxWidth: .infinity)
@@ -45,10 +45,10 @@ struct SignInView: View {
                     }
                     .padding(.horizontal, 24)
                     
-                    // Create Profile Button
-                    Button(action: {
-                        // Handle create profile
-                    }) {
+                    
+                    NavigationLink(destination: RegistrationView()){
+                        
+                        
                         Text("Create Free Profile")
                             .font(.system(size: 17, weight: .semibold))
                             .frame(maxWidth: .infinity)
@@ -63,16 +63,20 @@ struct SignInView: View {
                 
                 Spacer()
                 
-                // I'll do it later button
-                Button(action: {
-                    // Handle skip
-                }) {
+                
+                NavigationLink(destination: MainView()){
+                    
+                    
+                    
                     Text("I'll do it later")
                         .font(.system(size: 17))
                         .foregroundColor(.primary)
                 }
                 .padding(.bottom, 32)
+                //  .navigationBarBackButtonHidden(true)
+                
             }
+            
         }
     }
 }

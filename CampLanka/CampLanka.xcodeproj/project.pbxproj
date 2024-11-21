@@ -7,8 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8216B3D82CDCEA8A00CB656A /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8216B3D72CDCEA8A00CB656A /* ForgotPasswordView.swift */; };
+		8216B3DA2CDCFB8600CB656A /* MapLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8216B3D92CDCFB8600CB656A /* MapLocationView.swift */; };
+		822355672CD9D49800CF7554 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822355662CD9D49800CF7554 /* HomeView.swift */; };
+		822355692CD9FCD800CF7554 /* AddToCommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822355682CD9FCD800CF7554 /* AddToCommunityView.swift */; };
+		8223556B2CDA00CA00CF7554 /* starRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223556A2CDA00CA00CF7554 /* starRatingView.swift */; };
+		8223556D2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223556C2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift */; };
+		8223556F2CDA14F100CF7554 /* GroupChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223556E2CDA14F100CF7554 /* GroupChatView.swift */; };
+		822355712CDA21A600CF7554 /* TripPlannerDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */; };
+		822355752CDA3A3200CF7554 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 822355742CDA3A3200CF7554 /* GoogleService-Info.plist */; };
+		822355782CDA3D2D00CF7554 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 822355772CDA3D2D00CF7554 /* FirebaseAuth */; };
+		8223557A2CDA3D2D00CF7554 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 822355792CDA3D2D00CF7554 /* FirebaseDatabase */; };
+		8223557D2CDA4D7700CF7554 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8223557C2CDA4D7700CF7554 /* AppDelegate.swift */; };
+		822355802CDA548200CF7554 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 8223557F2CDA548200CF7554 /* GoogleSignIn */; };
+		822355822CDA548200CF7554 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 822355812CDA548200CF7554 /* GoogleSignInSwift */; };
+		8249E7D12CE8D6E200685B60 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8249E7D02CE8D6E200685B60 /* FirebaseAnalytics */; };
+		8249E7D32CE8D6E200685B60 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 8249E7D22CE8D6E200685B60 /* FirebaseStorage */; };
+		825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825822002CD8A5F0006E225B /* CampgroundServicesView.swift */; };
 		82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CCE2CCE45C100924439 /* CampLankaApp.swift */; };
-		82981CD12CCE45C100924439 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD02CCE45C100924439 /* ContentView.swift */; };
+		82981CD12CCE45C100924439 /* ConteentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD02CCE45C100924439 /* ConteentView.swift */; };
 		82981CD32CCE45C200924439 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82981CD22CCE45C200924439 /* Assets.xcassets */; };
 		82981CD62CCE45C200924439 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82981CD52CCE45C200924439 /* Preview Assets.xcassets */; };
 		82981CD82CCE45C200924439 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981CD72CCE45C200924439 /* Persistence.swift */; };
@@ -22,6 +39,35 @@
 		82981D042CCE477200924439 /* TripPlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D032CCE477200924439 /* TripPlannerView.swift */; };
 		82981D062CCE481100924439 /* NotificationPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D052CCE481100924439 /* NotificationPermissionView.swift */; };
 		82981D082CCE483400924439 /* RegistrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82981D072CCE483400924439 /* RegistrationView.swift */; };
+		82A9A83F2CEDA1EB00BEB90F /* NotificationManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A9A83E2CEDA1EB00BEB90F /* NotificationManger.swift */; };
+		82A9A8412CEDA76600BEB90F /* NotificationManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A9A8402CEDA76600BEB90F /* NotificationManagementViewController.swift */; };
+		82AAE6FA2CE31049005E1189 /* CampgroundDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */; };
+		82AAE6FC2CE32BA8005E1189 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAE6FB2CE32BA8005E1189 /* SearchBar.swift */; };
+		82AAE6FE2CE37EE8005E1189 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAE6FD2CE37EE8005E1189 /* APIManager.swift */; };
+		82B094862CE9FE990035A3B7 /* PersonalDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B094852CE9FE990035A3B7 /* PersonalDetailsView.swift */; };
+		82B094882CEA02EB0035A3B7 /* AccountAndPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B094872CEA02EB0035A3B7 /* AccountAndPasswordView.swift */; };
+		82B0948A2CEA04430035A3B7 /* HelpDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B094892CEA04430035A3B7 /* HelpDetailView.swift */; };
+		82B14EF42CDE1EC70092D0D4 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF32CDE1EC70092D0D4 /* FirebaseAppCheck */; };
+		82B14EF62CDE1EC70092D0D4 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF52CDE1EC70092D0D4 /* FirebaseCore */; };
+		82B14EF82CDE1EC70092D0D4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */; };
+		82B14EFA2CDE1EC70092D0D4 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 82B14EF92CDE1EC70092D0D4 /* FirebaseMessaging */; };
+		82B1942C2CEC550000BA9F35 /* CampgroundList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B1942B2CEC550000BA9F35 /* CampgroundList.swift */; };
+		82B2A9102CE07B7100568194 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B2A90F2CE07B7100568194 /* KeychainHelper.swift */; };
+		82B2F51A2CE1D19D00DD4E30 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B2F5192CE1D19D00DD4E30 /* ChatView.swift */; };
+		82C7ACD62CCF6E78002F64DC /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */; };
+		82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD72CCF70B6002F64DC /* ProfileView.swift */; };
+		82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */; };
+		82C7ACDC2CCF930C002F64DC /* AddContactSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */; };
+		82C7ACDE2CCF96CC002F64DC /* EmergencyCallingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */; };
+		82D49DA42CD628CE00AC989F /* SaveToPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D49DA32CD628CE00AC989F /* SaveToPlanView.swift */; };
+		82D49DA62CD62C6000AC989F /* PlanListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D49DA52CD62C6000AC989F /* PlanListView.swift */; };
+		82D49DA82CD62FD700AC989F /* CampingPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */; };
+		82D49DAA2CD6374300AC989F /* BudgetPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D49DA92CD6374300AC989F /* BudgetPreferenceView.swift */; };
+		82D49DAC2CD63B8400AC989F /* WishListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D49DAB2CD63B8400AC989F /* WishListView.swift */; };
+		82DCC4662CD785D30050CF26 /* CampgroundListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DCC4652CD785D30050CF26 /* CampgroundListView.swift */; };
+		82DCC4682CD78F650050CF26 /* PreferredFacilitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */; };
+		82DCC46A2CD795A20050CF26 /* ActivitiesPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */; };
+		82DCC46C2CD799680050CF26 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DCC46B2CD799680050CF26 /* Models.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,9 +88,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8216B3D72CDCEA8A00CB656A /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		8216B3D92CDCFB8600CB656A /* MapLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLocationView.swift; sourceTree = "<group>"; };
+		822355662CD9D49800CF7554 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		822355682CD9FCD800CF7554 /* AddToCommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCommunityView.swift; sourceTree = "<group>"; };
+		8223556A2CDA00CA00CF7554 /* starRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = starRatingView.swift; sourceTree = "<group>"; };
+		8223556C2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSubmissionScreen.swift; sourceTree = "<group>"; };
+		8223556E2CDA14F100CF7554 /* GroupChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupChatView.swift; sourceTree = "<group>"; };
+		822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPlannerDetailsView.swift; sourceTree = "<group>"; };
+		822355742CDA3A3200CF7554 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		8223557B2CDA3E3000CF7554 /* CampLanka.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CampLanka.entitlements; sourceTree = "<group>"; };
+		8223557C2CDA4D7700CF7554 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		822355832CDA58C800CF7554 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		825822002CD8A5F0006E225B /* CampgroundServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundServicesView.swift; sourceTree = "<group>"; };
 		82981CCB2CCE45C100924439 /* CampLanka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CampLanka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82981CCE2CCE45C100924439 /* CampLankaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampLankaApp.swift; sourceTree = "<group>"; };
-		82981CD02CCE45C100924439 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		82981CD02CCE45C100924439 /* ConteentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConteentView.swift; sourceTree = "<group>"; };
 		82981CD22CCE45C200924439 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		82981CD52CCE45C200924439 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		82981CD72CCE45C200924439 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -60,6 +119,31 @@
 		82981D032CCE477200924439 /* TripPlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripPlannerView.swift; sourceTree = "<group>"; };
 		82981D052CCE481100924439 /* NotificationPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionView.swift; sourceTree = "<group>"; };
 		82981D072CCE483400924439 /* RegistrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationView.swift; sourceTree = "<group>"; };
+		82A9A83E2CEDA1EB00BEB90F /* NotificationManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManger.swift; sourceTree = "<group>"; };
+		82A9A8402CEDA76600BEB90F /* NotificationManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManagementViewController.swift; sourceTree = "<group>"; };
+		82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundDetailView.swift; sourceTree = "<group>"; };
+		82AAE6FB2CE32BA8005E1189 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		82AAE6FD2CE37EE8005E1189 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
+		82B094852CE9FE990035A3B7 /* PersonalDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalDetailsView.swift; sourceTree = "<group>"; };
+		82B094872CEA02EB0035A3B7 /* AccountAndPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAndPasswordView.swift; sourceTree = "<group>"; };
+		82B094892CEA04430035A3B7 /* HelpDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpDetailView.swift; sourceTree = "<group>"; };
+		82B1942B2CEC550000BA9F35 /* CampgroundList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundList.swift; sourceTree = "<group>"; };
+		82B2A90F2CE07B7100568194 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		82B2F5192CE1D19D00DD4E30 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		82C7ACD72CCF70B6002F64DC /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyView.swift; sourceTree = "<group>"; };
+		82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactSheetView.swift; sourceTree = "<group>"; };
+		82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyCallingView.swift; sourceTree = "<group>"; };
+		82D49DA32CD628CE00AC989F /* SaveToPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveToPlanView.swift; sourceTree = "<group>"; };
+		82D49DA52CD62C6000AC989F /* PlanListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanListView.swift; sourceTree = "<group>"; };
+		82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampingPreferenceView.swift; sourceTree = "<group>"; };
+		82D49DA92CD6374300AC989F /* BudgetPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetPreferenceView.swift; sourceTree = "<group>"; };
+		82D49DAB2CD63B8400AC989F /* WishListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishListView.swift; sourceTree = "<group>"; };
+		82DCC4652CD785D30050CF26 /* CampgroundListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampgroundListView.swift; sourceTree = "<group>"; };
+		82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredFacilitiesView.swift; sourceTree = "<group>"; };
+		82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitiesPreferencesView.swift; sourceTree = "<group>"; };
+		82DCC46B2CD799680050CF26 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +151,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82B14EFA2CDE1EC70092D0D4 /* FirebaseMessaging in Frameworks */,
+				8223557A2CDA3D2D00CF7554 /* FirebaseDatabase in Frameworks */,
+				822355782CDA3D2D00CF7554 /* FirebaseAuth in Frameworks */,
+				8249E7D32CE8D6E200685B60 /* FirebaseStorage in Frameworks */,
+				822355802CDA548200CF7554 /* GoogleSignIn in Frameworks */,
+				82B14EF42CDE1EC70092D0D4 /* FirebaseAppCheck in Frameworks */,
+				82B14EF62CDE1EC70092D0D4 /* FirebaseCore in Frameworks */,
+				822355822CDA548200CF7554 /* GoogleSignInSwift in Frameworks */,
+				82B14EF82CDE1EC70092D0D4 /* FirebaseFirestore in Frameworks */,
+				8249E7D12CE8D6E200685B60 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,13 +204,51 @@
 		82981CCD2CCE45C100924439 /* CampLanka */ = {
 			isa = PBXGroup;
 			children = (
+				822355832CDA58C800CF7554 /* Info.plist */,
+				8223557B2CDA3E3000CF7554 /* CampLanka.entitlements */,
+				822355742CDA3A3200CF7554 /* GoogleService-Info.plist */,
 				82981CCE2CCE45C100924439 /* CampLankaApp.swift */,
-				82981CD02CCE45C100924439 /* ContentView.swift */,
+				82981CD02CCE45C100924439 /* ConteentView.swift */,
 				82981CFD2CCE46F400924439 /* SignInView.swift */,
+				8216B3D72CDCEA8A00CB656A /* ForgotPasswordView.swift */,
+				8216B3D92CDCFB8600CB656A /* MapLocationView.swift */,
 				82981CFF2CCE470D00924439 /* SplashScreen.swift */,
 				82981D012CCE473D00924439 /* SignInSignUpView.swift */,
+				82AAE6F92CE31049005E1189 /* CampgroundDetailView.swift */,
+				8223557C2CDA4D7700CF7554 /* AppDelegate.swift */,
+				82A9A8402CEDA76600BEB90F /* NotificationManagementViewController.swift */,
 				82981D032CCE477200924439 /* TripPlannerView.swift */,
+				822355702CDA21A600CF7554 /* TripPlannerDetailsView.swift */,
+				82C7ACD92CCF8AAC002F64DC /* EmergencyView.swift */,
+				82C7ACDB2CCF930C002F64DC /* AddContactSheetView.swift */,
+				82C7ACDD2CCF96CC002F64DC /* EmergencyCallingView.swift */,
+				82C7ACD72CCF70B6002F64DC /* ProfileView.swift */,
+				82B094892CEA04430035A3B7 /* HelpDetailView.swift */,
+				82B094872CEA02EB0035A3B7 /* AccountAndPasswordView.swift */,
+				82B094852CE9FE990035A3B7 /* PersonalDetailsView.swift */,
+				82B2A90F2CE07B7100568194 /* KeychainHelper.swift */,
+				82C7ACD52CCF6E78002F64DC /* CustomTabBar.swift */,
 				82981D052CCE481100924439 /* NotificationPermissionView.swift */,
+				82A9A83E2CEDA1EB00BEB90F /* NotificationManger.swift */,
+				82D49DA32CD628CE00AC989F /* SaveToPlanView.swift */,
+				82D49DA52CD62C6000AC989F /* PlanListView.swift */,
+				82D49DA72CD62FD700AC989F /* CampingPreferenceView.swift */,
+				82D49DA92CD6374300AC989F /* BudgetPreferenceView.swift */,
+				825822002CD8A5F0006E225B /* CampgroundServicesView.swift */,
+				822355662CD9D49800CF7554 /* HomeView.swift */,
+				82B1942B2CEC550000BA9F35 /* CampgroundList.swift */,
+				82AAE6FB2CE32BA8005E1189 /* SearchBar.swift */,
+				822355682CD9FCD800CF7554 /* AddToCommunityView.swift */,
+				8223556A2CDA00CA00CF7554 /* starRatingView.swift */,
+				8223556C2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift */,
+				8223556E2CDA14F100CF7554 /* GroupChatView.swift */,
+				82B2F5192CE1D19D00DD4E30 /* ChatView.swift */,
+				82DCC4652CD785D30050CF26 /* CampgroundListView.swift */,
+				82DCC4672CD78F650050CF26 /* PreferredFacilitiesView.swift */,
+				82DCC4692CD795A20050CF26 /* ActivitiesPreferencesView.swift */,
+				82AAE6FD2CE37EE8005E1189 /* APIManager.swift */,
+				82D49DAB2CD63B8400AC989F /* WishListView.swift */,
+				82DCC46B2CD799680050CF26 /* Models.swift */,
 				82981D072CCE483400924439 /* RegistrationView.swift */,
 				82981CD22CCE45C200924439 /* Assets.xcassets */,
 				82981CD72CCE45C200924439 /* Persistence.swift */,
@@ -167,6 +299,18 @@
 			dependencies = (
 			);
 			name = CampLanka;
+			packageProductDependencies = (
+				822355772CDA3D2D00CF7554 /* FirebaseAuth */,
+				822355792CDA3D2D00CF7554 /* FirebaseDatabase */,
+				8223557F2CDA548200CF7554 /* GoogleSignIn */,
+				822355812CDA548200CF7554 /* GoogleSignInSwift */,
+				82B14EF32CDE1EC70092D0D4 /* FirebaseAppCheck */,
+				82B14EF52CDE1EC70092D0D4 /* FirebaseCore */,
+				82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */,
+				82B14EF92CDE1EC70092D0D4 /* FirebaseMessaging */,
+				8249E7D02CE8D6E200685B60 /* FirebaseAnalytics */,
+				8249E7D22CE8D6E200685B60 /* FirebaseStorage */,
+			);
 			productName = CampLanka;
 			productReference = 82981CCB2CCE45C100924439 /* CampLanka.app */;
 			productType = "com.apple.product-type.application";
@@ -239,6 +383,10 @@
 				Base,
 			);
 			mainGroup = 82981CC22CCE45C100924439;
+			packageReferences = (
+				822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				8223557E2CDA548200CF7554 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
 			productRefGroup = 82981CCC2CCE45C100924439 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -257,6 +405,7 @@
 			files = (
 				82981CD62CCE45C200924439 /* Preview Assets.xcassets in Resources */,
 				82981CD32CCE45C200924439 /* Assets.xcassets in Resources */,
+				822355752CDA3A3200CF7554 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,14 +430,49 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8216B3DA2CDCFB8600CB656A /* MapLocationView.swift in Sources */,
 				82981D002CCE470D00924439 /* SplashScreen.swift in Sources */,
+				8216B3D82CDCEA8A00CB656A /* ForgotPasswordView.swift in Sources */,
+				8223556B2CDA00CA00CF7554 /* starRatingView.swift in Sources */,
+				82B094882CEA02EB0035A3B7 /* AccountAndPasswordView.swift in Sources */,
+				82B2F51A2CE1D19D00DD4E30 /* ChatView.swift in Sources */,
+				82C7ACDE2CCF96CC002F64DC /* EmergencyCallingView.swift in Sources */,
 				82981CD82CCE45C200924439 /* Persistence.swift in Sources */,
+				8223556F2CDA14F100CF7554 /* GroupChatView.swift in Sources */,
+				82DCC46C2CD799680050CF26 /* Models.swift in Sources */,
 				82981D042CCE477200924439 /* TripPlannerView.swift in Sources */,
+				82C7ACD62CCF6E78002F64DC /* CustomTabBar.swift in Sources */,
+				8223557D2CDA4D7700CF7554 /* AppDelegate.swift in Sources */,
+				82DCC4682CD78F650050CF26 /* PreferredFacilitiesView.swift in Sources */,
+				82D49DA62CD62C6000AC989F /* PlanListView.swift in Sources */,
+				82C7ACD82CCF70B6002F64DC /* ProfileView.swift in Sources */,
+				82AAE6FC2CE32BA8005E1189 /* SearchBar.swift in Sources */,
+				82D49DA82CD62FD700AC989F /* CampingPreferenceView.swift in Sources */,
+				82D49DAA2CD6374300AC989F /* BudgetPreferenceView.swift in Sources */,
 				82981D022CCE473D00924439 /* SignInSignUpView.swift in Sources */,
-				82981CD12CCE45C100924439 /* ContentView.swift in Sources */,
+				82DCC4662CD785D30050CF26 /* CampgroundListView.swift in Sources */,
+				82B2A9102CE07B7100568194 /* KeychainHelper.swift in Sources */,
+				82D49DA42CD628CE00AC989F /* SaveToPlanView.swift in Sources */,
+				82981CD12CCE45C100924439 /* ConteentView.swift in Sources */,
+				82B0948A2CEA04430035A3B7 /* HelpDetailView.swift in Sources */,
+				822355672CD9D49800CF7554 /* HomeView.swift in Sources */,
+				82A9A8412CEDA76600BEB90F /* NotificationManagementViewController.swift in Sources */,
+				8223556D2CDA0E4E00CF7554 /* ReviewSubmissionScreen.swift in Sources */,
+				825822012CD8A5F0006E225B /* CampgroundServicesView.swift in Sources */,
+				82C7ACDA2CCF8AAC002F64DC /* EmergencyView.swift in Sources */,
 				82981CDB2CCE45C200924439 /* CampLanka.xcdatamodeld in Sources */,
+				82C7ACDC2CCF930C002F64DC /* AddContactSheetView.swift in Sources */,
+				822355692CD9FCD800CF7554 /* AddToCommunityView.swift in Sources */,
+				82AAE6FA2CE31049005E1189 /* CampgroundDetailView.swift in Sources */,
+				82D49DAC2CD63B8400AC989F /* WishListView.swift in Sources */,
+				822355712CDA21A600CF7554 /* TripPlannerDetailsView.swift in Sources */,
+				82B094862CE9FE990035A3B7 /* PersonalDetailsView.swift in Sources */,
+				82A9A83F2CEDA1EB00BEB90F /* NotificationManger.swift in Sources */,
+				82B1942C2CEC550000BA9F35 /* CampgroundList.swift in Sources */,
+				82DCC46A2CD795A20050CF26 /* ActivitiesPreferencesView.swift in Sources */,
 				82981CCF2CCE45C100924439 /* CampLankaApp.swift in Sources */,
 				82981CFE2CCE46F400924439 /* SignInView.swift in Sources */,
+				82AAE6FE2CE37EE8005E1189 /* APIManager.swift in Sources */,
 				82981D062CCE481100924439 /* NotificationPermissionView.swift in Sources */,
 				82981D082CCE483400924439 /* RegistrationView.swift in Sources */,
 			);
@@ -451,11 +635,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CampLanka/CampLanka.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CampLanka/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CampLanka/Info.plist;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "We need access to your calendar to add trip events";
+				INFOPLIST_KEY_NSContactsUsageDescription = "This app uses your contacts to add and manage group members.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID to securely sign you in to your account.";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "We need access to your reminders to add trip reminders";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -479,11 +670,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CampLanka/CampLanka.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CampLanka/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CampLanka/Info.plist;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "We need access to your calendar to add trip events";
+				INFOPLIST_KEY_NSContactsUsageDescription = "This app uses your contacts to add and manage group members.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID to securely sign you in to your account.";
+				INFOPLIST_KEY_NSRemindersUsageDescription = "We need access to your reminders to add trip reminders";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -614,6 +812,78 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.4.0;
+			};
+		};
+		8223557E2CDA548200CF7554 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		822355772CDA3D2D00CF7554 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		822355792CDA3D2D00CF7554 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		8223557F2CDA548200CF7554 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8223557E2CDA548200CF7554 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		822355812CDA548200CF7554 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8223557E2CDA548200CF7554 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		8249E7D02CE8D6E200685B60 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		8249E7D22CE8D6E200685B60 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		82B14EF32CDE1EC70092D0D4 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		82B14EF52CDE1EC70092D0D4 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		82B14EF72CDE1EC70092D0D4 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		82B14EF92CDE1EC70092D0D4 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 822355762CDA3D2D00CF7554 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		82981CD92CCE45C200924439 /* CampLanka.xcdatamodeld */ = {

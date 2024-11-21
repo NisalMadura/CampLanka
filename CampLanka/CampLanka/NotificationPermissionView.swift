@@ -37,7 +37,7 @@ struct NotificationPermissionView: View {
                     .padding(.top, 8)
             }
             
-            // Notification Example Card
+            
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Circle()
@@ -60,27 +60,27 @@ struct NotificationPermissionView: View {
             .background(Color(.systemGray6))
             .cornerRadius(12)
             
-            // Features List with Left Alignment
+            
             VStack(alignment: .leading, spacing: 16) {
                 ForEach(features, id: \.self) { feature in
                     HStack(spacing: 12) {
                         Image(systemName: "checkmark")
                             .foregroundColor(.green)
-                            .frame(width: 20, alignment: .center) // Fixed width for alignment
+                            .frame(width: 20, alignment: .center)
                         
                         Text(feature)
                             .font(.system(size: 16))
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading) // Forces left alignment
-                    .padding(.leading, 24) // Add left padding
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 24)
                 }
             }
             
             Spacer()
             
-            // Enable Button
+            
             Button(action: {
-                // Request notification permissions
+                
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
                     if success {
                         print("Notifications enabled")
